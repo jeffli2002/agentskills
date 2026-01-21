@@ -2,7 +2,21 @@
 // Run with: npx tsx apps/api/src/scripts/seed.ts > seed.sql
 // Then: wrangler d1 execute agentskills-db --local --file=./seed.sql
 
-const SEED_SKILLS = [
+const escapeSQL = (value: string): string => value.replace(/'/g, "''");
+
+interface SeedSkill {
+  id: string;
+  name: string;
+  description: string;
+  author: string;
+  github_url: string;
+  stars_count: number;
+  category: string;
+  r2_file_key: string;
+  file_size: number;
+}
+
+const SEED_SKILLS: SeedSkill[] = [
   {
     id: '550e8400-e29b-41d4-a716-446655440001',
     name: 'Code Review Assistant',
@@ -119,14 +133,14 @@ const SEED_SKILLS = [
 const now = Date.now();
 const insertStatements = SEED_SKILLS.map((skill) => `INSERT INTO skills (id, name, description, author, github_url, stars_count, category, r2_file_key, file_size, download_count, avg_rating, rating_count, created_at, updated_at)
 VALUES (
-  '${skill.id}',
-  '${skill.name.replace(/'/g, "''")}',
-  '${skill.description.replace(/'/g, "''")}',
-  '${skill.author}',
-  '${skill.github_url}',
+  '${escapeSQL(skill.id)}',
+  '${escapeSQL(skill.name)}',
+  '${escapeSQL(skill.description)}',
+  '${escapeSQL(skill.author)}',
+  '${escapeSQL(skill.github_url)}',
   ${skill.stars_count},
-  '${skill.category}',
-  '${skill.r2_file_key}',
+  '${escapeSQL(skill.category)}',
+  '${escapeSQL(skill.r2_file_key)}',
   ${skill.file_size},
   0,
   0,
