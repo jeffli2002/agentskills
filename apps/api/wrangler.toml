@@ -9,7 +9,7 @@ database_id = "local"
 
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "agentskills-skills"
+bucket_name = "agentskills"
 
 [vars]
 ENVIRONMENT = "development"
