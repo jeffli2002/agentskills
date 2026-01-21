@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { skillsRouter } from './routes/skills';
+import { createDb, skills } from './db';
 
 type Bindings = {
   DB: D1Database;
@@ -18,9 +20,22 @@ app.use('/api/*', cors({
   credentials: true,
 }));
 
+// Routes
+app.route('/api/skills', skillsRouter);
+
 // Health check
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok', timestamp: Date.now() });
+});
+
+// Categories endpoint (alias for convenience)
+app.get('/api/categories', async (c) => {
+  const db = createDb(c.env.DB);
+
+  const categories = await db.selectDistinct({ category: skills.category })
+    .from(skills);
+
+  return c.json({ data: categories.map(cat => cat.category), error: null });
 });
 
 // 404 handler
