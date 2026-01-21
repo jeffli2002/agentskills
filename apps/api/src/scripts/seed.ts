@@ -17,6 +17,7 @@ interface SeedSkill {
 }
 
 // Real skills data scraped from GitHub (January 2026)
+// Only includes skills that are successfully uploaded to R2
 const SEED_SKILLS: SeedSkill[] = [
   {
     id: '550e8400-e29b-41d4-a716-446655440001',
@@ -27,7 +28,7 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 79400,
     category: 'devops',
     r2_file_key: 'skills/awesome-mcp-servers/skill.zip',
-    file_size: 25600,
+    file_size: 329728,
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440002',
@@ -38,7 +39,7 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 76700,
     category: 'coding',
     r2_file_key: 'skills/mcp-servers/skill.zip',
-    file_size: 45000,
+    file_size: 490700,
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440003',
@@ -49,7 +50,7 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 58800,
     category: 'coding',
     r2_file_key: 'skills/claude-code/skill.zip',
-    file_size: 52000,
+    file_size: 11178598,
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440004',
@@ -60,7 +61,7 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 57000,
     category: 'coding',
     r2_file_key: 'skills/cline/skill.zip',
-    file_size: 38000,
+    file_size: 7951974,
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440005',
@@ -71,54 +72,10 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 45800,
     category: 'data',
     r2_file_key: 'skills/mem0/skill.zip',
-    file_size: 32000,
+    file_size: 22083788,
   },
   {
     id: '550e8400-e29b-41d4-a716-446655440006',
-    name: 'Claude Cookbooks',
-    description: 'A collection of notebooks and recipes showcasing effective ways of using Claude for various tasks.',
-    author: 'anthropics',
-    github_url: 'https://github.com/anthropics/claude-cookbooks',
-    stars_count: 31400,
-    category: 'research',
-    r2_file_key: 'skills/claude-cookbooks/skill.zip',
-    file_size: 28000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440007',
-    name: 'Prompt Engineering Tutorial',
-    description: 'Anthropics Interactive Prompt Engineering Tutorial - learn to write effective prompts for AI models.',
-    author: 'anthropics',
-    github_url: 'https://github.com/anthropics/prompt-eng-interactive-tutorial',
-    stars_count: 29000,
-    category: 'writing',
-    r2_file_key: 'skills/prompt-eng-tutorial/skill.zip',
-    file_size: 18000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440008',
-    name: 'Goose',
-    description: 'An open source, extensible AI agent that goes beyond code suggestions - install, execute, edit, and test with any LLM.',
-    author: 'block',
-    github_url: 'https://github.com/block/goose',
-    stars_count: 26400,
-    category: 'automation',
-    r2_file_key: 'skills/goose/skill.zip',
-    file_size: 42000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440009',
-    name: 'Awesome Claude Skills (ComposioHQ)',
-    description: 'A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows.',
-    author: 'ComposioHQ',
-    github_url: 'https://github.com/ComposioHQ/awesome-claude-skills',
-    stars_count: 22900,
-    category: 'research',
-    r2_file_key: 'skills/awesome-claude-skills-composio/skill.zip',
-    file_size: 15000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440010',
     name: 'Awesome Claude Code',
     description: 'A curated list of awesome skills, hooks, slash-commands, agent orchestrators, applications, and plugins for Claude Code.',
     author: 'hesreallyhim',
@@ -126,21 +83,10 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 21200,
     category: 'research',
     r2_file_key: 'skills/awesome-claude-code/skill.zip',
-    file_size: 12000,
+    file_size: 3186892,
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440011',
-    name: 'Anthropic Courses',
-    description: 'Anthropics educational courses for learning to build with Claude and AI agents.',
-    author: 'anthropics',
-    github_url: 'https://github.com/anthropics/courses',
-    stars_count: 18200,
-    category: 'research',
-    r2_file_key: 'skills/anthropic-courses/skill.zip',
-    file_size: 35000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440012',
+    id: '550e8400-e29b-41d4-a716-446655440007',
     name: 'MCP Agent',
     description: 'Build effective agents using Model Context Protocol and simple workflow patterns.',
     author: 'lastmile-ai',
@@ -148,10 +94,10 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 8000,
     category: 'automation',
     r2_file_key: 'skills/mcp-agent/skill.zip',
-    file_size: 22000,
+    file_size: 20975923,
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440013',
+    id: '550e8400-e29b-41d4-a716-446655440008',
     name: 'Awesome Claude Skills',
     description: 'A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows — particularly Claude Code.',
     author: 'travisvn',
@@ -159,32 +105,10 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 5500,
     category: 'research',
     r2_file_key: 'skills/awesome-claude-skills-travisvn/skill.zip',
-    file_size: 8000,
+    file_size: 11469,
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440014',
-    name: 'MCP Playwright',
-    description: 'Playwright Model Context Protocol Server - Tool to automate browsers and APIs in Claude Desktop, Cline, Cursor IDE and more.',
-    author: 'executeautomation',
-    github_url: 'https://github.com/executeautomation/mcp-playwright',
-    stars_count: 5200,
-    category: 'testing',
-    r2_file_key: 'skills/mcp-playwright/skill.zip',
-    file_size: 18000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440015',
-    name: 'MCP Server Qdrant',
-    description: 'An official Qdrant Model Context Protocol (MCP) server implementation for semantic search capabilities.',
-    author: 'qdrant',
-    github_url: 'https://github.com/qdrant/mcp-server-qdrant',
-    stars_count: 1200,
-    category: 'data',
-    r2_file_key: 'skills/mcp-server-qdrant/skill.zip',
-    file_size: 14000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440016',
+    id: '550e8400-e29b-41d4-a716-446655440009',
     name: 'Claude Code Skills Marketplace',
     description: 'Professional Claude Code skills marketplace featuring production-ready skills for enhanced development workflows.',
     author: 'daymade',
@@ -192,18 +116,7 @@ const SEED_SKILLS: SeedSkill[] = [
     stars_count: 358,
     category: 'coding',
     r2_file_key: 'skills/daymade-skills/skill.zip',
-    file_size: 25000,
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440017',
-    name: 'Claude Code Skills Collection',
-    description: 'Production-ready skills covering the full delivery workflow from research and discovery to epic planning, implementation, testing, and code review.',
-    author: 'levnikolaevich',
-    github_url: 'https://github.com/levnikolaevich/claude-code-skills',
-    stars_count: 49,
-    category: 'devops',
-    r2_file_key: 'skills/levnikolaevich-skills/skill.zip',
-    file_size: 20000,
+    file_size: 9805005,
   },
 ];
 
@@ -229,7 +142,7 @@ VALUES (
 
 console.log('-- Seed data for Agent Skills Marketplace');
 console.log('-- Generated at:', new Date().toISOString());
-console.log('-- Data scraped from GitHub (January 2026)');
+console.log('-- 9 skills with files uploaded to R2');
 console.log('-- Run with: wrangler d1 execute agentskills-db --local --file=./seed.sql');
 console.log('');
 console.log(insertStatements);
