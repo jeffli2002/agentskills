@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { skillsRouter } from './routes/skills';
 import { authRouter } from './routes/auth';
+import { favoritesRouter } from './routes/favorites';
 import { createDb, skills } from './db';
 
 type Bindings = {
@@ -24,6 +25,7 @@ app.use('/api/*', cors({
 // Routes
 app.route('/api/skills', skillsRouter);
 app.route('/api/auth', authRouter);
+app.route('/api/favorites', favoritesRouter);
 
 // Health check
 app.get('/api/health', (c) => {
