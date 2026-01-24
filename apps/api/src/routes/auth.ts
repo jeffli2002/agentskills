@@ -31,9 +31,13 @@ function getRedirectUri(c: any): string {
 function getFrontendUrl(c: any): string {
   const host = c.req.header('host') || 'localhost:8787';
   if (host.includes('localhost')) {
-    return 'http://localhost:5173';
+    return 'http://localhost:5180';
   }
-  return 'https://agentskills.pages.dev';
+  // Preserve www subdomain if present
+  if (host.includes('www.agentskills.cv')) {
+    return 'https://www.agentskills.cv';
+  }
+  return 'https://agentskills.cv';
 }
 
 // Initiate Google OAuth
