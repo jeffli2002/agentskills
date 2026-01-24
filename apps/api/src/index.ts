@@ -19,7 +19,15 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // CORS for frontend
 app.use('/api/*', cors({
-  origin: ['http://localhost:5173', 'https://agentskills.pages.dev'],
+  origin: (origin) => {
+    // Allow localhost for dev
+    if (origin?.startsWith('http://localhost:')) return origin;
+    // Allow all agentskills.pages.dev subdomains
+    if (origin?.endsWith('.agentskills.pages.dev')) return origin;
+    // Allow main domain
+    if (origin === 'https://agentskills.pages.dev') return origin;
+    return null;
+  },
   credentials: true,
 }));
 
