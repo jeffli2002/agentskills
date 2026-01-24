@@ -5,7 +5,7 @@ compatibility_date = "2025-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "agentskills-db"
-database_id = "local"
+database_id = "9066b849-fb94-4196-b887-1b57b6fc314e"
 
 [[r2_buckets]]
 binding = "BUCKET"
