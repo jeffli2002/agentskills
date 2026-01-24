@@ -7,6 +7,7 @@ export const API_BASE = import.meta.env.PROD
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
+    credentials: 'include', // Include cookies for cross-origin requests
     headers: {
       'Content-Type': 'application/json',
       ...options?.headers,

@@ -145,10 +145,12 @@ authRouter.get('/callback', async (c) => {
     });
 
     // Set session cookie
+    // For cross-domain cookies: sameSite=None requires secure=true
+    const isLocalhost = c.req.header('host')?.includes('localhost');
     setCookie(c, 'session', sessionToken, {
       httpOnly: true,
-      secure: !c.req.header('host')?.includes('localhost'),
-      sameSite: 'Lax',
+      secure: !isLocalhost,
+      sameSite: isLocalhost ? 'Lax' : 'None',
       path: '/',
       expires: expiresAt,
     });
