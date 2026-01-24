@@ -6,3 +6,16 @@ dist/
 .env.local
 *.log
 .DS_Store
+
+# Temporary seed/scraping files
+apps/api/seed*.sql
+apps/api/skills-seed.sql
+scripts/*-progress.json
+scripts/scraped-*.json
+scripts/skills-with-files*.json
+scripts/r2-*.json
+seed.sql
+nul
+
+# Backup files
+*.backup
