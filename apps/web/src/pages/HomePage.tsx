@@ -315,7 +315,7 @@ export function HomePage() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-neutral-900">
-            每日精选 Daily Featured
+            Daily Featured
           </h2>
 
           {loading ? (
