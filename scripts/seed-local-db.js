@@ -17,7 +17,7 @@ function escapeSql(str) {
     .replace(/'/g, "''")
     .replace(/\\/g, '\\\\')
     .replace(/\x00/g, '')  // Remove null bytes
-    .replace(/[\x01-\x1f]/g, ' ');  // Replace control chars with space
+    .replace(/[\x01-\x09\x0b\x0c\x0e-\x1f]/g, ' ');  // Replace control chars except newline (\x0a) and carriage return (\x0d)
 }
 
 // Generate unique UUID using index to guarantee uniqueness
