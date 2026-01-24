@@ -179,8 +179,16 @@ skillsRouter.get('/:id/download', async (c) => {
   }
 
   // Fallback: redirect to GitHub archive URL
-  const githubArchiveUrl = skill.githubUrl.replace('github.com', 'github.com') + '/archive/refs/heads/main.zip';
-  return c.redirect(githubArchiveUrl, 302);
+  // Extract the base repo URL (remove /tree/branch/path parts)
+  const repoMatch = skill.githubUrl.match(/^(https:\/\/github\.com\/[^\/]+\/[^\/]+)/);
+  if (repoMatch) {
+    const repoUrl = repoMatch[1];
+    const githubArchiveUrl = `${repoUrl}/archive/refs/heads/main.zip`;
+    return c.redirect(githubArchiveUrl, 302);
+  }
+
+  // If we can't parse the URL, return an error
+  return c.json<ApiResponse<null>>({ data: null, error: 'Download not available' }, 404);
 });
 
 export { skillsRouter };
