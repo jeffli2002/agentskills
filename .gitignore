@@ -19,3 +19,9 @@ nul
 
 # Backup files
 *.backup
+
+# Scripts with secrets (keep local only)
+scripts/scrape-*.js
+scripts/fetch-*.js
+scripts/upload-*.js
+scripts/retry-*.js
