@@ -8,22 +8,51 @@ export interface User {
   updatedAt: number;
 }
 
+// Skill file structure for file explorer
+export interface SkillFile {
+  path: string;
+  name: string;
+  size: number;
+  type: 'file' | 'folder';
+}
+
 // Skill types
 export interface Skill {
   id: string;
   name: string;
   description: string;
   author: string;
+  authorAvatarUrl: string | null;
   githubUrl: string;
   starsCount: number;
+  forksCount: number;
   category: string;
   r2FileKey: string;
   fileSize: number;
   downloadCount: number;
   avgRating: number;
   ratingCount: number;
+  lastCommitAt: number | null;
+  filesJson: string | null;
+  skillMdContent: string | null;
+  skillMdParsed: string | null;
   createdAt: number;
   updatedAt: number;
+}
+
+// Extended skill detail with parsed data
+export interface SkillDetail extends Skill {
+  files: SkillFile[];
+  parsedMetadata: Record<string, string> | null;
+}
+
+// Related skill for sidebar display
+export interface RelatedSkill {
+  id: string;
+  name: string;
+  author: string;
+  authorAvatarUrl: string | null;
+  starsCount: number;
 }
 
 export interface SkillWithUserData extends Skill {
