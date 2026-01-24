@@ -286,19 +286,6 @@ export function HomePage() {
                   Browse All Skills
                 </Button>
               </Link>
-              <a
-                href="https://github.com/agentskills"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer"
-                >
-                  Contribute a Skill
-                </Button>
-              </a>
             </div>
           </div>
         </div>
@@ -610,19 +597,6 @@ export function HomePage() {
                 Explore Skills
               </Button>
             </Link>
-            <a
-              href="https://github.com/agentskills"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-transparent border-2 border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-200 cursor-pointer"
-              >
-                Share Your Skill
-              </Button>
-            </a>
           </div>
         </div>
       </section>
