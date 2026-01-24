@@ -3,14 +3,18 @@ import { Star, GitFork, Clock } from 'lucide-react';
 interface GitStatsBarProps {
   stars: number;
   forks: number;
-  updatedAt: number | null;
+  updatedAt: string | number | null;
 }
 
-function formatRelativeTime(timestamp: number | null): string {
+function formatRelativeTime(timestamp: string | number | null): string {
   if (!timestamp) return 'Unknown';
 
+  // Handle both string dates (ISO format) and numeric timestamps
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : new Date(timestamp);
+  if (isNaN(date.getTime())) return 'Unknown';
+
   const now = Date.now();
-  const diff = now - timestamp;
+  const diff = now - date.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
   if (days === 0) return 'Today';
