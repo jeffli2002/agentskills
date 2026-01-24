@@ -1,6 +1,8 @@
 import type { ApiResponse, PaginatedResponse, Skill, SkillsQueryParams, User, RelatedSkill, SkillFile } from '@agentskills/shared';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.PROD
+  ? 'https://agentskills-api.jefflee2002.workers.dev/api'
+  : '/api';
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
