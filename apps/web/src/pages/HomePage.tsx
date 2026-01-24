@@ -231,37 +231,29 @@ export function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Search Focused */}
-      <section className="relative py-20 md:py-28 bg-gradient-to-br from-neutral-900 via-neutral-800 to-black text-white overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-              backgroundSize: '32px 32px'
-            }}
-          />
-        </div>
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        {/* Gradient overlay for hero */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-              <span className="text-sm font-medium">Agent Skills Marketplace</span>
-              <Badge variant="secondary" className="bg-neutral-700 text-white border-0 hover:bg-neutral-600">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 backdrop-blur-sm border border-border mb-6">
+              <span className="text-sm font-medium text-gold">Agent Skills Marketplace</span>
+              <Badge variant="secondary" className="bg-accent text-foreground border-0">
                 New
               </Badge>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight text-foreground">
               Discover & Create
               <br />
-              <span className="text-neutral-300">the Best AI Agent Skills</span>
+              <span className="text-gold-shimmer">the Best AI Agent Skills</span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-lg md:text-xl text-neutral-200 max-w-2xl mx-auto mb-10">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
               Discover, download, and share powerful Claude skills and agent skills for AI coding assistants.
               Built by developers, for developers.
             </p>
@@ -272,7 +264,7 @@ export function HomePage() {
                 onChange={handleSearch}
                 onSubmit={handleSearchSubmit}
                 placeholder="Search agent skills... (e.g., 'git automation', 'code review')"
-                className="bg-white text-neutral-900"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
 
@@ -281,7 +273,7 @@ export function HomePage() {
               <Link to="/skills">
                 <Button
                   size="lg"
-                  className="bg-white text-black hover:bg-neutral-100 hover:scale-105 border-0 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
+                  className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 border-0 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
                 >
                   Browse All Skills
                 </Button>
@@ -292,18 +284,18 @@ export function HomePage() {
       </section>
 
       {/* Trust Metrics Bar */}
-      <section className="py-8 bg-neutral-50 border-b border-neutral-200">
+      <section className="py-8 bg-secondary/50 border-y border-border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {trustMetrics.map((metric, index) => {
               const IconComponent = metric.icon;
               return (
                 <div key={index} className="text-center">
-                  <IconComponent className="w-8 h-8 mx-auto mb-2 text-neutral-700" />
-                  <div className="text-2xl md:text-3xl font-bold text-neutral-900 mb-1">
+                  <IconComponent className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
                     {metric.value}
                   </div>
-                  <div className="text-sm text-neutral-600">{metric.label}</div>
+                  <div className="text-sm text-muted-foreground">{metric.label}</div>
                 </div>
               );
             })}
@@ -312,18 +304,18 @@ export function HomePage() {
       </section>
 
       {/* Daily Featured Carousel - 每日精选 */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-neutral-900">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-foreground">
             Daily Featured
           </h2>
 
           {loading ? (
-            <div className="max-w-4xl mx-auto h-64 bg-neutral-100 rounded-xl animate-pulse" />
+            <div className="max-w-4xl mx-auto h-64 bg-secondary rounded-xl animate-pulse" />
           ) : featuredSkills.length > 0 ? (
             <div className="max-w-4xl mx-auto relative">
               {/* Carousel Container */}
-              <div className="relative overflow-hidden rounded-xl border-2 border-neutral-200 bg-neutral-50">
+              <div className="relative overflow-hidden rounded-xl border border-border bg-card">
                 {/* Slides */}
                 <div
                   className="flex transition-transform duration-500 ease-in-out"
@@ -335,31 +327,31 @@ export function HomePage() {
                         <div className="cursor-pointer">
                           <div className="flex items-start gap-4 mb-4">
                             <div className="flex-1">
-                              <h3 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2 hover:text-neutral-700 transition-colors">
+                              <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2 hover:text-muted-foreground transition-colors">
                                 {skill.name}
                               </h3>
-                              <p className="text-neutral-600 text-lg mb-4 line-clamp-2">
+                              <p className="text-muted-foreground text-lg mb-4 line-clamp-2">
                                 {skill.description}
                               </p>
-                              <div className="flex items-center gap-4 text-sm text-neutral-500">
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 <span className="flex items-center gap-1">
                                   <User className="w-4 h-4" />
                                   {skill.author}
                                 </span>
                                 <span className="flex items-center gap-1">
-                                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                  <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
                                   {skill.starsCount?.toLocaleString() || 0}
                                 </span>
                                 {skill.avgRating && (
                                   <span className="flex items-center gap-1">
-                                    <Star className="w-4 h-4 fill-neutral-400 text-neutral-400" />
+                                    <Star className="w-4 h-4 fill-muted-foreground text-muted-foreground" />
                                     {skill.avgRating.toFixed(1)}
                                   </span>
                                 )}
                               </div>
                             </div>
                           </div>
-                          <Button className="bg-neutral-900 text-white hover:bg-neutral-800 hover:scale-105 transition-all duration-200 cursor-pointer">
+                          <Button className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 transition-all duration-200 cursor-pointer">
                             View Details
                           </Button>
                         </div>
@@ -373,17 +365,17 @@ export function HomePage() {
                   <>
                     <button
                       onClick={prevSlide}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-secondary/90 hover:bg-secondary shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 border border-border"
                       aria-label="Previous slide"
                     >
-                      <ChevronLeft className="w-6 h-6 text-neutral-900" />
+                      <ChevronLeft className="w-6 h-6 text-foreground" />
                     </button>
                     <button
                       onClick={nextSlide}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-secondary/90 hover:bg-secondary shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 border border-border"
                       aria-label="Next slide"
                     >
-                      <ChevronRight className="w-6 h-6 text-neutral-900" />
+                      <ChevronRight className="w-6 h-6 text-foreground" />
                     </button>
                   </>
                 )}
@@ -398,8 +390,8 @@ export function HomePage() {
                       onClick={() => setCurrentSlide(index)}
                       className={`w-2 h-2 rounded-full transition-all duration-200 cursor-pointer ${
                         index === currentSlide
-                          ? 'bg-neutral-900 w-8'
-                          : 'bg-neutral-300 hover:bg-neutral-400'
+                          ? 'bg-foreground w-8'
+                          : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                       }`}
                       aria-label={`Go to slide ${index + 1}`}
                     />
@@ -412,9 +404,9 @@ export function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-neutral-50">
+      <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-neutral-900">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-foreground">
             Browse by Category
           </h2>
           <div className="flex items-center justify-center gap-4 max-w-6xl mx-auto">
@@ -423,10 +415,10 @@ export function HomePage() {
               onClick={() => setCategoryStartIndex((prev) =>
                 prev === 0 ? Math.max(0, categories.length - CATEGORIES_PER_PAGE) : prev - CATEGORIES_PER_PAGE
               )}
-              className="flex-shrink-0 w-10 h-10 rounded-full bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 flex items-center justify-center transition-all duration-200 cursor-pointer"
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border hover:border-foreground/50 hover:bg-secondary flex items-center justify-center transition-all duration-200 cursor-pointer"
               aria-label="Previous categories"
             >
-              <ChevronLeft className="w-5 h-5 text-neutral-700" />
+              <ChevronLeft className="w-5 h-5 text-foreground" />
             </button>
 
             {/* Categories Grid */}
@@ -435,12 +427,12 @@ export function HomePage() {
                 const IconComponent = categoryIcons[cat.category] || Package;
                 return (
                   <Link key={index} to={`/skills?category=${encodeURIComponent(cat.category)}`}>
-                    <div className="group p-6 rounded-xl border-2 border-neutral-200 hover:border-neutral-900 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-center cursor-pointer bg-white h-full">
-                      <IconComponent className="w-10 h-10 mx-auto mb-3 text-neutral-700 group-hover:text-neutral-900 group-hover:scale-110 transition-all duration-200" />
-                      <h3 className="font-semibold text-neutral-900 mb-1 text-sm capitalize truncate">
+                    <div className="group p-6 rounded-xl border border-border hover:border-foreground/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-center cursor-pointer bg-card h-full">
+                      <IconComponent className="w-10 h-10 mx-auto mb-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all duration-200" />
+                      <h3 className="font-semibold text-foreground mb-1 text-sm capitalize truncate">
                         {cat.category.replace(/-/g, ' ')}
                       </h3>
-                      <p className="text-xs text-neutral-600">{cat.count} skills</p>
+                      <p className="text-xs text-muted-foreground">{cat.count} skills</p>
                     </div>
                   </Link>
                 );
@@ -452,10 +444,10 @@ export function HomePage() {
               onClick={() => setCategoryStartIndex((prev) =>
                 prev + CATEGORIES_PER_PAGE >= categories.length ? 0 : prev + CATEGORIES_PER_PAGE
               )}
-              className="flex-shrink-0 w-10 h-10 rounded-full bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 flex items-center justify-center transition-all duration-200 cursor-pointer"
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-card border border-border hover:border-foreground/50 hover:bg-secondary flex items-center justify-center transition-all duration-200 cursor-pointer"
               aria-label="Next categories"
             >
-              <ChevronRight className="w-5 h-5 text-neutral-700" />
+              <ChevronRight className="w-5 h-5 text-foreground" />
             </button>
           </div>
 
@@ -468,8 +460,8 @@ export function HomePage() {
                   onClick={() => setCategoryStartIndex(index * CATEGORIES_PER_PAGE)}
                   className={`w-2 h-2 rounded-full transition-all duration-200 cursor-pointer ${
                     Math.floor(categoryStartIndex / CATEGORIES_PER_PAGE) === index
-                      ? 'bg-neutral-900 w-6'
-                      : 'bg-neutral-300 hover:bg-neutral-400'
+                      ? 'bg-foreground w-6'
+                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                   }`}
                   aria-label={`Go to category page ${index + 1}`}
                 />
@@ -480,19 +472,19 @@ export function HomePage() {
       </section>
 
       {/* Featured Skills Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                 Popular Skills
               </h2>
-              <p className="text-neutral-600">
+              <p className="text-muted-foreground">
                 Top-rated skills from the community
               </p>
             </div>
             <Link to="/skills">
-              <Button variant="ghost" className="cursor-pointer hover:bg-neutral-100">
+              <Button variant="ghost" className="cursor-pointer hover:bg-secondary">
                 View all →
               </Button>
             </Link>
@@ -508,13 +500,13 @@ export function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-neutral-50">
+      <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
               Why Choose Agent Skills Marketplace?
             </h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               A trusted platform for Claude skills and agent skills built for the AI coding community
             </p>
           </div>
@@ -523,13 +515,13 @@ export function HomePage() {
               const IconComponent = feature.icon;
               return (
                 <div key={index} className="text-center group">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <IconComponent className="w-8 h-8 text-neutral-900" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-secondary flex items-center justify-center group-hover:scale-110 transition-transform duration-200 border border-border">
+                    <IconComponent className="w-8 h-8 text-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-neutral-600 text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -540,34 +532,34 @@ export function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-neutral-900">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-foreground">
               Frequently Asked Questions about Claude Skills
             </h2>
             <div className="space-y-4">
               {faqs.map((faq, index) => (
                 <div
                   key={index}
-                  className="border-2 border-neutral-200 rounded-xl overflow-hidden hover:border-neutral-900 transition-colors duration-200"
+                  className="border border-border rounded-xl overflow-hidden hover:border-foreground/30 transition-colors duration-200 bg-card"
                 >
                   <button
                     onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
-                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-neutral-50 transition-colors duration-200 cursor-pointer"
+                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary/50 transition-colors duration-200 cursor-pointer"
                   >
-                    <span className="font-semibold text-neutral-900 pr-4">
+                    <span className="font-semibold text-foreground pr-4">
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-neutral-600 flex-shrink-0 transition-transform duration-200 ${
+                      className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
                         openFaqIndex === index ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
                   {openFaqIndex === index && (
-                    <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-200">
-                      <p className="text-neutral-600 leading-relaxed">
+                    <div className="px-6 py-4 bg-secondary/30 border-t border-border">
+                      <p className="text-muted-foreground leading-relaxed">
                         {faq.answer}
                       </p>
                     </div>
@@ -580,19 +572,19 @@ export function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-neutral-900 to-black text-white">
+      <section className="py-20 bg-secondary/50 border-t border-border">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
             Ready to Get Started?
           </h2>
-          <p className="text-lg text-neutral-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join thousands of developers extending their AI agents with community-built agent skills
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/skills">
               <Button
                 size="lg"
-                className="bg-white text-black hover:bg-neutral-100 hover:scale-105 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
+                className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
               >
                 Explore Skills
               </Button>

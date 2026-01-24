@@ -6,31 +6,78 @@
 @tailwind utilities;
 
 :root {
-  /* Updated color palette - Black/Gray monochrome theme */
-  --background: 0 0% 100%; /* White background */
-  --foreground: 0 0% 9%; /* #171717 - Almost black for text */
-  --primary: 0 0% 9%; /* #171717 - Black as primary */
-  --primary-foreground: 0 0% 98%; /* White text on black */
-  --secondary: 0 0% 18%; /* #2D2D2D - Dark gray */
-  --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 96%; /* #F5F5F5 - Light gray background */
-  --muted-foreground: 0 0% 45%; /* #737373 - Medium gray for muted text */
-  --accent: 0 0% 96%;
-  --accent-foreground: 0 0% 9%;
+  /* Refined Metallic Dark Theme */
+  --background: 220 16% 8%; /* #121418 - Deep charcoal black */
+  --foreground: 220 13% 91%; /* #E4E6EA - Soft warm white */
+  --primary: 220 13% 91%; /* Light/white for primary actions */
+  --primary-foreground: 220 16% 8%; /* Dark text on primary */
+  --secondary: 220 14% 14%; /* #1F2328 - Elevated surface */
+  --secondary-foreground: 220 13% 91%;
+  --muted: 220 14% 18%; /* #282D35 - Muted backgrounds */
+  --muted-foreground: 220 10% 55%; /* #858993 - Muted text */
+  --accent: 220 14% 22%; /* #333A45 - Accent backgrounds */
+  --accent-foreground: 220 13% 91%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 0 0% 90%; /* #E5E5E5 - Light gray border */
-  --ring: 0 0% 9%;
+  --border: 220 12% 22%; /* #353B44 - Subtle metallic border */
+  --ring: 220 13% 70%;
   --radius: 0.5rem;
 
-  /* CTA - Keep a subtle accent for important actions */
-  --cta: 0 0% 9%; /* Black for CTAs */
-  --cta-foreground: 0 0% 100%;
+  /* Card styling */
+  --card: 220 14% 11%; /* #191C21 - Card background */
+  --card-foreground: 220 13% 91%;
+
+  /* Gold metallic accent */
+  --gold: 43 74% 49%; /* #D4A017 - Rich gold */
+  --gold-light: 43 89% 63%; /* #F4C542 - Light gold */
+  --gold-dark: 38 72% 38%; /* #A67C00 - Dark gold */
+}
+
+/* Gold metallic text effect */
+.text-gold {
+  background: linear-gradient(
+    135deg,
+    hsl(43 89% 63%) 0%,
+    hsl(43 74% 49%) 50%,
+    hsl(38 72% 38%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gold metallic text with shimmer */
+.text-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(38 72% 38%) 0%,
+    hsl(43 89% 70%) 25%,
+    hsl(43 74% 49%) 50%,
+    hsl(43 89% 70%) 75%,
+    hsl(38 72% 38%) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
 }
 
 body {
   @apply bg-background text-foreground antialiased;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: hsl(var(--background));
+  /* Subtle grid pattern - metallic tech aesthetic */
+  background-image:
+    linear-gradient(to right, hsl(220 12% 15% / 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(220 12% 15% / 0.5) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-attachment: fixed;
 }
 
 /* Typography hierarchy */
@@ -55,4 +102,12 @@ a:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
+}
+
+/* Header with frosted glass effect */
+.header-glass {
+  background: hsl(220 16% 6% / 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
 }

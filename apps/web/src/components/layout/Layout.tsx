@@ -11,7 +11,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">{children}</main>
-      <footer className="border-t py-6">
+      <footer className="border-t border-border/50 py-8 mt-12 bg-secondary/30">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <div className="flex items-center justify-center gap-4 mb-2">
             <Link href="/privacy" className="hover:text-foreground">

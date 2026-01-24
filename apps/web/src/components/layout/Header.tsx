@@ -16,7 +16,7 @@ function UserAvatar({ name, avatarUrl }: { name: string; avatarUrl: string | nul
 
   if (!avatarUrl || imgError) {
     return (
-      <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
+      <div className="h-8 w-8 rounded-full bg-secondary text-foreground flex items-center justify-center text-xs font-medium border border-border">
         {initials}
       </div>
     );
@@ -36,7 +36,7 @@ export function Header() {
   const { user, loading, login, logout } = useAuth();
 
   return (
-    <header className="border-b">
+    <header className="header-glass sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="text-xl font-bold cursor-pointer hover:opacity-80">
@@ -66,7 +66,7 @@ export function Header() {
               </Button>
             </div>
           ) : (
-            <Button onClick={login}>Sign in with Google</Button>
+            <Button variant="outline" onClick={login}>Sign in with Google</Button>
           )}
         </div>
       </div>
