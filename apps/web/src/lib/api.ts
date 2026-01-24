@@ -1,4 +1,4 @@
-import type { ApiResponse, PaginatedResponse, Skill, SkillsQueryParams, User } from '@agentskills/shared';
+import type { ApiResponse, PaginatedResponse, Skill, SkillsQueryParams, User, RelatedSkill, SkillFile } from '@agentskills/shared';
 
 const API_BASE = '/api';
 
@@ -53,6 +53,11 @@ export async function getCategories(): Promise<string[]> {
   return response.data || [];
 }
 
+export async function getCategoriesWithCounts(): Promise<{ category: string; count: number }[]> {
+  const response = await fetchApi<ApiResponse<{ category: string; count: number }[]>>('/skills/meta/categories');
+  return response.data || [];
+}
+
 export function getDownloadUrl(skillId: string): string {
   return `${API_BASE}/skills/${skillId}/download`;
 }
@@ -87,4 +92,30 @@ export async function rateSkill(skillId: string, score: number): Promise<{ avgRa
     }
   );
   return { avgRating: response.data?.avgRating || 0, ratingCount: response.data?.ratingCount || 0 };
+}
+
+// Related Skills
+export async function getRelatedSkills(skillId: string, category: string): Promise<RelatedSkill[]> {
+  const response = await fetchApi<ApiResponse<RelatedSkill[]>>(`/skills/${skillId}/related`);
+  return response.data || [];
+}
+
+// Parse skill files from JSON
+export function parseSkillFiles(filesJson: string | null): SkillFile[] {
+  if (!filesJson) return [];
+  try {
+    return JSON.parse(filesJson) as SkillFile[];
+  } catch {
+    return [];
+  }
+}
+
+// Parse skill metadata from JSON
+export function parseSkillMetadata(metadataJson: string | null): Record<string, string> | null {
+  if (!metadataJson) return null;
+  try {
+    return JSON.parse(metadataJson) as Record<string, string>;
+  } catch {
+    return null;
+  }
 }
