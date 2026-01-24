@@ -6,6 +6,8 @@ import { SkillsPage } from '@/pages/SkillsPage';
 import { SkillDetailPage } from '@/pages/SkillDetailPage';
 import { FavoritesPage } from '@/pages/FavoritesPage';
 import { LoginPage } from '@/pages/LoginPage';
+import { PrivacyPage } from '@/pages/PrivacyPage';
+import { TermsPage } from '@/pages/TermsPage';
 
 function NotFoundPage() {
   return (
@@ -36,6 +38,8 @@ export default function App() {
           <Route path="/skills" component={SkillsPage} />
           <Route path="/favorites" component={FavoritesPage} />
           <Route path="/login" component={LoginPage} />
+          <Route path="/privacy" component={PrivacyPage} />
+          <Route path="/terms" component={TermsPage} />
           <Route component={NotFoundPage} />
         </Switch>
       </Layout>
