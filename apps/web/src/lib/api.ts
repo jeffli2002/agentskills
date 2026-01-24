@@ -1,6 +1,6 @@
 import type { ApiResponse, PaginatedResponse, Skill, SkillsQueryParams, User, RelatedSkill, SkillFile } from '@agentskills/shared';
 
-const API_BASE = import.meta.env.PROD
+export const API_BASE = import.meta.env.PROD
   ? 'https://agentskills-api.jefflee2002.workers.dev/api'
   : '/api';
 

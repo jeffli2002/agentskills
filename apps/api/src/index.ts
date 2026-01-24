@@ -26,8 +26,9 @@ app.use('/api/*', cors({
     if (origin?.endsWith('.agentskills.pages.dev')) return origin;
     // Allow main Pages domain
     if (origin === 'https://agentskills.pages.dev') return origin;
-    // Allow custom domain
+    // Allow custom domain (with and without www)
     if (origin === 'https://agentskills.cv') return origin;
+    if (origin === 'https://www.agentskills.cv') return origin;
     return null;
   },
   credentials: true,

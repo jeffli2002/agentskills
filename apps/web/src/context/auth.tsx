@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { User } from '@agentskills/shared';
-import { getCurrentUser, logout as apiLogout } from '@/lib/api';
+import { getCurrentUser, logout as apiLogout, API_BASE } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = () => {
-    window.location.href = '/api/auth/google';
+    window.location.href = `${API_BASE}/auth/google`;
   };
 
   const logout = async () => {
