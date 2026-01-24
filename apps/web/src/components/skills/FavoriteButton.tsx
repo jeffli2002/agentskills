@@ -9,6 +9,7 @@ interface FavoriteButtonProps {
   isFavorited?: boolean;
   onFavoriteChange?: (isFavorited: boolean) => void;
   size?: 'sm' | 'md';
+  className?: string;
 }
 
 export function FavoriteButton({
@@ -16,6 +17,7 @@ export function FavoriteButton({
   isFavorited = false,
   onFavoriteChange,
   size = 'md',
+  className,
 }: FavoriteButtonProps) {
   const { user, login } = useAuth();
   const [favorited, setFavorited] = useState(isFavorited);
@@ -58,7 +60,8 @@ export function FavoriteButton({
       disabled={isSubmitting}
       className={cn(
         'transition-colors',
-        favorited && 'text-red-500 hover:text-red-600'
+        favorited && 'text-red-500 hover:text-red-600',
+        className
       )}
       aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
     >

@@ -9,16 +9,16 @@ export function Header() {
     <header className="border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/">
-            <a className="text-xl font-bold">Agent Skills</a>
+          <Link href="/" className="text-xl font-bold cursor-pointer hover:opacity-80">
+            Agent Skills
           </Link>
           <nav className="hidden md:flex items-center gap-4">
-            <Link href="/skills">
-              <a className="text-sm text-muted-foreground hover:text-foreground">Browse</a>
+            <Link href="/skills" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
+              Browse
             </Link>
             {user && (
-              <Link href="/favorites">
-                <a className="text-sm text-muted-foreground hover:text-foreground">Favorites</a>
+              <Link href="/favorites" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
+                Favorites
               </Link>
             )}
           </nav>

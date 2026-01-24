@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 interface SearchBarProps {
   value?: string;
   onChange: (value: string) => void;
+  onSubmit?: (value: string) => void;
   placeholder?: string;
   className?: string;
   debounceMs?: number;
@@ -13,6 +14,7 @@ interface SearchBarProps {
 export function SearchBar({
   value: externalValue,
   onChange,
+  onSubmit,
   placeholder = 'Search skills...',
   className,
   debounceMs = 300,
@@ -39,6 +41,12 @@ export function SearchBar({
     setInternalValue(e.target.value);
   }, []);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onSubmit) {
+      onSubmit(internalValue);
+    }
+  }, [internalValue, onSubmit]);
+
   return (
     <div className={cn('relative', className)}>
       <svg
@@ -58,6 +66,7 @@ export function SearchBar({
         type="search"
         value={internalValue}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="pl-10"
       />

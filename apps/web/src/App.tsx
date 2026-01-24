@@ -25,13 +25,15 @@ function NotFoundPage() {
 }
 
 export default function App() {
+  console.log('App rendering, current path:', window.location.pathname);
+
   return (
     <AuthProvider>
       <Layout>
         <Switch>
           <Route path="/" component={HomePage} />
-          <Route path="/skills" component={SkillsPage} />
           <Route path="/skills/:id" component={SkillDetailPage} />
+          <Route path="/skills" component={SkillsPage} />
           <Route path="/favorites" component={FavoritesPage} />
           <Route path="/login" component={LoginPage} />
           <Route component={NotFoundPage} />
