@@ -57,7 +57,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
 
 // Trust indicators
 const trustMetrics = [
-  { label: 'Active Skills', value: '1,000+', icon: Package },
+  { label: 'Agent Skills', value: '1,000+', icon: Package },
   { label: 'Community Members', value: '5,000+', icon: Users },
   { label: 'Downloads', value: '50K+', icon: Download },
   { label: 'Avg Rating', value: '4.8/5', icon: Star }
@@ -67,12 +67,12 @@ const trustMetrics = [
 const features = [
   {
     title: 'Quality Curation',
-    description: 'Every skill is reviewed and rated by the community. Find reliable, well-documented tools.',
+    description: 'Every agent skill is reviewed and rated by the community. Find reliable, well-documented tools.',
     icon: CheckCircle
   },
   {
     title: 'Creator Profiles',
-    description: 'Follow top creators, see their portfolios, and discover their latest contributions.',
+    description: 'Follow top creators, see their portfolios, and discover their latest agent skills.',
     icon: User
   },
   {
@@ -82,7 +82,7 @@ const features = [
   },
   {
     title: 'Easy Integration',
-    description: 'One-click install for Claude Code and compatible AI coding assistants. Start using skills instantly.',
+    description: 'One-click install for Claude skills and compatible AI coding assistants. Start using agent skills instantly.',
     icon: Rocket
   }
 ];
@@ -91,26 +91,26 @@ const features = [
 const faqs = [
   {
     question: 'What are Agent Skills?',
-    answer: 'Agent Skills are reusable capabilities that extend AI coding assistants like Claude Code. They can automate tasks, integrate with tools, or provide specialized knowledge domains.'
+    answer: 'Agent skills are reusable capabilities that extend AI coding assistants like Claude Code. They can automate tasks, integrate with tools, or provide specialized knowledge domains.'
   },
   {
-    question: 'How do I install a skill?',
-    answer: 'Simply browse the marketplace, find a skill you like, and click the install button. The skill will be automatically added to your Claude Code configuration.'
+    question: 'How do I install Claude skills?',
+    answer: 'Simply browse the marketplace, find a skill you like, and click the install button. The Claude skill will be automatically added to your Claude Code configuration.'
   },
   {
-    question: 'Can I create my own skills?',
-    answer: 'Yes! We encourage developers to contribute skills. Check our documentation for guidelines on creating, testing, and submitting skills to the marketplace.'
+    question: 'Can I create my own agent skills?',
+    answer: 'Yes! We encourage developers to contribute agent skills. Check our documentation for guidelines on creating, testing, and submitting skills to the marketplace.'
   },
   {
-    question: 'Are skills free to use?',
-    answer: 'Most skills in the marketplace are free and open-source. Some premium skills may require a subscription or one-time payment to support their creators.'
+    question: 'Are agent skills free to use?',
+    answer: 'Most agent skills in the marketplace are free and open-source. Some premium skills may require a subscription or one-time payment to support their creators.'
   },
   {
-    question: 'How are skills reviewed?',
-    answer: 'All skills go through community review and rating. We also perform automated security scans and manual code reviews for popular skills to ensure quality and safety.'
+    question: 'How are Claude skills reviewed?',
+    answer: 'All Claude skills go through community review and rating. We also perform automated security scans and manual code reviews for popular skills to ensure quality and safety.'
   },
   {
-    question: 'What if a skill doesn\'t work?',
+    question: 'What if an agent skill doesn\'t work?',
     answer: 'You can report issues directly on the skill\'s page. Our community and skill creators actively monitor feedback and provide updates to fix bugs and improve functionality.'
   }
 ];
@@ -247,7 +247,7 @@ export function HomePage() {
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
-              <span className="text-sm font-medium">Community-Driven Marketplace</span>
+              <span className="text-sm font-medium">Agent Skills Marketplace</span>
               <Badge variant="secondary" className="bg-neutral-700 text-white border-0 hover:bg-neutral-600">
                 New
               </Badge>
@@ -255,14 +255,14 @@ export function HomePage() {
 
             {/* Main Heading */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
-              Supercharge Your AI Agents
+              Discover & Create
               <br />
-              <span className="text-neutral-300">with Community Skills</span>
+              <span className="text-neutral-300">the Best AI Agent Skills</span>
             </h1>
 
             {/* Subheading */}
             <p className="text-lg md:text-xl text-neutral-200 max-w-2xl mx-auto mb-10">
-              Discover, download, and share powerful skills for Claude Code and AI coding assistants.
+              Discover, download, and share powerful Claude skills and agent skills for AI coding assistants.
               Built by developers, for developers.
             </p>
 
@@ -271,7 +271,7 @@ export function HomePage() {
               <SearchBar
                 onChange={handleSearch}
                 onSubmit={handleSearchSubmit}
-                placeholder="Search skills... (e.g., 'git automation', 'code review')"
+                placeholder="Search agent skills... (e.g., 'git automation', 'code review')"
                 className="bg-white text-neutral-900"
               />
             </div>
@@ -515,7 +515,7 @@ export function HomePage() {
               Why Choose Agent Skills Marketplace?
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              A trusted platform built for the AI coding community
+              A trusted platform for Claude skills and agent skills built for the AI coding community
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -544,7 +544,7 @@ export function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-neutral-900">
-              Frequently Asked Questions
+              Frequently Asked Questions about Claude Skills
             </h2>
             <div className="space-y-4">
               {faqs.map((faq, index) => (
@@ -586,7 +586,7 @@ export function HomePage() {
             Ready to Get Started?
           </h2>
           <p className="text-lg text-neutral-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of developers extending their AI agents with community-built skills
+            Join thousands of developers extending their AI agents with community-built agent skills
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/skills">
