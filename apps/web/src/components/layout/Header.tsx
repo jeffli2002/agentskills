@@ -1,6 +1,36 @@
+import { useState } from 'react';
 import { Link } from 'wouter';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
+
+function UserAvatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
+  const [imgError, setImgError] = useState(false);
+
+  // Get initials from name
+  const initials = name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  if (!avatarUrl || imgError) {
+    return (
+      <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={avatarUrl}
+      alt={name}
+      className="h-8 w-8 rounded-full"
+      onError={() => setImgError(true)}
+    />
+  );
+}
 
 export function Header() {
   const { user, loading, login, logout } = useAuth();
@@ -29,13 +59,7 @@ export function Header() {
             <div className="h-10 w-20 bg-muted animate-pulse rounded-md" />
           ) : user ? (
             <div className="flex items-center gap-3">
-              {user.avatarUrl && (
-                <img
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  className="h-8 w-8 rounded-full"
-                />
-              )}
+              <UserAvatar name={user.name} avatarUrl={user.avatarUrl} />
               <span className="text-sm hidden sm:inline">{user.name}</span>
               <Button variant="outline" size="sm" onClick={logout}>
                 Sign Out
