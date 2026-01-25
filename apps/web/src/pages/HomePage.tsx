@@ -32,7 +32,8 @@ import {
   Database,
   Briefcase,
   FlaskConical,
-  Sparkles
+  Sparkles,
+  ThumbsUp
 } from 'lucide-react';
 
 // Category icons mapping - user-friendly categories
@@ -61,7 +62,7 @@ const trustMetrics = [
   { label: 'Agent Skills', value: '1,000+', icon: Package },
   { label: 'Community Members', value: '5,000+', icon: Users },
   { label: 'Downloads', value: '50K+', icon: Download },
-  { label: 'Avg Rating', value: '4.8/5', icon: Star }
+  { label: 'Avg Rating', value: '4.8/5', icon: ThumbsUp }
 ];
 
 // Feature highlights
@@ -362,7 +363,7 @@ export function HomePage() {
                                 </span>
                                 {skill.avgRating && (
                                   <span className="flex items-center gap-1">
-                                    <Star className="w-4 h-4 fill-muted-foreground text-muted-foreground" />
+                                    <ThumbsUp className="w-4 h-4" />
                                     {skill.avgRating.toFixed(1)}
                                   </span>
                                 )}
