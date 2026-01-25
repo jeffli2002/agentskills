@@ -4,7 +4,7 @@ export function PrivacyPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-      <p className="text-muted-foreground mb-8">Last updated: January 24, 2026</p>
+      <p className="text-muted-foreground mb-8">Last updated: January 25, 2026</p>
 
       <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">
         <section>
@@ -45,8 +45,20 @@ export function PrivacyPage() {
           </p>
           <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
             <li>Skills you favorite or download</li>
-            <li>Ratings and reviews you submit</li>
+            <li>Ratings you submit</li>
             <li>Search queries</li>
+            <li>Skills you create using the AI Skill Composer</li>
+          </ul>
+
+          <h3 className="text-xl font-medium mb-3 mt-6">2.4 AI Skill Composer Data</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            When you use the AI Skill Composer to create skills, we collect:
+          </p>
+          <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
+            <li>Your prompts and descriptions for skill generation</li>
+            <li>Clarifying question responses</li>
+            <li>Generated skill content (SKILL.md files)</li>
+            <li>Whether you publish skills as public or private</li>
           </ul>
         </section>
 
@@ -60,7 +72,9 @@ export function PrivacyPage() {
             <li>Authenticate your account</li>
             <li>Personalize your experience</li>
             <li>Track favorites and preferences</li>
-            <li>Improve our platform</li>
+            <li>Power the AI Skill Composer to generate skills based on your input</li>
+            <li>Store and manage your created skills (public and private)</li>
+            <li>Improve our platform and AI generation quality</li>
             <li>Analyze usage patterns via Google Analytics</li>
             <li>Communicate important updates</li>
           </ul>
@@ -72,7 +86,8 @@ export function PrivacyPage() {
             We do not sell your personal data. We may share information with:
           </p>
           <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-            <li><strong>Service Providers:</strong> Google (authentication, analytics), Cloudflare (hosting, security)</li>
+            <li><strong>Service Providers:</strong> Google (authentication, analytics), Cloudflare (hosting, security, R2 storage)</li>
+            <li><strong>AI Services:</strong> We use AI models to power the Skill Composer for generating skill content</li>
             <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
             <li><strong>Business Transfers:</strong> In connection with a merger or acquisition</li>
           </ul>
