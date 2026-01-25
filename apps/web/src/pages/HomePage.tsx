@@ -363,7 +363,7 @@ export function HomePage() {
                                 </span>
                                 {skill.avgRating && (
                                   <span className="flex items-center gap-1">
-                                    <ThumbsUp className="w-4 h-4" />
+                                    <ThumbsUp className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                                     {skill.avgRating.toFixed(1)}
                                   </span>
                                 )}
