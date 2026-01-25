@@ -31,7 +31,8 @@ import {
   Code,
   Database,
   Briefcase,
-  FlaskConical
+  FlaskConical,
+  Sparkles
 } from 'lucide-react';
 
 // Category icons mapping - user-friendly categories
@@ -276,6 +277,15 @@ export function HomePage() {
                   className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 border-0 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
                 >
                   Browse All Skills
+                </Button>
+              </Link>
+              <Link to="/create">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-gold-dark via-gold to-gold-light text-background font-semibold hover:opacity-90 hover:scale-105 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Create with AI
                 </Button>
               </Link>
             </div>
@@ -587,6 +597,15 @@ export function HomePage() {
                 className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
               >
                 Explore Skills
+              </Button>
+            </Link>
+            <Link to="/create">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-gold-dark via-gold to-gold-light text-background font-semibold hover:opacity-90 hover:scale-105 shadow-lg hover:shadow-2xl transition-all duration-200 cursor-pointer"
+              >
+                <Sparkles className="w-5 h-5 mr-2" />
+                Create Your Own
               </Button>
             </Link>
           </div>
