@@ -10,8 +10,8 @@ export interface GeneratedStep {
   sources: {
     skillId: string;
     skillName: string;
-    views: number;
-    rating: number;
+    stars: number;
+    forks: number;
     reason: string;
   }[];
 }
@@ -66,7 +66,7 @@ export async function buildTopSkillsContext(
     .map(s => `
 --- SKILL: ${s.name} (ID: ${s.id}) ---
 Category: ${s.category}
-Views: ${s.viewCount || 0} | Rating: ${s.avgRating?.toFixed(1) || 'N/A'}
+Stars: ${s.starsCount || 0} | Forks: ${s.forksCount || 0}
 Description: ${s.description}
 
 SKILL.md Content:
@@ -415,8 +415,8 @@ Generate a high-quality skill based on this request. Use the existing skills abo
       return {
         skillId: source.skillId,
         skillName: skill?.name || 'Unknown Skill',
-        views: skill?.viewCount || 0,
-        rating: skill?.avgRating || 0,
+        stars: skill?.starsCount || 0,
+        forks: skill?.forksCount || 0,
         reason: source.reason,
       };
     }),
@@ -652,8 +652,8 @@ Generate a high-quality skill based on this request. Use the existing skills abo
       return {
         skillId: source.skillId,
         skillName: skill?.name || 'Unknown Skill',
-        views: skill?.viewCount || 0,
-        rating: skill?.avgRating || 0,
+        stars: skill?.starsCount || 0,
+        forks: skill?.forksCount || 0,
         reason: source.reason,
       };
     }),

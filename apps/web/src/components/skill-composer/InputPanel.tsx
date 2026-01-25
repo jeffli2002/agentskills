@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Star, Eye } from 'lucide-react';
+import { Loader2, Sparkles, Star, GitFork } from 'lucide-react';
 import { getCategories } from '@/lib/api';
 import type { GeneratedStep } from '@/lib/api';
 
@@ -115,13 +115,13 @@ export function InputPanel({ onGenerate, loading, loadingMessage, steps }: Input
                 <span className="text-sm text-foreground">{skill.skillName}</span>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    <Eye className="w-3 h-3" />
-                    {skill.views.toLocaleString()}
+                    <Star className="w-3 h-3 fill-gold text-gold" />
+                    {skill.stars >= 1000 ? `${(skill.stars / 1000).toFixed(1)}k` : skill.stars.toLocaleString()}
                   </span>
-                  {skill.rating > 0 && (
+                  {skill.forks > 0 && (
                     <span className="flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-gold text-gold" />
-                      {skill.rating.toFixed(1)}
+                      <GitFork className="w-3 h-3" />
+                      {skill.forks >= 1000 ? `${(skill.forks / 1000).toFixed(1)}k` : skill.forks.toLocaleString()}
                     </span>
                   )}
                 </div>

@@ -136,8 +136,8 @@ export interface GeneratedStep {
   sources: {
     skillId: string;
     skillName: string;
-    views: number;
-    rating: number;
+    stars: number;
+    forks: number;
     reason: string;
   }[];
 }

@@ -78,8 +78,8 @@ export function WorkflowNode({ step, isLast, isNew = false }: WorkflowNodeProps)
                   <SourceBadge
                     skillId={source.skillId}
                     skillName={source.skillName}
-                    views={source.views}
-                    rating={source.rating}
+                    stars={source.stars}
+                    forks={source.forks}
                     reason={source.reason}
                   />
                 </div>

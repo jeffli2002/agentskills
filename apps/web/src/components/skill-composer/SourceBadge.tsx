@@ -1,14 +1,14 @@
-import { Star, Eye } from 'lucide-react';
+import { Star, GitFork } from 'lucide-react';
 
 interface SourceBadgeProps {
   skillId: string;
   skillName: string;
-  views: number;
-  rating: number;
+  stars: number;
+  forks: number;
   reason: string;
 }
 
-export function SourceBadge({ skillId, skillName, views, rating, reason }: SourceBadgeProps) {
+export function SourceBadge({ skillId, skillName, stars, forks, reason }: SourceBadgeProps) {
   return (
     <a
       href={`/skills/${skillId}`}
@@ -22,13 +22,13 @@ export function SourceBadge({ skillId, skillName, views, rating, reason }: Sourc
         </span>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Eye className="w-3 h-3" />
-            {views.toLocaleString()}
+            <Star className="w-3 h-3 fill-gold text-gold" />
+            {stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : stars.toLocaleString()}
           </span>
-          {rating > 0 && (
+          {forks > 0 && (
             <span className="flex items-center gap-1">
-              <Star className="w-3 h-3 fill-gold text-gold" />
-              {rating.toFixed(1)}
+              <GitFork className="w-3 h-3" />
+              {forks >= 1000 ? `${(forks / 1000).toFixed(1)}k` : forks.toLocaleString()}
             </span>
           )}
         </div>
