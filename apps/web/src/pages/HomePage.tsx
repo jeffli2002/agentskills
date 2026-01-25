@@ -92,27 +92,35 @@ const features = [
 const faqs = [
   {
     question: 'What are Agent Skills?',
-    answer: 'Agent skills are reusable capabilities that extend AI coding assistants like Claude Code. They can automate tasks, integrate with tools, or provide specialized knowledge domains.'
+    answer: 'Agent skills are reusable SKILL.md files that extend AI coding assistants like Claude Code and Codex CLI. They define specialized capabilities, workflows, and knowledge that AI agents can use to automate tasks, integrate with tools, or provide domain expertise.'
   },
   {
-    question: 'How do I install Claude skills?',
-    answer: 'Simply browse the marketplace, find a skill you like, and click the install button. The Claude skill will be automatically added to your Claude Code configuration.'
+    question: 'How do I install a skill?',
+    answer: 'Click the "Download ZIP" button on any skill page to get the SKILL.md file. Place it in your project\'s .claude/skills/ directory or your global Claude Code skills folder. The skill will be automatically available in your next Claude Code session.'
   },
   {
-    question: 'Can I create my own agent skills?',
-    answer: 'Yes! We encourage developers to contribute agent skills. Check our documentation for guidelines on creating, testing, and submitting skills to the marketplace.'
+    question: 'How do I create my own skill?',
+    answer: 'Use our AI Skill Composer! Click "Create with AI" to describe what you want your skill to do. Our AI will ask clarifying questions, then generate a professional SKILL.md file with proper frontmatter, instructions, and examples. You can edit, regenerate, and publish directly from the composer.'
   },
   {
-    question: 'Are agent skills free to use?',
-    answer: 'Most agent skills in the marketplace are free and open-source. Some premium skills may require a subscription or one-time payment to support their creators.'
+    question: 'What is the AI Skill Composer?',
+    answer: 'The AI Skill Composer is our built-in tool that helps you create skills using natural language. Simply describe your idea, answer a few clarifying questions, and get a complete, well-structured SKILL.md file. You can iterate with feedback, preview in real-time, and publish publicly or keep it private.'
   },
   {
-    question: 'How are Claude skills reviewed?',
-    answer: 'All Claude skills go through community review and rating. We also perform automated security scans and manual code reviews for popular skills to ensure quality and safety.'
+    question: 'Are skills free to use?',
+    answer: 'Yes! All skills in the marketplace are free to download and use. We believe in open knowledge sharing to help the AI agent community grow. Creators earn recognition through ratings, favorites, and community visibility.'
   },
   {
-    question: 'What if an agent skill doesn\'t work?',
-    answer: 'You can report issues directly on the skill\'s page. Our community and skill creators actively monitor feedback and provide updates to fix bugs and improve functionality.'
+    question: 'How are skills reviewed and rated?',
+    answer: 'Skills are rated by the community on a 5-star scale. You can favorite skills to save them for later and help others discover quality content. Popular skills with high ratings appear in featured sections and category highlights.'
+  },
+  {
+    question: 'Can I keep my skills private?',
+    answer: 'Yes! When publishing from the AI Skill Composer, you can choose to publish publicly (visible to everyone) or keep it private (only visible to you in My Skills). Private skills can be made public later if you decide to share them.'
+  },
+  {
+    question: 'Where can I find my created skills?',
+    answer: 'All skills you create are saved in "My Skills" accessible from the header navigation. From there you can view, download, and manage all your creations whether they\'re public or private.'
   }
 ];
 
