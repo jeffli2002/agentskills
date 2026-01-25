@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { eq, desc, sql, and } from 'drizzle-orm';
-import { createDb, skills, type Skill } from '../db';
+import { createDb, skills, users, type Skill, type User } from '../db';
+import { getSessionFromCookie } from '../middleware/auth';
 import type { ApiResponse, PaginatedResponse } from '@agentskills/shared';
 
 type Bindings = {
@@ -8,7 +9,11 @@ type Bindings = {
   BUCKET: R2Bucket;
 };
 
-const skillsRouter = new Hono<{ Bindings: Bindings }>();
+type Variables = {
+  user?: User;
+};
+
+const skillsRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Get categories with counts - must be defined before :id route to avoid conflicts
 skillsRouter.get('/meta/categories', async (c) => {
@@ -26,6 +31,24 @@ skillsRouter.get('/meta/categories', async (c) => {
     data: categories,
     error: null
   });
+});
+
+// Get user's created skills (requires auth)
+skillsRouter.get('/my', async (c) => {
+  const db = createDb(c.env.DB);
+
+  // Get user from session
+  const user = await getSessionFromCookie(c, db);
+  if (!user) {
+    return c.json<ApiResponse<null>>({ data: null, error: 'Unauthorized' }, 401);
+  }
+
+  const userSkills = await db.select()
+    .from(skills)
+    .where(eq(skills.creatorId, user.id))
+    .orderBy(desc(skills.createdAt));
+
+  return c.json<ApiResponse<Skill[]>>({ data: userSkills, error: null });
 });
 
 // List all skills with search, filter, sort
@@ -161,7 +184,7 @@ skillsRouter.get('/:id/download', async (c) => {
 
   // TODO: Log download to downloads table if user is logged in
 
-  // Try to get object from R2 bucket
+  // Try to get object from R2 bucket first
   let object: R2ObjectBody | null = null;
   try {
     object = await c.env.BUCKET.get(skill.r2FileKey);
@@ -178,8 +201,98 @@ skillsRouter.get('/:id/download', async (c) => {
     return new Response(object.body, { headers });
   }
 
-  // Fallback: redirect to GitHub archive URL
-  // Extract the base repo URL (remove /tree/branch/path parts)
+  // Fallback for user-created skills: generate ZIP on-the-fly from skillMdContent
+  if (skill.skillMdContent) {
+    const skillMdBytes = new TextEncoder().encode(skill.skillMdContent);
+    const filename = 'SKILL.md';
+    const filenameBytes = new TextEncoder().encode(filename);
+    const now = new Date();
+    const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+    const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+
+    // CRC32 calculation
+    const crc32Table = new Uint32Array(256);
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let j = 0; j < 8; j++) {
+        c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      crc32Table[i] = c;
+    }
+    let crc = 0xFFFFFFFF;
+    for (let i = 0; i < skillMdBytes.length; i++) {
+      crc = crc32Table[(crc ^ skillMdBytes[i]) & 0xFF] ^ (crc >>> 8);
+    }
+    crc = (crc ^ 0xFFFFFFFF) >>> 0;
+
+    // Local file header
+    const localHeader = new Uint8Array(30 + filenameBytes.length);
+    const localView = new DataView(localHeader.buffer);
+    localView.setUint32(0, 0x04034b50, true);
+    localView.setUint16(4, 20, true);
+    localView.setUint16(6, 0, true);
+    localView.setUint16(8, 0, true);
+    localView.setUint16(10, dosTime, true);
+    localView.setUint16(12, dosDate, true);
+    localView.setUint32(14, crc, true);
+    localView.setUint32(18, skillMdBytes.length, true);
+    localView.setUint32(22, skillMdBytes.length, true);
+    localView.setUint16(26, filenameBytes.length, true);
+    localView.setUint16(28, 0, true);
+    localHeader.set(filenameBytes, 30);
+
+    // Central directory header
+    const centralHeader = new Uint8Array(46 + filenameBytes.length);
+    const centralView = new DataView(centralHeader.buffer);
+    centralView.setUint32(0, 0x02014b50, true);
+    centralView.setUint16(4, 20, true);
+    centralView.setUint16(6, 20, true);
+    centralView.setUint16(8, 0, true);
+    centralView.setUint16(10, 0, true);
+    centralView.setUint16(12, dosTime, true);
+    centralView.setUint16(14, dosDate, true);
+    centralView.setUint32(16, crc, true);
+    centralView.setUint32(20, skillMdBytes.length, true);
+    centralView.setUint32(24, skillMdBytes.length, true);
+    centralView.setUint16(28, filenameBytes.length, true);
+    centralView.setUint16(30, 0, true);
+    centralView.setUint16(32, 0, true);
+    centralView.setUint16(34, 0, true);
+    centralView.setUint16(36, 0, true);
+    centralView.setUint32(38, 0, true);
+    centralView.setUint32(42, 0, true);
+    centralHeader.set(filenameBytes, 46);
+
+    // End of central directory
+    const centralDirOffset = localHeader.length + skillMdBytes.length;
+    const centralDirSize = centralHeader.length;
+    const endRecord = new Uint8Array(22);
+    const endView = new DataView(endRecord.buffer);
+    endView.setUint32(0, 0x06054b50, true);
+    endView.setUint16(4, 0, true);
+    endView.setUint16(6, 0, true);
+    endView.setUint16(8, 1, true);
+    endView.setUint16(10, 1, true);
+    endView.setUint32(12, centralDirSize, true);
+    endView.setUint32(16, centralDirOffset, true);
+    endView.setUint16(20, 0, true);
+
+    // Combine all parts
+    const zipBuffer = new Uint8Array(localHeader.length + skillMdBytes.length + centralHeader.length + endRecord.length);
+    let offset = 0;
+    zipBuffer.set(localHeader, offset); offset += localHeader.length;
+    zipBuffer.set(skillMdBytes, offset); offset += skillMdBytes.length;
+    zipBuffer.set(centralHeader, offset); offset += centralHeader.length;
+    zipBuffer.set(endRecord, offset);
+
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/zip');
+    headers.set('Content-Disposition', `attachment; filename="${skill.name}.zip"`);
+    headers.set('Content-Length', zipBuffer.length.toString());
+    return new Response(zipBuffer, { headers });
+  }
+
+  // Fallback for GitHub skills: redirect to GitHub archive URL
   const repoMatch = skill.githubUrl.match(/^(https:\/\/github\.com\/[^\/]+\/[^\/]+)/);
   if (repoMatch) {
     const repoUrl = repoMatch[1];
@@ -187,7 +300,7 @@ skillsRouter.get('/:id/download', async (c) => {
     return c.redirect(githubArchiveUrl, 302);
   }
 
-  // If we can't parse the URL, return an error
+  // If we can't serve the file, return an error
   return c.json<ApiResponse<null>>({ data: null, error: 'Download not available' }, 404);
 });
 

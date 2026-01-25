@@ -28,11 +28,25 @@ export default {
         },
         border: 'hsl(var(--border))',
         ring: 'hsl(var(--ring))',
+        gold: {
+          DEFAULT: 'hsl(var(--gold))',
+          light: 'hsl(var(--gold-light))',
+          dark: 'hsl(var(--gold-dark))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+      },
+      animation: {
+        shimmer: 'shimmer 2s ease-in-out infinite',
       },
     },
   },

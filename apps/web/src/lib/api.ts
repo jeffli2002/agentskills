@@ -64,6 +64,12 @@ export function getDownloadUrl(skillId: string): string {
   return `${API_BASE}/skills/${skillId}/download`;
 }
 
+// My Skills (user's created skills)
+export async function getMySkills(): Promise<Skill[]> {
+  const response = await fetchApi<ApiResponse<Skill[]>>('/skills/my');
+  return response.data || [];
+}
+
 // Favorites
 export async function getFavorites(): Promise<Skill[]> {
   const response = await fetchApi<ApiResponse<Skill[]>>('/favorites');
@@ -120,4 +126,206 @@ export function parseSkillMetadata(metadataJson: string | null): Record<string, 
   } catch {
     return null;
   }
+}
+
+// Skill Composer Types
+export interface GeneratedStep {
+  stepNumber: number;
+  title: string;
+  description: string;
+  sources: {
+    skillId: string;
+    skillName: string;
+    views: number;
+    rating: number;
+    reason: string;
+  }[];
+}
+
+export interface GenerateResponse {
+  creationId: string;
+  name: string;
+  description: string;
+  skillMd: string;
+  steps: GeneratedStep[];
+}
+
+export interface DraftItem {
+  creationId: string;
+  prompt: string;
+  status: string;
+  createdAt: number;
+}
+
+// Clarification types
+export interface ClarifyQuestion {
+  id: string;
+  question: string;
+  type: 'single' | 'multiple' | 'text';
+  options?: string[];
+}
+
+export interface ClarifyResponse {
+  questions: ClarifyQuestion[];
+  isComplete: boolean;
+  refinedPrompt?: string;
+  summary?: string;
+}
+
+export interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+// Skill Composer API
+export async function clarifyRequirements(
+  prompt: string,
+  conversationHistory: ConversationMessage[] = []
+): Promise<ClarifyResponse> {
+  const response = await fetchApi<ApiResponse<ClarifyResponse>>('/composer/clarify', {
+    method: 'POST',
+    body: JSON.stringify({ prompt, conversationHistory }),
+  });
+  if (!response.data) throw new Error(response.error || 'Failed to clarify requirements');
+  return response.data;
+}
+
+export async function generateSkill(prompt: string, category?: string): Promise<GenerateResponse> {
+  const response = await fetchApi<ApiResponse<GenerateResponse>>('/composer/generate', {
+    method: 'POST',
+    body: JSON.stringify({ prompt, category }),
+  });
+  if (!response.data) throw new Error(response.error || 'Failed to generate skill');
+  return response.data;
+}
+
+export interface StreamProgress {
+  type: 'status' | 'thinking' | 'generating' | 'error';
+  message: string;
+}
+
+export interface StreamStep {
+  type: 'step';
+  step: GeneratedStep;
+  stepIndex: number;
+  totalSteps: number;
+}
+
+export interface StreamSkillMd {
+  type: 'skillMd';
+  chunk: string;
+  fullContent: string;
+}
+
+export interface StreamResult {
+  type: 'complete';
+  result: GenerateResponse;
+}
+
+export async function generateSkillStreaming(
+  prompt: string,
+  category: string | undefined,
+  onProgress: (progress: StreamProgress) => void,
+  onStep?: (step: GeneratedStep, stepIndex: number, totalSteps: number) => void,
+  onSkillMd?: (chunk: string, fullContent: string) => void
+): Promise<GenerateResponse> {
+  const response = await fetch(`${API_BASE}/composer/generate/stream`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt, category }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+
+  const reader = response.body?.getReader();
+  if (!reader) {
+    throw new Error('No response body');
+  }
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (line.startsWith('data:')) {
+          const data = line.slice(5).trim();
+          if (!data) continue;
+
+          try {
+            const parsed = JSON.parse(data);
+
+            if (parsed.type === 'complete') {
+              return parsed.result as GenerateResponse;
+            } else if (parsed.type === 'step' && onStep) {
+              onStep(parsed.step as GeneratedStep, parsed.stepIndex, parsed.totalSteps);
+            } else if (parsed.type === 'skillMd' && onSkillMd) {
+              onSkillMd(parsed.chunk, parsed.fullContent);
+            } else if (parsed.type === 'error') {
+              throw new Error(parsed.message || 'Generation failed');
+            } else {
+              onProgress(parsed as StreamProgress);
+            }
+          } catch (e) {
+            if (e instanceof SyntaxError) continue;
+            throw e;
+          }
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  throw new Error('Stream ended without complete result');
+}
+
+export async function regenerateSkill(creationId: string, feedback: string): Promise<GenerateResponse> {
+  const response = await fetchApi<ApiResponse<GenerateResponse>>(`/composer/${creationId}/regenerate`, {
+    method: 'POST',
+    body: JSON.stringify({ feedback }),
+  });
+  if (!response.data) throw new Error(response.error || 'Failed to regenerate skill');
+  return response.data;
+}
+
+export async function saveSkillDraft(creationId: string, skillMd: string): Promise<boolean> {
+  const response = await fetchApi<ApiResponse<{ saved: boolean }>>(`/composer/${creationId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ skillMd }),
+  });
+  return response.data?.saved || false;
+}
+
+export async function publishSkill(creationId: string, name: string, description: string, visibility: 'public' | 'private' = 'public'): Promise<{ skillId: string; url: string }> {
+  const response = await fetchApi<ApiResponse<{ skillId: string; url: string }>>(`/composer/${creationId}/publish`, {
+    method: 'POST',
+    body: JSON.stringify({ name, description, visibility }),
+  });
+  if (!response.data) throw new Error(response.error || 'Failed to publish skill');
+  return response.data;
+}
+
+export async function getSkillDrafts(): Promise<DraftItem[]> {
+  const response = await fetchApi<ApiResponse<DraftItem[]>>('/composer/drafts');
+  return response.data || [];
+}
+
+export async function getSkillCreation(creationId: string): Promise<GenerateResponse> {
+  const response = await fetchApi<ApiResponse<GenerateResponse>>(`/composer/${creationId}`);
+  if (!response.data) throw new Error(response.error || 'Creation not found');
+  return response.data;
 }

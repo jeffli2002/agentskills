@@ -8,9 +8,53 @@ interface SkillMdPreviewProps {
 // Fields already displayed elsewhere on the page
 const REDUNDANT_FIELDS = ['name', 'description'];
 
+// Parse YAML frontmatter from markdown content
+function parseFrontmatter(content: string): { frontmatter: Record<string, string>; body: string } {
+  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n?/;
+  const match = content.match(frontmatterRegex);
+
+  if (!match) {
+    return { frontmatter: {}, body: content };
+  }
+
+  const frontmatterStr = match[1];
+  const body = content.slice(match[0].length);
+  const frontmatter: Record<string, string> = {};
+
+  // Parse simple YAML key-value pairs
+  frontmatterStr.split('\n').forEach(line => {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex > 0) {
+      const key = line.slice(0, colonIndex).trim();
+      let value = line.slice(colonIndex + 1).trim();
+      // Remove quotes if present
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      frontmatter[key] = value;
+    }
+  });
+
+  return { frontmatter, body };
+}
+
 export function SkillMdPreview({ metadata, content }: SkillMdPreviewProps) {
   // Parse metadata if it's a string
-  const parsedMetadata = typeof metadata === 'string' ? JSON.parse(metadata) : metadata;
+  let parsedMetadata = typeof metadata === 'string' ? JSON.parse(metadata) : metadata;
+
+  // Parse frontmatter from content and get the body
+  let markdownContent = content?.trim() || '';
+
+  if (markdownContent) {
+    const { frontmatter, body } = parseFrontmatter(markdownContent);
+    markdownContent = body.trim();
+
+    // Merge frontmatter into metadata if metadata is empty
+    if (!parsedMetadata || Object.keys(parsedMetadata).length === 0) {
+      parsedMetadata = frontmatter;
+    }
+  }
 
   // Filter out entries with empty values and redundant fields
   const filteredMetadata = parsedMetadata
@@ -22,9 +66,6 @@ export function SkillMdPreview({ metadata, content }: SkillMdPreviewProps) {
         return strValue !== '' && strValue !== 'null' && strValue !== 'undefined';
       })
     : [];
-
-  // Use content directly - it should already be properly formatted
-  const markdownContent = content?.trim() || '';
 
   // Hide the entire card if there's no unique content to show
   if (filteredMetadata.length === 0 && !markdownContent) {

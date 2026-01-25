@@ -47,9 +47,14 @@ export function Header() {
               Browse
             </Link>
             {user && (
-              <Link href="/favorites" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
-                Favorites
-              </Link>
+              <>
+                <Link href="/favorites" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
+                  Favorites
+                </Link>
+                <Link href="/my-skills" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
+                  My Skills
+                </Link>
+              </>
             )}
           </nav>
         </div>
@@ -60,7 +65,6 @@ export function Header() {
           ) : user ? (
             <div className="flex items-center gap-3">
               <UserAvatar name={user.name} avatarUrl={user.avatarUrl} />
-              <span className="text-sm hidden sm:inline">{user.name}</span>
               <Button variant="outline" size="sm" onClick={logout}>
                 Sign Out
               </Button>

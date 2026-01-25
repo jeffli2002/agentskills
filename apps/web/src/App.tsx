@@ -5,9 +5,11 @@ import { HomePage } from '@/pages/HomePage';
 import { SkillsPage } from '@/pages/SkillsPage';
 import { SkillDetailPage } from '@/pages/SkillDetailPage';
 import { FavoritesPage } from '@/pages/FavoritesPage';
+import { MySkillsPage } from '@/pages/MySkillsPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { PrivacyPage } from '@/pages/PrivacyPage';
 import { TermsPage } from '@/pages/TermsPage';
+import { CreateSkillPage } from '@/pages/CreateSkillPage';
 
 function NotFoundPage() {
   return (
@@ -37,7 +39,9 @@ export default function App() {
           <Route path="/skills/:id" component={SkillDetailPage} />
           <Route path="/skills" component={SkillsPage} />
           <Route path="/favorites" component={FavoritesPage} />
+          <Route path="/my-skills" component={MySkillsPage} />
           <Route path="/login" component={LoginPage} />
+          <Route path="/create" component={CreateSkillPage} />
           <Route path="/privacy" component={PrivacyPage} />
           <Route path="/terms" component={TermsPage} />
           <Route component={NotFoundPage} />
