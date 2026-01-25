@@ -540,8 +540,8 @@ async function tryEmitSteps(
           return {
             skillId: source.skillId,
             skillName: skill?.name || 'Unknown Skill',
-            views: skill?.viewCount || 0,
-            rating: skill?.avgRating || 0,
+            stars: skill?.starsCount || 0,
+            forks: skill?.forksCount || 0,
             reason: source.reason,
           };
         }),

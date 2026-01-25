@@ -926,8 +926,8 @@ composerRouter.get('/:creationId', async (c) => {
       sources: sources.map((s) => ({
         skillId: s.source.sourceSkillId,
         skillName: s.skill.name,
-        views: s.skill.viewCount || 0,
-        rating: s.skill.avgRating || 0,
+        stars: s.skill.starsCount || 0,
+        forks: s.skill.forksCount || 0,
         reason: s.source.reason,
       })),
     });
