@@ -78,7 +78,7 @@ export function RatingWidget({
                 starSize,
                 'transition-colors',
                 star <= displayRating
-                  ? 'fill-blue-500 text-blue-500'
+                  ? 'fill-yellow-400 text-yellow-400'
                   : 'fill-none text-muted-foreground'
               )}
             />
