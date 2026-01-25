@@ -12,5 +12,5 @@ binding = "BUCKET"
 bucket_name = "agentskills"
 
 [vars]
-ENVIRONMENT = "development"
-# DEEPSEEK_BASE_URL and DEEPSEEK_API_KEY are set in .dev.vars
+ENVIRONMENT = "production"
+# DEEPSEEK_BASE_URL and DEEPSEEK_API_KEY are set as secrets
