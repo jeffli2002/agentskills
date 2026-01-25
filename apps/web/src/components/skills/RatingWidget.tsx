@@ -59,7 +59,9 @@ export function RatingWidget({
         className="flex items-center"
         onMouseLeave={() => !readonly && setHoveredRating(null)}
       >
-        {[1, 2, 3, 4, 5].map((star) => (
+        {[1, 2, 3, 4, 5].map((star) => {
+          const isActive = star <= displayRating;
+          return (
           <button
             key={star}
             type="button"
@@ -77,13 +79,13 @@ export function RatingWidget({
               className={cn(
                 starSize,
                 'transition-colors',
-                star <= displayRating
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'fill-none text-muted-foreground'
+                !isActive && 'text-muted-foreground'
               )}
+              style={isActive ? { color: '#D4A017', fill: '#D4A017' } : { fill: 'none' }}
             />
           </button>
-        ))}
+          );
+        })}
       </div>
       <span className={cn('text-muted-foreground', textSize)}>
         ({ratingCount})

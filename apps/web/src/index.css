@@ -46,6 +46,22 @@
   background-clip: text;
 }
 
+/* Gold fill for SVG icons */
+.fill-gold {
+  fill: hsl(43 74% 49%); /* #D4A017 - Rich gold */
+}
+
+/* Gold stroke/text color for SVG icons */
+.stroke-gold {
+  stroke: hsl(43 74% 49%);
+}
+
+/* Icon gold color (for lucide icons that use currentColor) */
+.icon-gold {
+  color: hsl(43 74% 49%);
+  fill: hsl(43 74% 49%);
+}
+
 /* Gold metallic text with shimmer */
 .text-gold-shimmer {
   background: linear-gradient(
