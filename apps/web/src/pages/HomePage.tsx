@@ -369,9 +369,11 @@ export function HomePage() {
                               </div>
                             </div>
                           </div>
-                          <Button className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 transition-all duration-200 cursor-pointer">
-                            View Details
-                          </Button>
+                          <div className="flex justify-center">
+                            <Button className="bg-foreground text-background hover:bg-foreground/90 hover:scale-105 transition-all duration-200 cursor-pointer">
+                              View Details
+                            </Button>
+                          </div>
                         </div>
                       </Link>
                     </div>
