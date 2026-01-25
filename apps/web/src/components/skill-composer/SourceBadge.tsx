@@ -23,12 +23,12 @@ export function SourceBadge({ skillId, skillName, stars, forks, reason }: Source
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Star className="w-3 h-3 fill-gold text-gold" />
-            {stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : stars.toLocaleString()}
+            {(stars || 0) >= 1000 ? `${((stars || 0) / 1000).toFixed(1)}k` : (stars || 0).toLocaleString()}
           </span>
-          {forks > 0 && (
+          {(forks || 0) > 0 && (
             <span className="flex items-center gap-1">
               <GitFork className="w-3 h-3" />
-              {forks >= 1000 ? `${(forks / 1000).toFixed(1)}k` : forks.toLocaleString()}
+              {(forks || 0) >= 1000 ? `${((forks || 0) / 1000).toFixed(1)}k` : (forks || 0).toLocaleString()}
             </span>
           )}
         </div>

@@ -116,12 +116,12 @@ export function InputPanel({ onGenerate, loading, loadingMessage, steps }: Input
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Star className="w-3 h-3 fill-gold text-gold" />
-                    {skill.stars >= 1000 ? `${(skill.stars / 1000).toFixed(1)}k` : skill.stars.toLocaleString()}
+                    {(skill.stars || 0) >= 1000 ? `${((skill.stars || 0) / 1000).toFixed(1)}k` : (skill.stars || 0).toLocaleString()}
                   </span>
-                  {skill.forks > 0 && (
+                  {(skill.forks || 0) > 0 && (
                     <span className="flex items-center gap-1">
                       <GitFork className="w-3 h-3" />
-                      {skill.forks >= 1000 ? `${(skill.forks / 1000).toFixed(1)}k` : skill.forks.toLocaleString()}
+                      {(skill.forks || 0) >= 1000 ? `${((skill.forks || 0) / 1000).toFixed(1)}k` : (skill.forks || 0).toLocaleString()}
                     </span>
                   )}
                 </div>
