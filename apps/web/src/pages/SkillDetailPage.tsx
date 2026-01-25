@@ -149,7 +149,7 @@ export function SkillDetailPage() {
             <GitStatsBar
               stars={skill.starsCount}
               forks={skill.forksCount}
-              updatedAt={skill.lastCommitAt}
+              updatedAt={skill.lastCommitAt || skill.updatedAt}
             />
 
             {/* File Explorer */}
