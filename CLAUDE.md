@@ -161,10 +161,58 @@ Key tables:
 - Terminal-style code blocks with traffic light dots
 - Responsive design with mobile support
 
+## Architecture: API Proxy for OAuth Branding
+
+Google OAuth consent screen displays the **redirect_uri domain**, not the app name configured in Google Cloud Console. To show `agentskills.cv` instead of `jefflee2002.workers.dev`, we proxy API requests through Cloudflare Pages.
+
+### How It Works
+
+```
+Browser → agentskills.cv/api/* → Pages Function → agentskills-api.jefflee2002.workers.dev
+```
+
+1. **Frontend uses relative API path** (`apps/web/src/lib/api.ts`):
+   ```typescript
+   export const API_BASE = '/api';  // NOT absolute worker URL
+   ```
+
+2. **Pages Function proxies requests** (`apps/web/functions/api/[[path]].ts`):
+   - Catches all `/api/*` requests
+   - Forwards to the Worker with `X-Forwarded-Host` header
+   - Returns response to browser
+
+3. **Auth route reads forwarded host** (`apps/api/src/routes/auth.ts`):
+   ```typescript
+   const forwardedHost = c.req.header('x-forwarded-host');
+   const host = forwardedHost || c.req.header('host');
+   ```
+
+4. **_routes.json tells Pages which paths invoke Functions** (`apps/web/public/_routes.json`):
+   ```json
+   { "version": 1, "include": ["/api/*"], "exclude": [] }
+   ```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `apps/web/functions/api/[[path]].ts` | Proxy function |
+| `apps/web/public/_routes.json` | Route config for Pages Functions |
+| `apps/web/src/lib/api.ts` | Frontend API base URL |
+| `apps/api/src/routes/auth.ts` | OAuth with X-Forwarded-Host support |
+
+### Lessons Learned
+
+1. **OAuth branding = redirect_uri domain** - Google shows the domain from redirect_uri, not app name
+2. **Use relative API paths** - Hardcoded worker URLs bypass the proxy
+3. **X-Forwarded-Host is essential** - Backend needs to know the original host for redirects
+4. **_routes.json controls Functions** - Must explicitly include paths for Functions to handle
+5. **Deployments need propagation** - Wait a few seconds after deploy for changes to take effect
+
 ## Business Context
 
 - **Live URL**: https://agentskills.cv
-- **API URL**: https://agentskills-api.jefflee2002.workers.dev
+- **API URL**: https://agentskills-api.jefflee2002.workers.dev (also proxied via agentskills.cv/api)
 - **Status**: MVP launched with AI Skill Composer
 - **Skills**: 770+ aggregated from GitHub + user-created
 - **Differentiators**: AI-powered skill creation, community ratings, SKILL.md standard
