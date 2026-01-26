@@ -11,6 +11,9 @@ database_id = "9066b849-fb94-4196-b887-1b57b6fc314e"
 binding = "BUCKET"
 bucket_name = "agentskills"
 
+# Custom domain configured in Cloudflare Dashboard
+# api.agentskills.cv -> agentskills-api worker
+
 [vars]
 ENVIRONMENT = "production"
 # DEEPSEEK_BASE_URL and DEEPSEEK_API_KEY are set as secrets
