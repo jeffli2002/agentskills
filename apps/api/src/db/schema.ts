@@ -106,6 +106,7 @@ export const skillCreationOutputs = sqliteTable('skill_creation_outputs', {
   creationId: text('creation_id').notNull().references(() => skillCreations.id, { onDelete: 'cascade' }),
   version: integer('version').notNull().default(1),
   skillMd: text('skill_md').notNull(),
+  resourcesJson: text('resources_json'), // JSON array of {path, content, description} for multi-file skills
   isEdited: integer('is_edited', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(sql`(unixepoch() * 1000)`),
 });

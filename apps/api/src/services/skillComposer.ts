@@ -16,11 +16,20 @@ export interface GeneratedStep {
   }[];
 }
 
+// Resource file generated alongside SKILL.md
+export interface GeneratedResource {
+  path: string;      // e.g., "scripts/helper.py" or "references/api-docs.md"
+  content: string;   // File content
+  description: string; // Brief description of what this file does
+}
+
 export interface GeneratedSkill {
   name: string;
   description: string;
   skillMd: string;
   steps: GeneratedStep[];
+  // Optional resource files for complex skills
+  resources?: GeneratedResource[];
 }
 
 // Types for clarification flow
@@ -85,7 +94,46 @@ You have access to top-rated skills from the marketplace. For each step in your 
 2. Extract relevant patterns, structures, or approaches
 3. Explain WHY you're utilizing that skill (what specific part or pattern)
 
-IMPORTANT: Always output valid JSON in exactly this format. NOTE: Output "steps" BEFORE "skillMd" so workflow steps appear early:
+## Skill Complexity Assessment
+
+Before generating, assess the skill complexity:
+
+**Simple skills** (SKILL.md only):
+- Basic instructions or workflows
+- No code execution needed
+- Pure guidance/documentation
+
+**Medium complexity** (SKILL.md + scripts/ OR references/):
+- Requires automation scripts (Python, Bash, etc.)
+- OR needs domain-specific documentation/schemas
+
+**Complex skills** (SKILL.md + multiple resource types):
+- Requires both automation AND domain knowledge
+- Needs templates or asset files
+
+## Resource Types
+
+When appropriate, generate additional resource files:
+
+1. **scripts/** - Executable code (Python, Bash, TypeScript)
+   - Use for: automation, data processing, API calls, file operations
+   - Example: scripts/format_code.py, scripts/validate.sh
+
+2. **references/** - Documentation loaded into context
+   - Use for: API docs, schemas, style guides, domain knowledge
+   - Example: references/api-schema.md, references/coding-standards.md
+
+3. **assets/** - Files used in output (templates, configs)
+   - Use for: config templates, example files, boilerplate
+   - Example: assets/template.json, assets/config.yaml
+
+IMPORTANT: Only generate resources when they add real value. Simple skills should just have SKILL.md.
+
+CRITICAL: If you mention "Bundled Resources" or reference scripts/files in the SKILL.md, you MUST include those files in the "resources" array with actual content. Do not mention resources that don't exist in the array.
+
+## Output Format
+
+Output valid JSON in exactly this format. NOTE: Output "steps" BEFORE "skillMd" so workflow steps appear early:
 {
   "name": "Skill Name",
   "description": "One-line description of what this skill does",
@@ -102,8 +150,17 @@ IMPORTANT: Always output valid JSON in exactly this format. NOTE: Output "steps"
       ]
     }
   ],
-  "skillMd": "Full SKILL.md content as a string with proper markdown formatting. Use \\n for newlines."
+  "resources": [
+    {
+      "path": "scripts/helper.py",
+      "content": "# Python script content here...",
+      "description": "Helper script for automating X"
+    }
+  ],
+  "skillMd": "Full SKILL.md content as a string with proper markdown formatting. Use \\\\n for newlines."
 }
+
+NOTE: The "resources" array is OPTIONAL. Omit it entirely for simple skills. Only include when the skill genuinely needs scripts, references, or assets.
 
 CRITICAL - SKILL.md Format Requirements:
 The skillMd content MUST start with YAML frontmatter in this exact format:
@@ -128,6 +185,7 @@ After the frontmatter, include:
 - "## When to Use" section listing specific scenarios
 - "## Workflow" section describing the step-by-step process
 - "## Example Usage" with practical code blocks or examples
+- If resources are included, add "## Bundled Resources" section explaining them
 - Keep it concise but comprehensive`;
 
 // Call DeepSeek API to generate skill with streaming
@@ -359,19 +417,18 @@ Generate a high-quality skill based on this request. Use the existing skills abo
 
   await onProgress({ type: 'status', data: 'Finalizing skill...' });
 
-  // Parse JSON from response - look for JSON object with "name" field
-  const jsonStartMatch = fullContent.match(/\{\s*"name"/);
-  if (!jsonStartMatch) {
-    console.error('DeepSeek response (no name field):', fullContent.substring(0, 500));
-    throw new Error('No valid skill JSON found in AI response');
+  // Parse JSON from response - look for any valid JSON object that might contain our fields
+  // DeepSeek might return fields in different order, so we look for any JSON object
+  const jsonStartIndex = fullContent.indexOf('{');
+  if (jsonStartIndex === -1) {
+    console.error('DeepSeek response (no JSON found):', fullContent.substring(0, 1000));
+    throw new Error('No valid JSON found in AI response');
   }
-
-  const jsonStart = fullContent.indexOf(jsonStartMatch[0]);
 
   // Find matching closing brace by counting braces
   let braceCount = 0;
   let jsonEnd = -1;
-  for (let i = jsonStart; i < fullContent.length; i++) {
+  for (let i = jsonStartIndex; i < fullContent.length; i++) {
     if (fullContent[i] === '{') braceCount++;
     if (fullContent[i] === '}') braceCount--;
     if (braceCount === 0) {
@@ -381,11 +438,14 @@ Generate a high-quality skill based on this request. Use the existing skills abo
   }
 
   if (jsonEnd === -1) {
-    console.error('DeepSeek response (incomplete JSON):', fullContent.substring(0, 500));
+    console.error('DeepSeek response (incomplete JSON):', fullContent.substring(0, 1000));
+    console.error('DeepSeek response end:', fullContent.substring(fullContent.length - 500));
     throw new Error('Incomplete skill JSON in AI response');
   }
 
-  const jsonStr = fullContent.substring(jsonStart, jsonEnd);
+  const jsonStr = fullContent.substring(jsonStartIndex, jsonEnd);
+  console.log('Extracted JSON length:', jsonStr.length);
+  console.log('JSON preview:', jsonStr.substring(0, 200));
 
   let parsed: {
     name: string;
@@ -397,15 +457,76 @@ Generate a high-quality skill based on this request. Use the existing skills abo
       description: string;
       sources: { skillId: string; reason: string }[];
     }[];
+    resources?: {
+      path: string;
+      content: string;
+      description: string;
+    }[];
   };
 
   try {
     parsed = JSON.parse(jsonStr);
   } catch (e) {
     console.error('JSON parse error:', e);
-    console.error('Attempted to parse:', jsonStr.substring(0, 500));
+    console.error('Attempted to parse (first 1000 chars):', jsonStr.substring(0, 1000));
+    console.error('Attempted to parse (last 500 chars):', jsonStr.substring(jsonStr.length - 500));
     throw new Error('Failed to parse skill JSON from AI response');
   }
+
+  // Validate required fields - try to extract from skillMd if missing
+  let name = parsed.name || '';
+  let description = parsed.description || '';
+
+  // If name/description missing but skillMd exists, try to extract from frontmatter
+  if (parsed.skillMd && (!name || !description)) {
+    const frontmatterMatch = parsed.skillMd.match(/^---\s*\n([\s\S]*?)\n---/);
+    if (frontmatterMatch) {
+      const frontmatter = frontmatterMatch[1];
+      if (!name) {
+        const nameMatch = frontmatter.match(/^name:\s*(.+)$/m);
+        if (nameMatch) {
+          name = nameMatch[1].trim().replace(/^["']|["']$/g, '');
+          console.log('Extracted name from skillMd frontmatter:', name);
+        }
+      }
+      if (!description) {
+        const descMatch = frontmatter.match(/^description:\s*["']?(.+?)["']?$/m);
+        if (descMatch) {
+          description = descMatch[1].trim();
+          console.log('Extracted description from skillMd frontmatter:', description);
+        }
+      }
+    }
+    // Fallback: extract name from first heading
+    if (!name) {
+      const headingMatch = parsed.skillMd.match(/^#\s+(.+)$/m);
+      if (headingMatch) {
+        name = headingMatch[1].trim();
+        console.log('Extracted name from skillMd heading:', name);
+      }
+    }
+  }
+
+  const missingFields: string[] = [];
+  if (!name) missingFields.push('name');
+  if (!description) missingFields.push('description');
+  if (!parsed.skillMd) missingFields.push('skillMd');
+  if (!parsed.steps || !Array.isArray(parsed.steps)) missingFields.push('steps');
+
+  if (missingFields.length > 0) {
+    console.error('Missing required fields:', missingFields);
+    console.error('Parsed object keys:', Object.keys(parsed));
+    console.error('Parsed object preview:', JSON.stringify(parsed).substring(0, 500));
+    throw new Error(`AI response missing required fields: ${missingFields.join(', ')}`);
+  }
+
+  console.log('Successfully parsed skill:', {
+    name,
+    descLength: description?.length,
+    skillMdLength: parsed.skillMd?.length,
+    stepsCount: parsed.steps?.length,
+    resourcesCount: parsed.resources?.length || 0,
+  });
 
   // Enrich sources with skill metadata
   const enrichedSteps: GeneratedStep[] = parsed.steps.map(step => ({
@@ -423,10 +544,11 @@ Generate a high-quality skill based on this request. Use the existing skills abo
   }));
 
   return {
-    name: parsed.name,
-    description: parsed.description,
+    name,
+    description,
     skillMd: parsed.skillMd,
     steps: enrichedSteps,
+    resources: parsed.resources,
   };
 }
 
@@ -642,6 +764,11 @@ Generate a high-quality skill based on this request. Use the existing skills abo
       description: string;
       sources: { skillId: string; reason: string }[];
     }[];
+    resources?: {
+      path: string;
+      content: string;
+      description: string;
+    }[];
   };
 
   // Enrich sources with skill metadata
@@ -664,6 +791,7 @@ Generate a high-quality skill based on this request. Use the existing skills abo
     description: parsed.description,
     skillMd: parsed.skillMd,
     steps: enrichedSteps,
+    resources: parsed.resources,
   };
 }
 

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Check, Copy, Edit2, ChevronDown, ChevronUp, Upload, Globe, Lock, Loader2 } from 'lucide-react';
+import { Check, Copy, Edit2, ChevronDown, ChevronUp, ChevronRight, Upload, Globe, Lock, Loader2, FileCode, File } from 'lucide-react';
+import type { GeneratedResource } from '@/lib/api';
 
 interface PreviewPanelProps {
   skillMd: string;
@@ -11,14 +12,16 @@ interface PreviewPanelProps {
   publishing?: boolean;
   canPublish?: boolean;
   isStreaming?: boolean;
+  resources?: GeneratedResource[];
 }
 
-export function PreviewPanel({ skillMd, onSave, saving, onPublish, publishing, canPublish, isStreaming }: PreviewPanelProps) {
+export function PreviewPanel({ skillMd, onSave, saving, onPublish, publishing, canPublish, isStreaming, resources }: PreviewPanelProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(skillMd);
   const [copied, setCopied] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [selectedVisibility, setSelectedVisibility] = useState<'public' | 'private'>('public');
+  const [expandedResource, setExpandedResource] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when streaming
@@ -69,6 +72,12 @@ export function PreviewPanel({ skillMd, onSave, saving, onPublish, publishing, c
             <ChevronDown className="w-4 h-4" />
           )}
           SKILL.md Preview
+          {resources && resources.length > 0 && (
+            <span className="flex items-center gap-1 px-2 py-0.5 bg-gold/10 text-gold text-xs rounded-full">
+              <FileCode className="w-3 h-3" />
+              +{resources.length} files
+            </span>
+          )}
         </button>
 
         <div className="flex items-center gap-2">
@@ -133,6 +142,42 @@ export function PreviewPanel({ skillMd, onSave, saving, onPublish, publishing, c
               </pre>
             )}
           </div>
+
+          {/* Bundled Resources Section */}
+          {resources && resources.length > 0 && (
+            <div className="border-t border-border p-4">
+              <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                <FileCode className="w-4 h-4 text-gold" />
+                Bundled Resources ({resources.length} files)
+              </h3>
+              <div className="space-y-2">
+                {resources.map((resource) => (
+                  <div key={resource.path} className="border border-border rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setExpandedResource(expandedResource === resource.path ? null : resource.path)}
+                      className="w-full flex items-center gap-2 p-2 hover:bg-muted/50 transition-colors text-left"
+                    >
+                      {expandedResource === resource.path ? (
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      )}
+                      <File className="w-4 h-4 text-gold" />
+                      <span className="text-sm font-mono text-foreground">{resource.path}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">{resource.description}</span>
+                    </button>
+                    {expandedResource === resource.path && (
+                      <div className="border-t border-border bg-muted/30 p-3 max-h-[200px] overflow-auto">
+                        <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap">
+                          {resource.content}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Publish section at bottom */}
           {onPublish && canPublish && (

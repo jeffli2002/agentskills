@@ -19,21 +19,20 @@ import {
   generateClarifyQuestions,
   type GeneratedStep,
   type GeneratedSkill,
+  type GeneratedResource,
   type ClarifyQuestion,
   type ClarifyResponse,
 } from '../services/skillComposer';
 import type { ApiResponse } from '@agentskills/shared';
 
-// Helper function to create a ZIP file containing SKILL.md
-function createSkillZip(skillMdContent: string): Uint8Array {
-  const skillMdBytes = new TextEncoder().encode(skillMdContent);
-  const filename = 'SKILL.md';
-  const filenameBytes = new TextEncoder().encode(filename);
-  const now = new Date();
-  const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
-  const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+// Interface for files to include in ZIP
+interface ZipFile {
+  path: string;
+  content: string;
+}
 
-  // CRC32 calculation
+// CRC32 calculation helper
+function calculateCrc32(data: Uint8Array): number {
   const crc32Table = new Uint32Array(256);
   for (let i = 0; i < 256; i++) {
     let c = i;
@@ -43,70 +42,119 @@ function createSkillZip(skillMdContent: string): Uint8Array {
     crc32Table[i] = c;
   }
   let crc = 0xFFFFFFFF;
-  for (let i = 0; i < skillMdBytes.length; i++) {
-    crc = crc32Table[(crc ^ skillMdBytes[i]) & 0xFF] ^ (crc >>> 8);
+  for (let i = 0; i < data.length; i++) {
+    crc = crc32Table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
   }
-  crc = (crc ^ 0xFFFFFFFF) >>> 0;
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
 
-  // Local file header
-  const localHeader = new Uint8Array(30 + filenameBytes.length);
-  const localView = new DataView(localHeader.buffer);
-  localView.setUint32(0, 0x04034b50, true);
-  localView.setUint16(4, 20, true);
-  localView.setUint16(6, 0, true);
-  localView.setUint16(8, 0, true);
-  localView.setUint16(10, dosTime, true);
-  localView.setUint16(12, dosDate, true);
-  localView.setUint32(14, crc, true);
-  localView.setUint32(18, skillMdBytes.length, true);
-  localView.setUint32(22, skillMdBytes.length, true);
-  localView.setUint16(26, filenameBytes.length, true);
-  localView.setUint16(28, 0, true);
-  localHeader.set(filenameBytes, 30);
+// Helper function to create a ZIP file containing multiple files
+function createSkillZip(skillMdContent: string, resources?: GeneratedResource[]): Uint8Array {
+  const now = new Date();
+  const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+  const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
 
-  // Central directory header
-  const centralHeader = new Uint8Array(46 + filenameBytes.length);
-  const centralView = new DataView(centralHeader.buffer);
-  centralView.setUint32(0, 0x02014b50, true);
-  centralView.setUint16(4, 20, true);
-  centralView.setUint16(6, 20, true);
-  centralView.setUint16(8, 0, true);
-  centralView.setUint16(10, 0, true);
-  centralView.setUint16(12, dosTime, true);
-  centralView.setUint16(14, dosDate, true);
-  centralView.setUint32(16, crc, true);
-  centralView.setUint32(20, skillMdBytes.length, true);
-  centralView.setUint32(24, skillMdBytes.length, true);
-  centralView.setUint16(28, filenameBytes.length, true);
-  centralView.setUint16(30, 0, true);
-  centralView.setUint16(32, 0, true);
-  centralView.setUint16(34, 0, true);
-  centralView.setUint16(36, 0, true);
-  centralView.setUint32(38, 0, true);
-  centralView.setUint32(42, 0, true);
-  centralHeader.set(filenameBytes, 46);
+  // Collect all files to include
+  const files: ZipFile[] = [
+    { path: 'SKILL.md', content: skillMdContent }
+  ];
 
-  // End of central directory
-  const centralDirOffset = localHeader.length + skillMdBytes.length;
-  const centralDirSize = centralHeader.length;
+  // Add resource files if present
+  if (resources && resources.length > 0) {
+    for (const resource of resources) {
+      files.push({ path: resource.path, content: resource.content });
+    }
+  }
+
+  // Calculate total size needed
+  let totalLocalSize = 0;
+  let totalCentralSize = 0;
+  const fileData: { pathBytes: Uint8Array; contentBytes: Uint8Array; crc: number }[] = [];
+
+  for (const file of files) {
+    const pathBytes = new TextEncoder().encode(file.path);
+    const contentBytes = new TextEncoder().encode(file.content);
+    const crc = calculateCrc32(contentBytes);
+    fileData.push({ pathBytes, contentBytes, crc });
+    totalLocalSize += 30 + pathBytes.length + contentBytes.length;
+    totalCentralSize += 46 + pathBytes.length;
+  }
+
+  // Create ZIP buffer
+  const zipBuffer = new Uint8Array(totalLocalSize + totalCentralSize + 22);
+  let localOffset = 0;
+  let centralOffset = totalLocalSize;
+  const fileOffsets: number[] = [];
+
+  // Write local file headers and file data
+  for (let i = 0; i < files.length; i++) {
+    const { pathBytes, contentBytes, crc } = fileData[i];
+    fileOffsets.push(localOffset);
+
+    // Local file header
+    const localHeader = new Uint8Array(30 + pathBytes.length);
+    const localView = new DataView(localHeader.buffer);
+    localView.setUint32(0, 0x04034b50, true); // Local file header signature
+    localView.setUint16(4, 20, true); // Version needed
+    localView.setUint16(6, 0, true); // General purpose bit flag
+    localView.setUint16(8, 0, true); // Compression method (stored)
+    localView.setUint16(10, dosTime, true);
+    localView.setUint16(12, dosDate, true);
+    localView.setUint32(14, crc, true);
+    localView.setUint32(18, contentBytes.length, true); // Compressed size
+    localView.setUint32(22, contentBytes.length, true); // Uncompressed size
+    localView.setUint16(26, pathBytes.length, true);
+    localView.setUint16(28, 0, true); // Extra field length
+    localHeader.set(pathBytes, 30);
+
+    zipBuffer.set(localHeader, localOffset);
+    localOffset += localHeader.length;
+    zipBuffer.set(contentBytes, localOffset);
+    localOffset += contentBytes.length;
+  }
+
+  // Write central directory headers
+  for (let i = 0; i < files.length; i++) {
+    const { pathBytes, contentBytes, crc } = fileData[i];
+
+    const centralHeader = new Uint8Array(46 + pathBytes.length);
+    const centralView = new DataView(centralHeader.buffer);
+    centralView.setUint32(0, 0x02014b50, true); // Central directory signature
+    centralView.setUint16(4, 20, true); // Version made by
+    centralView.setUint16(6, 20, true); // Version needed
+    centralView.setUint16(8, 0, true); // General purpose bit flag
+    centralView.setUint16(10, 0, true); // Compression method
+    centralView.setUint16(12, dosTime, true);
+    centralView.setUint16(14, dosDate, true);
+    centralView.setUint32(16, crc, true);
+    centralView.setUint32(20, contentBytes.length, true); // Compressed size
+    centralView.setUint32(24, contentBytes.length, true); // Uncompressed size
+    centralView.setUint16(28, pathBytes.length, true);
+    centralView.setUint16(30, 0, true); // Extra field length
+    centralView.setUint16(32, 0, true); // File comment length
+    centralView.setUint16(34, 0, true); // Disk number start
+    centralView.setUint16(36, 0, true); // Internal file attributes
+    centralView.setUint32(38, 0, true); // External file attributes
+    centralView.setUint32(42, fileOffsets[i], true); // Relative offset of local header
+    centralHeader.set(pathBytes, 46);
+
+    zipBuffer.set(centralHeader, centralOffset);
+    centralOffset += centralHeader.length;
+  }
+
+  // End of central directory record
   const endRecord = new Uint8Array(22);
   const endView = new DataView(endRecord.buffer);
-  endView.setUint32(0, 0x06054b50, true);
-  endView.setUint16(4, 0, true);
-  endView.setUint16(6, 0, true);
-  endView.setUint16(8, 1, true);
-  endView.setUint16(10, 1, true);
-  endView.setUint32(12, centralDirSize, true);
-  endView.setUint32(16, centralDirOffset, true);
-  endView.setUint16(20, 0, true);
+  endView.setUint32(0, 0x06054b50, true); // End of central directory signature
+  endView.setUint16(4, 0, true); // Disk number
+  endView.setUint16(6, 0, true); // Disk with central directory
+  endView.setUint16(8, files.length, true); // Entries on this disk
+  endView.setUint16(10, files.length, true); // Total entries
+  endView.setUint32(12, totalCentralSize, true); // Central directory size
+  endView.setUint32(16, totalLocalSize, true); // Central directory offset
+  endView.setUint16(20, 0, true); // Comment length
 
-  // Combine all parts
-  const zipBuffer = new Uint8Array(localHeader.length + skillMdBytes.length + centralHeader.length + endRecord.length);
-  let offset = 0;
-  zipBuffer.set(localHeader, offset); offset += localHeader.length;
-  zipBuffer.set(skillMdBytes, offset); offset += skillMdBytes.length;
-  zipBuffer.set(centralHeader, offset); offset += centralHeader.length;
-  zipBuffer.set(endRecord, offset);
+  zipBuffer.set(endRecord, centralOffset);
 
   return zipBuffer;
 }
@@ -129,6 +177,7 @@ interface GenerateResponse {
   description: string;
   skillMd: string;
   steps: GeneratedStep[];
+  resources?: GeneratedResource[];
 }
 
 interface PublishResponse {
@@ -150,7 +199,7 @@ composerRouter.use('*', requireAuth);
 
 // Rate limiting map (in-memory, resets on worker restart)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 10; // requests per hour
+const RATE_LIMIT = 100; // requests per hour (increased for testing)
 const RATE_WINDOW = 60 * 60 * 1000; // 1 hour in ms
 
 function checkRateLimit(userId: string): boolean {
@@ -315,6 +364,7 @@ composerRouter.post('/generate', async (c) => {
       creationId,
       version: 1,
       skillMd: generated.skillMd,
+      resourcesJson: generated.resources ? JSON.stringify(generated.resources) : null,
       isEdited: false,
       createdAt: now,
     });
@@ -334,6 +384,7 @@ composerRouter.post('/generate', async (c) => {
         description: generated.description,
         skillMd: generated.skillMd,
         steps: filteredSteps,
+        resources: generated.resources || [],
       },
       error: null,
     });
@@ -518,6 +569,7 @@ composerRouter.post('/generate/stream', async (c) => {
         creationId,
         version: 1,
         skillMd: generated.skillMd,
+        resourcesJson: generated.resources ? JSON.stringify(generated.resources) : null,
         isEdited: false,
         createdAt: now,
       });
@@ -532,13 +584,17 @@ composerRouter.post('/generate/stream', async (c) => {
             description: generated.description,
             skillMd: generated.skillMd,
             steps: filteredSteps,
+            resources: generated.resources || [],
           },
         }),
       });
     } catch (error) {
-      console.error('Streaming error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : '';
+      console.error('Streaming error:', errorMessage);
+      console.error('Error stack:', errorStack);
       await stream.writeSSE({
-        data: JSON.stringify({ type: 'error', message: 'Generation failed. Please try again.' }),
+        data: JSON.stringify({ type: 'error', message: `Generation failed: ${errorMessage}` }),
       });
     }
   });
@@ -655,6 +711,7 @@ composerRouter.post('/:creationId/regenerate', async (c) => {
       creationId,
       version: nextVersion,
       skillMd: generated.skillMd,
+      resourcesJson: generated.resources ? JSON.stringify(generated.resources) : null,
       isEdited: false,
       createdAt: now,
     });
@@ -680,6 +737,7 @@ composerRouter.post('/:creationId/regenerate', async (c) => {
         description: generated.description,
         skillMd: generated.skillMd,
         steps: filteredSteps,
+        resources: generated.resources || [],
       },
       error: null,
     });
@@ -800,8 +858,13 @@ composerRouter.post('/:creationId/publish', async (c) => {
   const skillId = generateId();
   const r2FileKey = `user-created/${skillId}/skill.zip`;
 
-  // Create ZIP file for the skill
-  const zipBuffer = createSkillZip(latestOutput.skillMd);
+  // Parse resources from JSON if present
+  const resources: GeneratedResource[] = latestOutput.resourcesJson
+    ? JSON.parse(latestOutput.resourcesJson)
+    : undefined;
+
+  // Create ZIP file for the skill (with optional resources)
+  const zipBuffer = createSkillZip(latestOutput.skillMd, resources);
 
   // Upload to R2 (for both public and private - enables download)
   try {

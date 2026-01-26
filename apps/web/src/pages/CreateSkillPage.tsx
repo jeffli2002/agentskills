@@ -15,11 +15,56 @@ import {
   clarifyRequirements,
   type GenerateResponse,
   type GeneratedStep,
+  type GeneratedResource,
   type ClarifyQuestion,
   type ConversationMessage,
   type StreamProgress,
 } from '@/lib/api';
 import { ArrowLeft, RefreshCw, Loader2 } from 'lucide-react';
+
+// Helper to extract name from SKILL.md frontmatter
+function extractNameFromSkillMd(skillMd: string): string {
+  // Try YAML frontmatter: name: skill-name
+  const frontmatterMatch = skillMd.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (frontmatterMatch) {
+    const frontmatter = frontmatterMatch[1];
+    const nameMatch = frontmatter.match(/^name:\s*(.+)$/m);
+    if (nameMatch) {
+      return nameMatch[1].trim().replace(/^["']|["']$/g, '');
+    }
+  }
+  // Fallback: first # heading
+  const headingMatch = skillMd.match(/^#\s+(.+)$/m);
+  if (headingMatch) {
+    return headingMatch[1].trim();
+  }
+  return '';
+}
+
+// Helper to extract description from SKILL.md frontmatter
+function extractDescriptionFromSkillMd(skillMd: string): string {
+  // Try YAML frontmatter: description: "..."
+  const frontmatterMatch = skillMd.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (frontmatterMatch) {
+    const frontmatter = frontmatterMatch[1];
+    // Match description with quotes
+    const descMatch = frontmatter.match(/^description:\s*["'](.+)["']$/m);
+    if (descMatch) {
+      return descMatch[1].trim();
+    }
+    // Match description without quotes
+    const descMatchNoQuotes = frontmatter.match(/^description:\s*(.+)$/m);
+    if (descMatchNoQuotes) {
+      return descMatchNoQuotes[1].trim().replace(/^["']|["']$/g, '');
+    }
+  }
+  // Fallback: first paragraph after heading
+  const paragraphMatch = skillMd.match(/^#.+\n+([^\n#]+)/m);
+  if (paragraphMatch) {
+    return paragraphMatch[1].trim().substring(0, 200);
+  }
+  return '';
+}
 
 export function CreateSkillPage() {
   const { user, loading: authLoading, login } = useAuth();
@@ -50,6 +95,7 @@ export function CreateSkillPage() {
   const [description, setDescription] = useState('');
   const [skillMd, setSkillMd] = useState('');
   const [steps, setSteps] = useState<GeneratedStep[]>([]);
+  const [resources, setResources] = useState<GeneratedResource[]>([]);
   const [progressMessage, setProgressMessage] = useState('');
 
   // Feedback for regeneration
@@ -64,6 +110,7 @@ export function CreateSkillPage() {
   }, [user, authLoading, login]);
 
   const handleGenerate = async (prompt: string, category?: string) => {
+    console.log('handleGenerate called with:', { prompt, category });
     // Reset all previous state
     setError(null);
     setCreationId(null);
@@ -191,15 +238,20 @@ export function CreateSkillPage() {
     setProgressMessage('Starting generation...');
     setSteps([]); // Clear steps before generation
     setSkillMd(''); // Clear skillMd before generation
+    setResources([]); // Clear resources before generation
+
+    console.log('Starting skill generation...');
 
     try {
       const result = await generateSkillStreaming(
         prompt,
         category,
         (progress) => {
+          console.log('Progress:', progress);
           setProgressMessage(progress.message || '');
         },
         (step, stepIndex, totalSteps) => {
+          console.log('Step received:', stepIndex, step);
           // Add each step progressively as it arrives
           setSteps(prevSteps => {
             const newSteps = [...prevSteps];
@@ -213,11 +265,24 @@ export function CreateSkillPage() {
           setSkillMd(fullContent);
         }
       );
+      console.log('Streaming complete, result:', result);
       setCreationId(result.creationId);
-      setName(result.name);
-      setDescription(result.description);
+      // Use result values, or extract from skillMd frontmatter as fallback
+      const extractedName = result.name || extractNameFromSkillMd(result.skillMd);
+      const extractedDesc = result.description || extractDescriptionFromSkillMd(result.skillMd);
+      console.log('Generation result:', {
+        resultName: result.name,
+        resultDesc: result.description,
+        extractedName,
+        extractedDesc,
+        resources: result.resources,
+        creationId: result.creationId
+      });
+      setName(extractedName);
+      setDescription(extractedDesc);
       setSkillMd(result.skillMd);
       setSteps(result.steps);
+      setResources(result.resources || []);
       setProgressMessage('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate skill');
@@ -236,10 +301,13 @@ export function CreateSkillPage() {
 
     try {
       const result = await regenerateSkill(creationId, feedback);
-      setName(result.name);
-      setDescription(result.description);
+      const extractedName = result.name || extractNameFromSkillMd(result.skillMd);
+      const extractedDesc = result.description || extractDescriptionFromSkillMd(result.skillMd);
+      setName(extractedName);
+      setDescription(extractedDesc);
       setSkillMd(result.skillMd);
       setSteps(result.steps);
+      setResources(result.resources || []);
       setFeedback('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate skill');
@@ -372,6 +440,7 @@ export function CreateSkillPage() {
             publishing={publishing}
             canPublish={!!creationId && !!name && !!description}
             isStreaming={generating && skillMd.length > 0}
+            resources={resources}
           />
         </div>
       </div>
