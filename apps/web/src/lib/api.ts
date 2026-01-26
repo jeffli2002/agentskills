@@ -129,6 +129,12 @@ export function parseSkillMetadata(metadataJson: string | null): Record<string, 
 }
 
 // Skill Composer Types
+export interface GeneratedResource {
+  path: string;
+  content: string;
+  description: string;
+}
+
 export interface GeneratedStep {
   stepNumber: number;
   title: string;
@@ -148,6 +154,7 @@ export interface GenerateResponse {
   description: string;
   skillMd: string;
   steps: GeneratedStep[];
+  resources?: GeneratedResource[];
 }
 
 export interface DraftItem {
@@ -219,7 +226,7 @@ export interface StreamSkillMd {
 
 export interface StreamResult {
   type: 'complete';
-  result: GenerateResponse;
+  result: GenerateResponse & { resources?: GeneratedResource[] };
 }
 
 export async function generateSkillStreaming(
