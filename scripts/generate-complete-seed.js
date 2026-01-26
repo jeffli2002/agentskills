@@ -386,8 +386,8 @@ let sql = `-- Seed data for Agent Skills Marketplace
 -- ${skills.length} skills from claude-skills-complete.json (uploaded to R2)
 -- Run with: wrangler d1 execute agentskills-db --local --file=./seed.sql
 
--- Clear existing data first
-DELETE FROM skills;
+-- Clear existing GitHub-sourced skills (preserve user-created skills)
+DELETE FROM skills WHERE creator_id IS NULL;
 
 `;
 
