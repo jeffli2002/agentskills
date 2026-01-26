@@ -144,7 +144,7 @@ Output valid JSON in exactly this format. NOTE: Output "steps" BEFORE "skillMd" 
       "description": "What this step does in 1-2 sentences",
       "sources": [
         {
-          "skillId": "the-skill-id-from-context",
+          "skillId": "550e8400-e29b-41d4-a716-000000000XXX",
           "reason": "Specific explanation of what pattern/technique is being utilized from this skill"
         }
       ]
@@ -159,6 +159,12 @@ Output valid JSON in exactly this format. NOTE: Output "steps" BEFORE "skillMd" 
   ],
   "skillMd": "Full SKILL.md content as a string with proper markdown formatting. Use \\\\n for newlines."
 }
+
+CRITICAL - Source Skill IDs:
+- The "skillId" in sources MUST be an EXACT ID from the skills provided in the context (format: 550e8400-e29b-41d4-a716-XXXXXXXXXXXX)
+- DO NOT make up skill IDs or use skill names as IDs
+- ONLY reference skills that are listed in the context above
+- If no skill from the context is relevant to a step, use an empty sources array []
 
 NOTE: The "resources" array is OPTIONAL. Omit it entirely for simple skills. Only include when the skill genuinely needs scripts, references, or assets.
 
@@ -199,7 +205,7 @@ export async function generateSkillWithClaudeStreaming(
   onStep?: (step: GeneratedStep) => Promise<void>,
   onSkillMdChunk?: (chunk: string, fullContent: string) => Promise<void>
 ): Promise<GeneratedSkill> {
-  const userMessage = `Here are top-rated skills from the marketplace for reference:
+  const userMessage = `Here are top-rated skills from the marketplace for reference. Each skill has an ID in the format (ID: 550e8400-...). You MUST use these EXACT IDs when referencing skills in your sources:
 
 ${skillsContext}
 
@@ -207,7 +213,7 @@ ${skillsContext}
 
 User Request: ${prompt}
 
-Generate a high-quality skill based on this request. Use the existing skills above as inspiration and reference them in your steps.`;
+Generate a high-quality skill based on this request. When referencing skills in your step sources, use the EXACT skill ID from the list above (e.g., "550e8400-e29b-41d4-a716-0000000001a5"). Do NOT make up IDs.`;
 
   // DeepSeek uses OpenAI-compatible endpoint
   const apiUrl = baseUrl.endsWith('/')
@@ -694,7 +700,7 @@ export async function generateSkillWithClaude(
   skillsContext: string,
   contextSkills: Skill[]
 ): Promise<GeneratedSkill> {
-  const userMessage = `Here are top-rated skills from the marketplace for reference:
+  const userMessage = `Here are top-rated skills from the marketplace for reference. Each skill has an ID in the format (ID: 550e8400-...). You MUST use these EXACT IDs when referencing skills in your sources:
 
 ${skillsContext}
 
@@ -702,7 +708,7 @@ ${skillsContext}
 
 User Request: ${prompt}
 
-Generate a high-quality skill based on this request. Use the existing skills above as inspiration and reference them in your steps.`;
+Generate a high-quality skill based on this request. When referencing skills in your step sources, use the EXACT skill ID from the list above (e.g., "550e8400-e29b-41d4-a716-0000000001a5"). Do NOT make up IDs.`;
 
   // DeepSeek uses OpenAI-compatible endpoint
   const apiUrl = baseUrl.endsWith('/')
