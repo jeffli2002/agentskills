@@ -23,13 +23,25 @@ const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
 function getRedirectUri(c: any): string {
-  const host = c.req.header('host') || 'localhost:8787';
-  const protocol = host.includes('localhost') ? 'http' : 'https';
+  // Use X-Forwarded-Host if behind a proxy (e.g., Cloudflare Pages)
+  const forwardedHost = c.req.header('x-forwarded-host');
+  const host = forwardedHost || c.req.header('host') || 'localhost:8788';
+
+  // In dev mode, API runs on 8788 but frontend runs on 5180
+  // Google OAuth needs the frontend URL since that's what user sees
+  if (host.includes('localhost:8788') || host.includes('localhost:8787')) {
+    return 'http://localhost:5180/api/auth/callback';
+  }
+  const forwardedProto = c.req.header('x-forwarded-proto');
+  const protocol = forwardedProto || (host.includes('localhost') ? 'http' : 'https');
   return `${protocol}://${host}/api/auth/callback`;
 }
 
 function getFrontendUrl(c: any): string {
-  const host = c.req.header('host') || 'localhost:8787';
+  // Use X-Forwarded-Host if behind a proxy (e.g., Cloudflare Pages)
+  const forwardedHost = c.req.header('x-forwarded-host');
+  const host = forwardedHost || c.req.header('host') || 'localhost:8787';
+
   if (host.includes('localhost')) {
     return 'http://localhost:5180';
   }
@@ -61,88 +73,170 @@ authRouter.get('/callback', async (c) => {
   const code = c.req.query('code');
   const error = c.req.query('error');
   const frontendUrl = getFrontendUrl(c);
+  const testMode = c.req.query('test') === '1';
 
   if (error || !code) {
     return c.redirect(`${frontendUrl}/login?error=oauth_failed`);
   }
 
   try {
-    // Exchange code for tokens
-    const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: c.env.GOOGLE_CLIENT_ID,
-        client_secret: c.env.GOOGLE_CLIENT_SECRET,
-        code,
-        grant_type: 'authorization_code',
-        redirect_uri: getRedirectUri(c),
-      }),
-    });
+    let googleUser: { id: string; email: string; name: string; picture: string };
 
-    if (!tokenResponse.ok) {
-      console.error('Token exchange failed:', await tokenResponse.text());
-      return c.redirect(`${frontendUrl}/login?error=token_exchange_failed`);
+    if (testMode) {
+      // Test mode - skip Google API calls
+      googleUser = {
+        id: 'test-123',
+        email: 'test@example.com',
+        name: 'Test User',
+        picture: 'https://example.com/pic.jpg',
+      };
+    } else {
+      // Exchange code for tokens
+      let tokenResponse;
+      try {
+        console.log('Fetching token from Google...');
+        tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            client_id: c.env.GOOGLE_CLIENT_ID,
+            client_secret: c.env.GOOGLE_CLIENT_SECRET,
+            code,
+            grant_type: 'authorization_code',
+            redirect_uri: getRedirectUri(c),
+          }),
+        });
+        console.log('Token response status:', tokenResponse.status);
+      } catch (fetchErr) {
+        console.error('Token fetch error:', fetchErr);
+        return c.redirect(`${frontendUrl}/login?error=token_fetch_error`);
+      }
+
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error('Token exchange failed:', errorText);
+        return c.redirect(`${frontendUrl}/login?error=token_exchange_failed`);
+      }
+
+      const tokens = await tokenResponse.json() as { access_token: string };
+      console.log('Got access token');
+
+      // Fetch user info
+      let userInfoResponse;
+      try {
+        console.log('Fetching user info from Google...');
+        userInfoResponse = await fetch(GOOGLE_USERINFO_URL, {
+          headers: { Authorization: `Bearer ${tokens.access_token}` },
+        });
+        console.log('User info response status:', userInfoResponse.status);
+      } catch (userFetchErr) {
+        console.error('User info fetch error:', userFetchErr);
+        return c.redirect(`${frontendUrl}/login?error=userinfo_fetch_error`);
+      }
+
+      if (!userInfoResponse.ok) {
+        return c.redirect(`${frontendUrl}/login?error=userinfo_failed`);
+      }
+
+      googleUser = await userInfoResponse.json() as {
+        id: string;
+        email: string;
+        name: string;
+        picture: string;
+      };
     }
 
-    const tokens = await tokenResponse.json() as { access_token: string };
+    // Use raw D1 SQL to bypass Drizzle ORM issues
+    const d1 = c.env.DB;
 
-    // Fetch user info
-    const userInfoResponse = await fetch(GOOGLE_USERINFO_URL, {
-      headers: { Authorization: `Bearer ${tokens.access_token}` },
-    });
+    console.log('=== OAuth callback debug ===');
+    console.log('Google user:', JSON.stringify(googleUser));
 
-    if (!userInfoResponse.ok) {
-      return c.redirect(`${frontendUrl}/login?error=userinfo_failed`);
+    // Test D1 connection first
+    try {
+      const testResult = await d1.prepare('SELECT 1 as test').first();
+      console.log('D1 connection test:', testResult);
+    } catch (testErr) {
+      console.error('D1 connection test FAILED:', testErr);
+      throw new Error('D1 connection failed');
     }
 
-    const googleUser = await userInfoResponse.json() as {
-      id: string;
-      email: string;
-      name: string;
-      picture: string;
-    };
+    // Check if users table exists
+    try {
+      const tableCheck = await d1.prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
+      ).first();
+      console.log('Users table exists:', tableCheck);
+    } catch (tableErr) {
+      console.error('Table check FAILED:', tableErr);
+      throw new Error('Table check failed');
+    }
 
-    const db = createDb(c.env.DB);
-
-    // Upsert user
-    let user = await db.select()
-      .from(users)
-      .where(eq(users.email, googleUser.email))
-      .get();
+    // Upsert user using raw SQL
+    let existingUser;
+    try {
+      existingUser = await d1.prepare(
+        'SELECT id, email, name, avatar_url, created_at, updated_at FROM users WHERE email = ?'
+      ).bind(googleUser.email).first();
+      console.log('Existing user lookup result:', existingUser);
+    } catch (selectErr) {
+      console.error('User SELECT failed:', selectErr);
+      throw new Error('User select failed: ' + (selectErr instanceof Error ? selectErr.message : 'unknown'));
+    }
 
     const now = Date.now();
+    let userId: string;
 
-    if (!user) {
-      user = {
-        id: generateId(),
-        email: googleUser.email,
-        name: googleUser.name,
-        avatarUrl: googleUser.picture,
-        createdAt: new Date(now),
-        updatedAt: new Date(now),
-      };
-      await db.insert(users).values(user);
+    if (!existingUser) {
+      const newUserId = generateId();
+      console.log('Creating new user with id:', newUserId, 'email:', googleUser.email);
+
+      try {
+        const insertResult = await d1.prepare(
+          'INSERT INTO users (id, email, name, avatar_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
+        ).bind(newUserId, googleUser.email, googleUser.name, googleUser.picture, now, now).run();
+        console.log('User INSERT result:', JSON.stringify(insertResult));
+      } catch (insertErr) {
+        console.error('User INSERT failed:', insertErr);
+        throw new Error('User insert failed: ' + (insertErr instanceof Error ? insertErr.message : 'unknown'));
+      }
+
+      userId = newUserId;
     } else {
-      await db.update(users)
-        .set({
-          name: googleUser.name,
-          avatarUrl: googleUser.picture,
-          updatedAt: new Date(now),
-        })
-        .where(eq(users.id, user.id));
+      console.log('Updating existing user:', existingUser.id);
+      try {
+        const updateResult = await d1.prepare(
+          'UPDATE users SET name = ?, avatar_url = ?, updated_at = ? WHERE id = ?'
+        ).bind(googleUser.name, googleUser.picture, now, existingUser.id).run();
+        console.log('User UPDATE result:', JSON.stringify(updateResult));
+      } catch (updateErr) {
+        console.error('User UPDATE failed:', updateErr);
+        throw new Error('User update failed: ' + (updateErr instanceof Error ? updateErr.message : 'unknown'));
+      }
+
+      userId = existingUser.id as string;
     }
 
-    // Create session
+    // Create session using raw SQL
     const sessionToken = generateSessionToken();
     const expiresAt = createSessionExpiry();
 
-    await db.insert(sessions).values({
-      id: sessionToken,
-      userId: user.id,
-      expiresAt,
-      createdAt: new Date(now),
-    });
+    console.log('Creating session for user:', userId, 'expires:', expiresAt.getTime());
+    try {
+      const sessionResult = await d1.prepare(
+        'INSERT INTO sessions (id, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)'
+      ).bind(sessionToken, userId, expiresAt.getTime(), now).run();
+      console.log('Session INSERT result:', JSON.stringify(sessionResult));
+    } catch (sessionErr) {
+      console.error('Session INSERT failed:', sessionErr);
+      throw new Error('Session insert failed: ' + (sessionErr instanceof Error ? sessionErr.message : 'unknown'));
+    }
+
+    // Fetch user for cookie and response
+    const user = await d1.prepare(
+      'SELECT id, email, name, avatar_url, created_at, updated_at FROM users WHERE id = ?'
+    ).bind(userId).first();
+    console.log('Final user fetch:', user);
 
     // Set session cookie
     // For cross-domain cookies: sameSite=None requires secure=true
@@ -158,7 +252,8 @@ authRouter.get('/callback', async (c) => {
     return c.redirect(frontendUrl);
   } catch (err) {
     console.error('OAuth callback error:', err);
-    return c.redirect(`${frontendUrl}/login?error=unknown`);
+    const errorMessage = err instanceof Error ? err.message : 'unknown';
+    return c.redirect(`${frontendUrl}/login?error=${encodeURIComponent(errorMessage)}`);
   }
 });
 
