@@ -68,14 +68,14 @@ const trustMetrics = [
 // Feature highlights
 const features = [
   {
+    title: 'Built on Proven Skills',
+    description: 'Our Skill Composer learns from top-rated community skills to generate yours. Built on what works, not from scratch.',
+    icon: Brain
+  },
+  {
     title: 'Quality Curation',
     description: 'Every agent skill is reviewed and rated by the community. Find reliable, well-documented tools.',
     icon: CheckCircle
-  },
-  {
-    title: 'Creator Profiles',
-    description: 'Follow top creators, see their portfolios, and discover their latest agent skills.',
-    icon: User
   },
   {
     title: 'Community Ratings',
@@ -101,11 +101,11 @@ const faqs = [
   },
   {
     question: 'How do I create my own skill?',
-    answer: 'Use our AI Skill Composer! Click "Create with AI" to describe what you want your skill to do. Our AI will ask clarifying questions, then generate a professional SKILL.md file with proper frontmatter, instructions, and examples. You can edit, regenerate, and publish directly from the composer.'
+    answer: 'Use our Skill Composer! Click "Create with AI" to describe what you want your skill to do. Our AI will ask clarifying questions, then generate a professional SKILL.md file based on proven patterns from top-rated community skills. You can edit, regenerate, and publish directly from the composer.'
   },
   {
-    question: 'What is the AI Skill Composer?',
-    answer: 'The AI Skill Composer is our built-in tool that helps you create skills using natural language. Simply describe your idea, answer a few clarifying questions, and get a complete, well-structured SKILL.md file. You can iterate with feedback, preview in real-time, and publish publicly or keep it private.'
+    question: 'What is the Skill Composer?',
+    answer: 'The Skill Composer analyzes proven, top-rated skills from our marketplace to generate yours. It learns what works—descriptions, structures, patterns—then applies those learnings to your needs. Simply describe your idea, answer a few clarifying questions, and get a complete, well-structured SKILL.md file built on community best practices.'
   },
   {
     question: 'Are skills free to use?',
@@ -117,7 +117,7 @@ const faqs = [
   },
   {
     question: 'Can I keep my skills private?',
-    answer: 'Yes! When publishing from the AI Skill Composer, you can choose to publish publicly (visible to everyone) or keep it private (only visible to you in My Skills). Private skills can be made public later if you decide to share them.'
+    answer: 'Yes! When publishing from the Skill Composer, you can choose to publish publicly (visible to everyone) or keep it private (only visible to you in My Skills). Private skills can be made public later if you decide to share them.'
   },
   {
     question: 'Where can I find my created skills?',
@@ -264,8 +264,8 @@ export function HomePage() {
 
             {/* Subheading */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              Discover, download, and share powerful Claude skills and agent skills for AI coding assistants.
-              Built by developers, for developers.
+              Create agent skills powered by proven patterns from the community's best.
+              Discover, download, and share with AI coding assistants.
             </p>
 
             {/* Search Bar */}

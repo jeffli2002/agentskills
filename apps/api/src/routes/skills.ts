@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq, desc, sql, and } from 'drizzle-orm';
+import { eq, desc, sql, and, asc } from 'drizzle-orm';
 import { createDb, skills, users, type Skill, type User } from '../db';
 import { getSessionFromCookie } from '../middleware/auth';
 import type { ApiResponse, PaginatedResponse } from '@agentskills/shared';
@@ -60,9 +60,14 @@ skillsRouter.get('/', async (c) => {
   const sort = c.req.query('sort') || 'stars';
   const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
   const offset = parseInt(c.req.query('offset') || '0');
+  const minStarsQuery = c.req.query('minStars');
+  const minStars = minStarsQuery ? parseInt(minStarsQuery) : undefined;
 
   // Build conditions
   const conditions = [];
+  if (minStars !== undefined) {
+    conditions.push(sql`${skills.starsCount} >= ${minStars}`);
+  }
   if (q) {
     conditions.push(
       sql`(${skills.name} LIKE ${'%' + q + '%'} OR ${skills.description} LIKE ${'%' + q + '%'})`
@@ -73,17 +78,27 @@ skillsRouter.get('/', async (c) => {
   }
 
   // Build order
-  let orderBy;
+  let orderBy: ReturnType<typeof desc>[];
+  const now = Date.now();
   switch (sort) {
+    case 'trending':
+      // Freshness-boosted stars: starsCount * max(0.2, 1 - daysSinceCommit/30)
+      // Skills with recent commits get boosted, 30-day decay window
+      // Secondary sort by name for deterministic ordering when scores tie
+      orderBy = [
+        desc(sql`${skills.starsCount} * MAX(0.2, 1.0 - ((${now} - COALESCE(${skills.lastCommitAt}, 0)) / (1000.0 * 60 * 60 * 24 * 30)))`),
+        asc(skills.name)
+      ];
+      break;
     case 'rating':
-      orderBy = desc(skills.avgRating);
+      orderBy = [desc(skills.avgRating), asc(skills.name)];
       break;
     case 'downloads':
-      orderBy = desc(skills.downloadCount);
+      orderBy = [desc(skills.downloadCount), asc(skills.name)];
       break;
     case 'stars':
     default:
-      orderBy = desc(skills.starsCount);
+      orderBy = [desc(skills.starsCount), asc(skills.name)];
   }
 
   // Query
@@ -93,7 +108,7 @@ skillsRouter.get('/', async (c) => {
     db.select()
       .from(skills)
       .where(whereClause)
-      .orderBy(orderBy)
+      .orderBy(...orderBy)
       .limit(limit)
       .offset(offset),
     db.select({ count: sql<number>`count(*)` })

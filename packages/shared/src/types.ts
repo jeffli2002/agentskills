@@ -77,9 +77,10 @@ export interface PaginatedResponse<T> {
 export interface SkillsQueryParams {
   q?: string;
   category?: string;
-  sort?: 'stars' | 'rating' | 'downloads';
+  sort?: 'stars' | 'rating' | 'downloads' | 'trending';
   limit?: number;
   offset?: number;
+  minStars?: number;
 }
 
 export interface RatingRequest {
