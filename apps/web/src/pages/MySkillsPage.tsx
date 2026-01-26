@@ -79,7 +79,7 @@ export function MySkillsPage() {
           </div>
           <h2 className="text-xl font-semibold mb-2">No skills created yet</h2>
           <p className="text-muted-foreground mb-6">
-            Use the AI Skill Composer to create your first skill!
+            Use the Skill Composer to create your first skill!
           </p>
           <Link href="/create">
             <Button className="bg-gradient-to-r from-gold-dark via-gold to-gold-light text-background font-semibold hover:opacity-90">

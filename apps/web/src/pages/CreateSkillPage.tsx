@@ -305,7 +305,7 @@ export function CreateSkillPage() {
             </a>
             <div className="h-6 w-px bg-border" />
             <h1 className="text-lg font-semibold">
-              <span className="text-gold">AI</span> Skill Composer
+              Skill Composer
             </h1>
           </div>
 
