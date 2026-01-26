@@ -1,5 +1,5 @@
 import { Hono, type Context } from 'hono';
-import { eq, and, avg, count } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { createDb, ratings, skills, type User } from '../db';
 import { requireAuth } from '../middleware/auth';
 import { generateId } from '../lib/utils';
@@ -83,13 +83,31 @@ async function handleRateSkill(c: AppContext): Promise<Response> {
 
   const now = Date.now();
 
+  // Get current skill stats (includes seeded values)
+  const currentAvg = skill.avgRating || 0;
+  const currentCount = skill.ratingCount || 0;
+
+  let avgRating: number;
+  let ratingCount: number;
+
   if (existing) {
-    // Update existing rating
+    // Update existing rating - adjust average by removing old score and adding new
+    const oldScore = existing.score;
+    if (currentCount > 0) {
+      avgRating = (currentAvg * currentCount - oldScore + score) / currentCount;
+    } else {
+      avgRating = score;
+    }
+    ratingCount = currentCount;
+
     await db.update(ratings)
       .set({ score, updatedAt: new Date(now) })
       .where(eq(ratings.id, existing.id));
   } else {
-    // Create new rating
+    // Create new rating - add to existing average
+    avgRating = (currentAvg * currentCount + score) / (currentCount + 1);
+    ratingCount = currentCount + 1;
+
     await db.insert(ratings).values({
       id: generateId(),
       userId: user.id,
@@ -97,18 +115,6 @@ async function handleRateSkill(c: AppContext): Promise<Response> {
       score,
     });
   }
-
-  // Recalculate average rating for skill
-  const stats = await db.select({
-    avgRating: avg(ratings.score),
-    ratingCount: count(ratings.id),
-  })
-    .from(ratings)
-    .where(eq(ratings.skillId, skillId))
-    .get();
-
-  const avgRating = stats?.avgRating ? Number(stats.avgRating) : 0;
-  const ratingCount = stats?.ratingCount || 0;
 
   await db.update(skills)
     .set({ avgRating, ratingCount, updatedAt: new Date(now) })

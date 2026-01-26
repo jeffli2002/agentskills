@@ -423,7 +423,7 @@ skills.forEach((skill, index) => {
   const starsCount = skill.starsCount || Math.floor(Math.random() * 1000);
   const forksCount = skill.forksCount || Math.floor(starsCount * 0.1);
   const downloadCount = Math.floor(starsCount * 0.01) + Math.floor(Math.random() * 50);
-  const avgRating = (3.5 + Math.random() * 1.5).toFixed(1);
+  const avgRating = (4.0 + Math.random() * 1.0).toFixed(1);
   const ratingCount = Math.floor(starsCount * 0.001) + Math.floor(Math.random() * 20);
   const fileSize = skill.fileSize || Math.floor(5000 + Math.random() * 50000);
 
