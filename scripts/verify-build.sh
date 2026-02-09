@@ -18,8 +18,8 @@ else
 fi
 
 # Check for API proxy function
-if [ ! -f "$DIST_DIR/functions/api/[[path]].ts" ]; then
-  echo "❌ ERROR: API proxy function missing at $DIST_DIR/functions/api/[[path]].ts"
+if [ ! -f "$DIST_DIR/functions/api/[[path]].js" ]; then
+  echo "❌ ERROR: API proxy function missing at $DIST_DIR/functions/api/[[path]].js"
   ERRORS=$((ERRORS + 1))
 else
   echo "✓ API proxy function exists"
