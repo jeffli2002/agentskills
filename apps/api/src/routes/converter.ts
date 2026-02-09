@@ -454,31 +454,40 @@ converterRouter.post('/publish', async (c) => {
   const skillId = `sk_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
   const now = Date.now();
 
-  await db.insert(skills).values({
-    id: skillId,
-    name: name,
-    description: description,
-    author: user.name,
-    authorAvatarUrl: user.avatarUrl,
-    githubUrl: skillId,
-    starsCount: 0,
-    forksCount: 0,
-    category: 'other',
-    r2FileKey: '',
-    fileSize: content.length,
-    downloadCount: 0,
-    avgRating: 0,
-    ratingCount: 0,
-    lastCommitAt: null,
-    filesJson: null,
-    skillMdContent: content,
-    skillMdParsed: JSON.stringify(frontmatter),
-    resourcesJson: resources && resources.length > 0 ? JSON.stringify(resources) : null,
-    creatorId: user.id,
-    visibility: visibility || 'public',
-    createdAt: now,
-    updatedAt: now,
-  });
+  try {
+    await db.insert(skills).values({
+      id: skillId,
+      name: name,
+      description: description,
+      author: user.name,
+      authorAvatarUrl: user.avatarUrl,
+      githubUrl: skillId,
+      starsCount: 0,
+      forksCount: 0,
+      category: 'other',
+      r2FileKey: '',
+      fileSize: content.length,
+      downloadCount: 0,
+      viewCount: 0,
+      avgRating: 0,
+      ratingCount: 0,
+      lastCommitAt: null,
+      filesJson: null,
+      skillMdContent: content,
+      skillMdParsed: JSON.stringify(frontmatter),
+      resourcesJson: resources && resources.length > 0 ? JSON.stringify(resources) : null,
+      creatorId: user.id,
+      visibility: visibility || 'public',
+      createdAt: now,
+      updatedAt: now,
+    });
+  } catch (err) {
+    console.error('Converter publish DB error:', err);
+    return c.json<ApiResponse<null>>({
+      data: null,
+      error: `Database error: ${err instanceof Error ? err.message : String(err)}`,
+    }, 500);
+  }
 
   return c.json<ApiResponse<{ skillId: string; url: string }>>({
     data: { skillId, url: `/skills/${skillId}` },
