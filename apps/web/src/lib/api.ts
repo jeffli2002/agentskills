@@ -62,6 +62,19 @@ export function getDownloadUrl(skillId: string): string {
   return `${API_BASE}/skills/${skillId}/download`;
 }
 
+// OpenClaw Export
+export function getOpenClawExportUrl(skillId: string): string {
+  return `${API_BASE}/skills/${skillId}/export/openclaw`;
+}
+
+export async function getOpenClawExport(skillId: string): Promise<{ content: string; name: string }> {
+  const res = await fetch(getOpenClawExportUrl(skillId), { credentials: 'include' });
+  if (!res.ok) throw new Error('Export failed');
+  const content = await res.text();
+  const name = res.headers.get('X-OpenClaw-Name') || 'skill';
+  return { content, name };
+}
+
 // My Skills (user's created skills)
 export async function getMySkills(): Promise<Skill[]> {
   const response = await fetchApi<ApiResponse<Skill[]>>('/skills/my');

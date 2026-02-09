@@ -10,6 +10,8 @@ import { LoginPage } from '@/pages/LoginPage';
 import { PrivacyPage } from '@/pages/PrivacyPage';
 import { TermsPage } from '@/pages/TermsPage';
 import { CreateSkillPage } from '@/pages/CreateSkillPage';
+import { OpenClawExportPage } from '@/pages/OpenClawExportPage';
+import { CLIPage } from '@/pages/CLIPage';
 
 function NotFoundPage() {
   return (
@@ -36,8 +38,10 @@ export default function App() {
       <Layout>
         <Switch>
           <Route path="/" component={HomePage} />
+          <Route path="/skills/:id/openclaw" component={OpenClawExportPage} />
           <Route path="/skills/:id" component={SkillDetailPage} />
           <Route path="/skills" component={SkillsPage} />
+          <Route path="/cli" component={CLIPage} />
           <Route path="/favorites" component={FavoritesPage} />
           <Route path="/my-skills" component={MySkillsPage} />
           <Route path="/login" component={LoginPage} />

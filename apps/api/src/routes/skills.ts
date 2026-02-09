@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { eq, desc, sql, and, asc } from 'drizzle-orm';
 import { createDb, skills, users, type Skill, type User } from '../db';
 import { getSessionFromCookie } from '../middleware/auth';
+import { convertSkillToOpenClaw } from '../services/formatConverter';
 import type { ApiResponse, PaginatedResponse } from '@agentskills/shared';
 
 type Bindings = {
@@ -124,6 +125,32 @@ skillsRouter.get('/', async (c) => {
   };
 
   return c.json(response);
+});
+
+// Export skill as OpenClaw-compliant SKILL.md
+skillsRouter.get('/:id/export/openclaw', async (c) => {
+  const db = createDb(c.env.DB);
+  const id = c.req.param('id');
+
+  const skill = await db.select()
+    .from(skills)
+    .where(eq(skills.id, id))
+    .get();
+
+  if (!skill) {
+    return c.json<ApiResponse<null>>({ data: null, error: 'Skill not found' }, 404);
+  }
+
+  const openClawMd = convertSkillToOpenClaw(skill);
+  const sanitizedName = skill.name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+  return new Response(openClawMd, {
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      'Content-Disposition': `attachment; filename="SKILL.md"`,
+      'X-OpenClaw-Name': sanitizedName,
+    },
+  });
 });
 
 // Get single skill
