@@ -32,6 +32,8 @@ import {
   FolderTree,
   Loader2,
   Trash2,
+  Archive,
+  Files,
 } from 'lucide-react';
 
 // ─── Syntax Highlighting (reused from OpenClawExportPage) ──────────────────
@@ -528,7 +530,7 @@ export function ConvertPage() {
               <div className="p-6">
                 {/* Paste / Upload */}
                 {activeTab === 'paste' && (
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     <div>
                       <label className="block text-sm text-zinc-300 mb-2">
                         Paste your SKILL.md, README, or any markdown content
@@ -539,6 +541,47 @@ export function ConvertPage() {
                         placeholder={"---\nname: my-skill\ndescription: \"A helpful skill\"\n---\n\n# My Skill\n\nInstructions here..."}
                         className="w-full h-64 bg-[#0d0d1a] border border-[#2d2d44] rounded-md p-4 text-sm font-mono text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/40 resize-none"
                       />
+                    </div>
+
+                    {/* Upload options */}
+                    <div className="bg-[#252538] rounded-md border border-[#2d2d44] p-4">
+                      <p className="text-sm text-zinc-300 font-medium mb-3">Or upload files</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <label className="flex flex-col items-center gap-2 p-3 bg-[#1a1a2e] hover:bg-[#0d0d1a] rounded-md border border-[#2d2d44] hover:border-amber-500/30 transition-colors cursor-pointer text-center">
+                          <FileText className="h-5 w-5 text-amber-400" />
+                          <span className="text-xs text-zinc-300 font-medium">Single File</span>
+                          <span className="text-[10px] text-zinc-500 leading-tight">SKILL.md, README, or any .md file</span>
+                          <input
+                            type="file"
+                            accept=".md,.txt,.yaml,.yml"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <label className="flex flex-col items-center gap-2 p-3 bg-[#1a1a2e] hover:bg-[#0d0d1a] rounded-md border border-[#2d2d44] hover:border-amber-500/30 transition-colors cursor-pointer text-center">
+                          <Files className="h-5 w-5 text-blue-400" />
+                          <span className="text-xs text-zinc-300 font-medium">Multiple Files</span>
+                          <span className="text-[10px] text-zinc-500 leading-tight">SKILL.md + scripts, references, assets</span>
+                          <input
+                            type="file"
+                            accept=".md,.txt,.yaml,.yml,.sh,.py,.js,.ts,.json"
+                            multiple
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <label className="flex flex-col items-center gap-2 p-3 bg-[#1a1a2e] hover:bg-[#0d0d1a] rounded-md border border-[#2d2d44] hover:border-amber-500/30 transition-colors cursor-pointer text-center">
+                          <Archive className="h-5 w-5 text-purple-400" />
+                          <span className="text-xs text-zinc-300 font-medium">ZIP Archive</span>
+                          <span className="text-[10px] text-zinc-500 leading-tight">Upload a .zip containing all skill files</span>
+                          <input
+                            type="file"
+                            accept=".zip"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     </div>
 
                     {/* Uploaded resource files */}
@@ -579,30 +622,14 @@ export function ConvertPage() {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-3">
-                      <Button
-                        onClick={handleConvertPaste}
-                        disabled={!pasteContent.trim()}
-                        className="bg-amber-500 hover:bg-amber-600 text-black font-medium"
-                      >
-                        <ArrowRight className="h-4 w-4 mr-2" />
-                        Convert
-                      </Button>
-                      <label className="flex items-center gap-2 px-4 py-2 bg-[#252538] hover:bg-[#2d2d44] text-zinc-300 text-sm rounded-md transition-colors border border-[#2d2d44] cursor-pointer">
-                        <Upload className="h-4 w-4" />
-                        Upload Files
-                        <input
-                          type="file"
-                          accept=".md,.txt,.yaml,.yml,.sh,.py,.js,.ts,.json,.zip"
-                          multiple
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                    <p className="text-xs text-zinc-600">
-                      Supports single file, multiple files (SKILL.md + scripts/references), or ZIP archive.
-                    </p>
+                    <Button
+                      onClick={handleConvertPaste}
+                      disabled={!pasteContent.trim()}
+                      className="bg-amber-500 hover:bg-amber-600 text-black font-medium"
+                    >
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Convert{uploadedResources.length > 0 ? ` (${uploadedResources.length + 1} files)` : ''}
+                    </Button>
                   </div>
                 )}
 
