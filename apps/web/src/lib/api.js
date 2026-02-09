@@ -240,10 +240,10 @@ export async function getSkillCreation(creationId) {
         throw new Error(response.error || 'Creation not found');
     return response.data;
 }
-export async function convertPaste(content, filename) {
+export async function convertPaste(content, filename, resources) {
     const response = await fetchApi('/converter/paste', {
         method: 'POST',
-        body: JSON.stringify({ content, filename }),
+        body: JSON.stringify({ content, filename, resources }),
     });
     if (!response.data)
         throw new Error(response.error || 'Conversion failed');

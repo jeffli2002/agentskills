@@ -219,7 +219,11 @@ const converterRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 // Convert from pasted/uploaded content
 converterRouter.post('/paste', async (c) => {
-  const { content, filename } = await c.req.json<{ content: string; filename?: string }>();
+  const { content, filename, resources } = await c.req.json<{
+    content: string;
+    filename?: string;
+    resources?: { path: string; content: string; description: string }[];
+  }>();
 
   if (!content || typeof content !== 'string') {
     return c.json<ApiResponse<null>>({ data: null, error: 'Content is required' }, 400);
@@ -227,6 +231,10 @@ converterRouter.post('/paste', async (c) => {
 
   const sourceName = filename?.replace(/\.(md|txt|yaml|yml)$/i, '');
   const result = validateAndConvert(content, 'paste', sourceName);
+
+  if (resources && resources.length > 0) {
+    result.resources = resources;
+  }
 
   return c.json<ApiResponse<ConversionResult>>({ data: result, error: null });
 });

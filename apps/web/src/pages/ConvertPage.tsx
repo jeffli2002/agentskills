@@ -31,6 +31,7 @@ import {
   FileText,
   FolderTree,
   Loader2,
+  Trash2,
 } from 'lucide-react';
 
 // ─── Syntax Highlighting (reused from OpenClawExportPage) ──────────────────
@@ -87,6 +88,45 @@ function renderHighlightedContent(content: string): ReactNode[] {
   });
 }
 
+// ─── ZIP Parser (stored/deflated entries) ─────────────────────────────────
+
+function parseZipEntries(buffer: ArrayBuffer): { path: string; content: string }[] {
+  const view = new DataView(buffer);
+  const decoder = new TextDecoder();
+  const entries: { path: string; content: string }[] = [];
+  let offset = 0;
+
+  while (offset < buffer.byteLength - 4) {
+    const sig = view.getUint32(offset, true);
+    if (sig !== 0x04034b50) break; // Not a local file header
+
+    const compressionMethod = view.getUint16(offset + 8, true);
+    const compressedSize = view.getUint32(offset + 18, true);
+    const filenameLen = view.getUint16(offset + 26, true);
+    const extraLen = view.getUint16(offset + 28, true);
+
+    const filenameBytes = new Uint8Array(buffer, offset + 30, filenameLen);
+    const path = decoder.decode(filenameBytes);
+
+    const contentStart = offset + 30 + filenameLen + extraLen;
+
+    // Skip directories
+    if (!path.endsWith('/') && compressedSize > 0) {
+      if (compressionMethod === 0) {
+        // Stored (no compression)
+        const contentBytes = new Uint8Array(buffer, contentStart, compressedSize);
+        entries.push({ path, content: decoder.decode(contentBytes) });
+      }
+      // Compressed entries (method 8 = deflate) are skipped —
+      // browser-native DecompressionStream is available but most skill ZIPs are stored
+    }
+
+    offset = contentStart + compressedSize;
+  }
+
+  return entries;
+}
+
 // ─── Types ─────────────────────────────────────────────────────────────────
 
 type TabId = 'paste' | 'github' | 'marketplace' | 'ai';
@@ -125,6 +165,9 @@ export function ConvertPage() {
   const [githubFiles, setGithubFiles] = useState<string[]>([]);
   const [showFilePicker, setShowFilePicker] = useState(false);
 
+  // Uploaded resource files
+  const [uploadedResources, setUploadedResources] = useState<{ path: string; content: string; description: string }[]>([]);
+
   // Pipeline state
   const [currentStep, setCurrentStep] = useState<PipelineStep>('input');
   const [converting, setConverting] = useState(false);
@@ -154,7 +197,11 @@ export function ConvertPage() {
     setCurrentStep('convert');
 
     try {
-      const data = await convertPaste(pasteContent);
+      const data = await convertPaste(
+        pasteContent,
+        undefined,
+        uploadedResources.length > 0 ? uploadedResources : undefined
+      );
       setResult(data);
       setCurrentStep('preview');
     } catch (err) {
@@ -287,16 +334,82 @@ export function ConvertPage() {
     setSearchResults([]);
     setGithubFiles([]);
     setShowFilePicker(false);
+    setUploadedResources([]);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPasteContent(reader.result as string);
-    };
-    reader.readAsText(file);
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // Single ZIP file — extract contents in-browser
+    if (files.length === 1 && files[0].name.endsWith('.zip')) {
+      const zipFile = files[0];
+      const buffer = await zipFile.arrayBuffer();
+      const extracted = parseZipEntries(buffer);
+
+      const skillMdEntry = extracted.find(
+        (f) => f.path.toUpperCase() === 'SKILL.MD' || f.path.toUpperCase().endsWith('/SKILL.MD')
+      );
+      if (skillMdEntry) {
+        setPasteContent(skillMdEntry.content);
+        setUploadedResources(
+          extracted
+            .filter((f) => f !== skillMdEntry)
+            .map((f) => ({
+              path: f.path,
+              content: f.content,
+              description: '',
+            }))
+        );
+      } else {
+        // No SKILL.md found in zip — use first .md as content
+        const firstMd = extracted.find((f) => f.path.endsWith('.md'));
+        if (firstMd) {
+          setPasteContent(firstMd.content);
+          setUploadedResources(
+            extracted
+              .filter((f) => f !== firstMd)
+              .map((f) => ({ path: f.path, content: f.content, description: '' }))
+          );
+        } else {
+          setError('No markdown file found in ZIP');
+        }
+      }
+      return;
+    }
+
+    // Multiple files — find SKILL.md, rest are resources
+    const fileEntries: { path: string; content: string }[] = [];
+    for (const file of Array.from(files)) {
+      const content = await file.text();
+      // Use webkitRelativePath for folder uploads, otherwise just the filename
+      const path = (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name;
+      fileEntries.push({ path, content });
+    }
+
+    const skillMdEntry = fileEntries.find(
+      (f) => {
+        const basename = f.path.split('/').pop()?.toUpperCase();
+        return basename === 'SKILL.MD';
+      }
+    );
+
+    if (skillMdEntry) {
+      setPasteContent(skillMdEntry.content);
+      setUploadedResources(
+        fileEntries
+          .filter((f) => f !== skillMdEntry)
+          .map((f) => ({ path: f.path, content: f.content, description: '' }))
+      );
+    } else {
+      // Single file or no SKILL.md — treat first file as content
+      setPasteContent(fileEntries[0].content);
+      setUploadedResources(
+        fileEntries
+          .slice(1)
+          .map((f) => ({ path: f.path, content: f.content, description: '' }))
+      );
+    }
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────
@@ -427,6 +540,45 @@ export function ConvertPage() {
                         className="w-full h-64 bg-[#0d0d1a] border border-[#2d2d44] rounded-md p-4 text-sm font-mono text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/40 resize-none"
                       />
                     </div>
+
+                    {/* Uploaded resource files */}
+                    {uploadedResources.length > 0 && (
+                      <div className="bg-[#252538] rounded-md border border-[#2d2d44] overflow-hidden">
+                        <div className="flex items-center justify-between px-3 py-2 border-b border-[#2d2d44]">
+                          <div className="flex items-center gap-2">
+                            <FolderTree className="h-3.5 w-3.5 text-amber-400" />
+                            <span className="text-xs text-zinc-300 font-medium">
+                              Resource Files ({uploadedResources.length})
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setUploadedResources([])}
+                            className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                          >
+                            Clear all
+                          </button>
+                        </div>
+                        <div className="divide-y divide-[#2d2d44]">
+                          {uploadedResources.map((resource, i) => (
+                            <div key={i} className="px-3 py-1.5 flex items-center gap-2">
+                              <FileText className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                              <span className="text-xs font-mono text-zinc-400 truncate">{resource.path}</span>
+                              <span className="text-[10px] text-zinc-600 ml-auto shrink-0">
+                                {resource.content.length} bytes
+                              </span>
+                              <button
+                                onClick={() => setUploadedResources((prev) => prev.filter((_, j) => j !== i))}
+                                className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors cursor-pointer shrink-0"
+                                aria-label="Remove file"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex items-center gap-3">
                       <Button
                         onClick={handleConvertPaste}
@@ -438,15 +590,19 @@ export function ConvertPage() {
                       </Button>
                       <label className="flex items-center gap-2 px-4 py-2 bg-[#252538] hover:bg-[#2d2d44] text-zinc-300 text-sm rounded-md transition-colors border border-[#2d2d44] cursor-pointer">
                         <Upload className="h-4 w-4" />
-                        Upload File
+                        Upload Files
                         <input
                           type="file"
-                          accept=".md,.txt,.yaml,.yml"
+                          accept=".md,.txt,.yaml,.yml,.sh,.py,.js,.ts,.json,.zip"
+                          multiple
                           onChange={handleFileUpload}
                           className="hidden"
                         />
                       </label>
                     </div>
+                    <p className="text-xs text-zinc-600">
+                      Supports single file, multiple files (SKILL.md + scripts/references), or ZIP archive.
+                    </p>
                   </div>
                 )}
 

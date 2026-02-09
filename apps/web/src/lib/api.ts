@@ -375,10 +375,14 @@ export interface GithubPickResult {
   needsPick: boolean;
 }
 
-export async function convertPaste(content: string, filename?: string): Promise<ConversionResult> {
+export async function convertPaste(
+  content: string,
+  filename?: string,
+  resources?: { path: string; content: string; description: string }[]
+): Promise<ConversionResult> {
   const response = await fetchApi<ApiResponse<ConversionResult>>('/converter/paste', {
     method: 'POST',
-    body: JSON.stringify({ content, filename }),
+    body: JSON.stringify({ content, filename, resources }),
   });
   if (!response.data) throw new Error(response.error || 'Conversion failed');
   return response.data;
