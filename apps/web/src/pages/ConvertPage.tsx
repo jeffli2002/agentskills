@@ -901,24 +901,24 @@ export function ConvertPage() {
                       </p>
                     </div>
 
-                    {/* Step 2: Place in OpenClaw */}
+                    {/* Step 2: Install with CLI */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
-                        <span className="text-sm text-zinc-200 font-medium">Place in your skills directory</span>
+                        <span className="text-sm text-zinc-200 font-medium">Install with CLI (recommended)</span>
                       </div>
                       <p className="text-xs text-zinc-400 ml-7 mb-2">
-                        Move the SKILL.md{result.resources.length > 0 ? ' and resource files' : ''} to your OpenClaw skills directory:
+                        If you have OpenClaw, Claude Code, or other agents installed:
                       </p>
                       <div className="ml-7 relative group">
                         <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-sm text-emerald-400 overflow-x-auto">
                           <span className="text-zinc-500">$ </span>
-                          mv SKILL.md ~/.openclaw/skills/
+                          npx agentskills convert ./SKILL.md --install
                         </div>
                         <button
                           onClick={async () => {
                             try {
-                              await navigator.clipboard.writeText('mv SKILL.md ~/.openclaw/skills/');
+                              await navigator.clipboard.writeText('npx agentskills convert ./SKILL.md --install');
                               setCommandCopied(true);
                               setTimeout(() => setCommandCopied(false), 2000);
                             } catch {}
@@ -934,18 +934,18 @@ export function ConvertPage() {
                         </button>
                       </div>
                       <p className="text-xs text-zinc-500 mt-2 ml-7">
-                        Or place in your project's <code className="text-zinc-400">skills/</code> directory for project-level installation.
+                        Auto-detects and installs to all agents. Add <code className="text-zinc-400">-g</code> for global installation.
                       </p>
                     </div>
 
-                    {/* Step 3: Reload */}
+                    {/* Step 3: Manual installation */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">3</span>
-                        <span className="text-sm text-zinc-200 font-medium">Reload OpenClaw</span>
+                        <span className="text-sm text-zinc-200 font-medium">Or install manually</span>
                       </div>
                       <p className="text-xs text-zinc-400 ml-7">
-                        Restart OpenClaw or reload your skills directory. The skill will be automatically detected and available for use.
+                        Place the SKILL.md{result.resources.length > 0 ? ' and resource files' : ''} in <code className="text-zinc-300">~/.openclaw/skills/</code> (global) or <code className="text-zinc-300">skills/</code> (project-level). Restart your agent to load the skill.
                       </p>
                     </div>
                   </div>
