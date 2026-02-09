@@ -26,6 +26,7 @@ skillsRouter.get('/meta/categories', async (c) => {
     count: sql<number>`count(*)`
   })
     .from(skills)
+    .where(eq(skills.visibility, 'public'))
     .groupBy(skills.category)
     .orderBy(sql`count(*) DESC`);
 
@@ -67,6 +68,7 @@ skillsRouter.get('/', async (c) => {
 
   // Build conditions
   const conditions = [];
+  conditions.push(eq(skills.visibility, 'public'));
   if (minStars !== undefined) {
     conditions.push(sql`${skills.starsCount} >= ${minStars}`);
   }
@@ -181,6 +183,14 @@ skillsRouter.get('/:id', async (c) => {
 
   if (!skill) {
     return c.json<ApiResponse<null>>({ data: null, error: 'Skill not found' }, 404);
+  }
+
+  // Private skills are only visible to their creator
+  if (skill.visibility === 'private') {
+    const user = await getSessionFromCookie(c, db);
+    if (!user || user.id !== skill.creatorId) {
+      return c.json<ApiResponse<null>>({ data: null, error: 'Skill not found' }, 404);
+    }
   }
 
   return c.json<ApiResponse<Skill>>({ data: skill, error: null });
