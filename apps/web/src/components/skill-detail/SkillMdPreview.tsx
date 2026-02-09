@@ -84,6 +84,25 @@ export function SkillMdPreview({ metadata, content }: SkillMdPreviewProps) {
         <span className="text-sm text-zinc-400 font-mono">SKILL.md</span>
       </div>
 
+      {/* Name & Description fields */}
+      {parsedMetadata && (
+        <div className="px-4 pt-4 space-y-2">
+          {parsedMetadata['name'] && (
+            <div className="flex items-start gap-3">
+              <span className="text-zinc-500 font-mono text-sm shrink-0">name:</span>
+              <span className="text-amber-400 font-mono text-sm font-medium">{parsedMetadata['name']}</span>
+            </div>
+          )}
+          {parsedMetadata['description'] && (
+            <div className="flex items-start gap-3">
+              <span className="text-zinc-500 font-mono text-sm shrink-0">description:</span>
+              <span className="text-zinc-300 font-mono text-sm leading-relaxed">{parsedMetadata['description']}</span>
+            </div>
+          )}
+          <div className="border-b border-[#2d2d44] pt-2" />
+        </div>
+      )}
+
       {/* Metadata table */}
       {filteredMetadata.length > 0 && (
         <div className="p-4">
