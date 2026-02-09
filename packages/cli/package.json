@@ -1,0 +1,33 @@
+{
+  "name": "agentskills",
+  "version": "0.1.0",
+  "description": "CLI tool to install AI agent skills from the AgentSkills marketplace",
+  "type": "module",
+  "bin": {
+    "agentskills": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup src/cli.ts --format esm --target node22 --clean",
+    "dev": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "ai",
+    "agent",
+    "skills",
+    "claude",
+    "cursor",
+    "codex",
+    "openclaw"
+  ],
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}

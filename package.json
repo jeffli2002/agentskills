@@ -8,10 +8,16 @@
     "build:api": "pnpm --filter api build",
     "db:generate": "pnpm --filter api db:generate",
     "db:migrate": "pnpm --filter api db:migrate",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "promo:studio": "pnpm --filter promo-video start",
+    "promo:render": "pnpm --filter promo-video render",
+    "verify:build": "bash scripts/verify-build.sh",
+    "deploy:web": "pnpm --filter web build && pnpm verify:build && pnpm --filter web deploy",
+    "deploy:api": "pnpm --filter api deploy"
   },
   "devDependencies": {
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=22.0.0"

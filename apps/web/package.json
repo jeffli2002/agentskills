@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node -e \"require('fs').cpSync('functions', 'dist/functions', {recursive: true})\"",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "npx wrangler pages deploy dist --project-name agentskills"
   },
   "dependencies": {
     "@agentskills/shared": "workspace:*",
