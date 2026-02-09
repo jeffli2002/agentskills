@@ -890,35 +890,24 @@ export function ConvertPage() {
                     </span>
                   </div>
                   <div className="p-4 space-y-4">
-                    {/* Step 1: Save */}
+                    {/* Option 1: Local - Download and copy */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">1</span>
-                        <span className="text-sm text-zinc-200 font-medium">Save the SKILL.md file</span>
-                      </div>
-                      <p className="text-xs text-zinc-400 ml-7">
-                        Download or copy the converted SKILL.md{result.resources.length > 0 ? ' and resource files' : ''} using the buttons on the right.
-                      </p>
-                    </div>
-
-                    {/* Step 2: Install with CLI */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
-                        <span className="text-sm text-zinc-200 font-medium">Install with CLI (recommended)</span>
+                        <span className="text-sm text-zinc-200 font-medium">Local: Download and copy</span>
                       </div>
                       <p className="text-xs text-zinc-400 ml-7 mb-2">
-                        If you have OpenClaw, Claude Code, or other agents installed:
+                        Download the SKILL.md, then copy it to your agent's skills directory:
                       </p>
                       <div className="ml-7 relative group">
                         <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-sm text-emerald-400 overflow-x-auto">
                           <span className="text-zinc-500">$ </span>
-                          npx agentskills convert ./SKILL.md --install
+                          mkdir -p ~/.openclaw/skills/skill-name && cp SKILL.md ~/.openclaw/skills/skill-name/
                         </div>
                         <button
                           onClick={async () => {
                             try {
-                              await navigator.clipboard.writeText('npx agentskills convert ./SKILL.md --install');
+                              await navigator.clipboard.writeText('mkdir -p ~/.openclaw/skills/skill-name && cp SKILL.md ~/.openclaw/skills/skill-name/');
                               setCommandCopied(true);
                               setTimeout(() => setCommandCopied(false), 2000);
                             } catch {}
@@ -934,18 +923,46 @@ export function ConvertPage() {
                         </button>
                       </div>
                       <p className="text-xs text-zinc-500 mt-2 ml-7">
-                        Auto-detects and installs to all agents. Add <code className="text-zinc-400">-g</code> for global installation.
+                        For Claude Code, use <code className="text-zinc-400">.claude/skills/</code> instead. See <Link href="/cli" className="text-amber-400 hover:underline">CLI docs</Link> for other agents.
                       </p>
                     </div>
 
-                    {/* Step 3: Manual installation */}
+                    <div className="border-t border-[#2d2d44]" />
+
+                    {/* Option 2: VPS with curl */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">3</span>
-                        <span className="text-sm text-zinc-200 font-medium">Or install manually</span>
+                        <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 text-xs font-bold flex items-center justify-center">2</span>
+                        <span className="text-sm text-zinc-200 font-medium">VPS: Fetch with curl</span>
                       </div>
-                      <p className="text-xs text-zinc-400 ml-7">
-                        Place the SKILL.md{result.resources.length > 0 ? ' and resource files' : ''} in <code className="text-zinc-300">~/.openclaw/skills/</code> (global) or <code className="text-zinc-300">skills/</code> (project-level). Restart your agent to load the skill.
+                      <p className="text-xs text-zinc-400 ml-7 mb-2">
+                        Directly fetch from the API (no Node.js needed):
+                      </p>
+                      <div className="ml-7 relative group">
+                        <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-xs text-emerald-400 overflow-x-auto">
+                          <span className="text-zinc-500">$ </span>
+                          mkdir -p ~/.openclaw/skills/skill-name && curl -o ~/.openclaw/skills/skill-name/SKILL.md "https://agentskills.cv/api/skills/SKILL_ID/export/openclaw"
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText('mkdir -p ~/.openclaw/skills/skill-name && curl -o ~/.openclaw/skills/skill-name/SKILL.md "https://agentskills.cv/api/skills/SKILL_ID/export/openclaw"');
+                              setCommandCopied(true);
+                              setTimeout(() => setCommandCopied(false), 2000);
+                            } catch {}
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded hover:bg-[#2d2d44] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          aria-label="Copy command"
+                        >
+                          {commandCopied ? (
+                            <Check className="h-4 w-4 text-emerald-400" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-2 ml-7">
+                        Replace <code className="text-zinc-400">skill-name</code> and <code className="text-zinc-400">SKILL_ID</code> accordingly. Or just download the SKILL.md above.
                       </p>
                     </div>
                   </div>
