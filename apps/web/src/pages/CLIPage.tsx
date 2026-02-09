@@ -41,7 +41,7 @@ const AGENTS = [
   { name: 'Claude Code', path: '.claude/skills/', globalPath: '~/.claude/skills/', color: 'text-amber-400' },
   { name: 'Cursor', path: '.cursor/skills/', globalPath: '~/.cursor/skills/', color: 'text-blue-400' },
   { name: 'Codex CLI', path: '.codex/skills/', globalPath: '~/.codex/skills/', color: 'text-green-400' },
-  { name: 'OpenClaw', path: 'skills/', globalPath: '~/.clawdbot/skills/', color: 'text-purple-400' },
+  { name: 'OpenClaw', path: 'skills/', globalPath: '~/.openclaw/skills/', color: 'text-purple-400' },
   { name: 'OpenCode', path: '.opencode/skills/', globalPath: '~/.opencode/skills/', color: 'text-cyan-400' },
 ];
 

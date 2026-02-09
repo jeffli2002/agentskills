@@ -226,7 +226,7 @@ Skills from our platform need to be placed in the correct directory for each age
 | Claude Code | `.claude/skills/` | `~/.claude/skills/` |
 | Cursor | `.cursor/skills/` | `~/.cursor/skills/` |
 | Codex CLI | `.codex/skills/` | `~/.codex/skills/` |
-| OpenClaw | `skills/` | `~/.clawdbot/skills/` |
+| OpenClaw | `skills/` | `~/.openclaw/skills/` |
 | OpenCode | `.opencode/skills/` | `~/.opencode/skills/` |
 
 ---
