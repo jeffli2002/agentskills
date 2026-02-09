@@ -1,5 +1,17 @@
 import type { Skill } from '../db';
 
+// Resource file type (matches GeneratedResource from skillComposer)
+export interface SkillResource {
+  path: string;
+  content: string;
+  description: string;
+}
+
+export interface OpenClawExportResult {
+  skillMd: string;
+  resources: SkillResource[];
+}
+
 // ─── Name Validation & Sanitization ─────────────────────────────────────────
 
 const OPENCLAW_NAME_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
@@ -107,7 +119,7 @@ function parseFrontmatter(content: string): { frontmatter: Record<string, unknow
 
 // ─── Main Converter ─────────────────────────────────────────────────────────
 
-export function convertSkillToOpenClaw(skill: Pick<Skill, 'name' | 'description' | 'skillMdContent' | 'skillMdParsed'>): string {
+export function convertSkillToOpenClaw(skill: Pick<Skill, 'name' | 'description' | 'skillMdContent' | 'skillMdParsed' | 'resourcesJson'>): OpenClawExportResult {
   // 1. Sanitize name
   const name = sanitizeOpenClawName(skill.name);
 
@@ -163,13 +175,27 @@ export function convertSkillToOpenClaw(skill: Pick<Skill, 'name' | 'description'
 
   yamlLines.push('---');
 
-  // 5. Assemble final SKILL.md
-  const frontmatterBlock = yamlLines.join('\n');
-
-  if (markdownBody) {
-    return `${frontmatterBlock}\n\n${markdownBody}\n`;
+  // 5. Parse resources from skill if present
+  let resources: SkillResource[] = [];
+  if (skill.resourcesJson) {
+    try {
+      const parsed = JSON.parse(skill.resourcesJson);
+      if (Array.isArray(parsed)) {
+        resources = parsed.filter((r: SkillResource) =>
+          r.path && r.content && !r.path.includes('..')
+        );
+      }
+    } catch {
+      // Ignore parse errors
+    }
   }
 
-  // Generate basic body when no existing content
-  return `${frontmatterBlock}\n\n# ${name}\n\n${description}\n`;
+  // 6. Assemble final SKILL.md
+  const frontmatterBlock = yamlLines.join('\n');
+
+  const skillMd = markdownBody
+    ? `${frontmatterBlock}\n\n${markdownBody}\n`
+    : `${frontmatterBlock}\n\n# ${name}\n\n${description}\n`;
+
+  return { skillMd, resources };
 }

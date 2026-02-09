@@ -294,9 +294,10 @@ describe('Format Converter', () => {
         description: 'A test skill for export',
         skillMdContent: '---\nname: my-skill\ndescription: "A test skill"\n---\n\n# My Skill\n\nInstructions here.\n',
         skillMdParsed: JSON.stringify({ name: 'my-skill', description: 'A test skill' }),
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       expect(openClawMd).toContain('name: my-skill');
       expect(openClawMd).toContain('description:');
       expect(openClawMd).toContain('---');
@@ -308,9 +309,10 @@ describe('Format Converter', () => {
         description: 'A skill with an invalid name',
         skillMdContent: null,
         skillMdParsed: null,
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       expect(openClawMd).toContain('name: my-cool-skill');
       expect(sanitizeOpenClawName('My Cool Skill!')).toBe('my-cool-skill');
     });
@@ -322,9 +324,10 @@ describe('Format Converter', () => {
         description: longDesc,
         skillMdContent: null,
         skillMdParsed: null,
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       // The description in the output should not exceed 1024 chars
       const match = openClawMd.match(/description: (.+)/);
       expect(match).toBeTruthy();
@@ -339,9 +342,10 @@ describe('Format Converter', () => {
         description: 'Line one\nLine two\nLine three',
         skillMdContent: null,
         skillMdParsed: null,
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       // Description in frontmatter should be single line
       const lines = openClawMd.split('\n');
       const descLine = lines.find(l => l.startsWith('description:'));
@@ -355,9 +359,10 @@ describe('Format Converter', () => {
         description: 'Test',
         skillMdContent: '---\nname: test-skill\ndescription: "Test"\n---\n\n# Test\n',
         skillMdParsed: JSON.stringify({ name: 'test-skill', description: 'Test', 'allowed-tools': ['Bash', 'Read'] }),
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       expect(openClawMd).toContain('allowed-tools');
       expect(openClawMd).toContain('Bash');
       expect(openClawMd).toContain('Read');
@@ -370,9 +375,10 @@ describe('Format Converter', () => {
         description: 'New description',
         skillMdContent: existingMd,
         skillMdParsed: null,
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       expect(openClawMd).toContain('This is the body content.');
       expect(openClawMd).toContain('name: new-name');
     });
@@ -383,12 +389,48 @@ describe('Format Converter', () => {
         description: 'A brand new skill',
         skillMdContent: null,
         skillMdParsed: null,
+        resourcesJson: null,
       };
 
-      const openClawMd = convertSkillToOpenClaw(mockSkill as any);
+      const { skillMd: openClawMd } = convertSkillToOpenClaw(mockSkill as any);
       expect(openClawMd).toContain('name: new-skill');
       expect(openClawMd).toContain('# new-skill');
       expect(openClawMd).toContain('A brand new skill');
+    });
+
+    it('should extract resources from resourcesJson', () => {
+      const mockSkill = {
+        name: 'multi-file-skill',
+        description: 'A skill with resources',
+        skillMdContent: '---\nname: multi-file-skill\ndescription: "A skill with resources"\n---\n\n# Multi File\n',
+        skillMdParsed: null,
+        resourcesJson: JSON.stringify([
+          { path: 'scripts/helper.sh', content: '#!/bin/bash\necho hello', description: 'Helper script' },
+        ]),
+      };
+
+      const { skillMd, resources } = convertSkillToOpenClaw(mockSkill as any);
+      expect(skillMd).toContain('name: multi-file-skill');
+      expect(resources).toHaveLength(1);
+      expect(resources[0].path).toBe('scripts/helper.sh');
+      expect(resources[0].content).toContain('echo hello');
+    });
+
+    it('should reject resources with path traversal', () => {
+      const mockSkill = {
+        name: 'unsafe-skill',
+        description: 'Skill with unsafe paths',
+        skillMdContent: null,
+        skillMdParsed: null,
+        resourcesJson: JSON.stringify([
+          { path: '../../../etc/passwd', content: 'bad', description: 'malicious' },
+          { path: 'scripts/safe.sh', content: 'good', description: 'safe' },
+        ]),
+      };
+
+      const { resources } = convertSkillToOpenClaw(mockSkill as any);
+      expect(resources).toHaveLength(1);
+      expect(resources[0].path).toBe('scripts/safe.sh');
     });
   });
 

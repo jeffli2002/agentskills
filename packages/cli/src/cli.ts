@@ -68,20 +68,25 @@ async function cmdInstall(skillName: string, global: boolean) {
   }
   console.log(`  Found: ${bold(skill.name)} by ${dim(skill.author)} ${dim(`(${skill.category})`)}`);
 
-  // 3. Fetch OpenClaw-compliant SKILL.md
+  // 3. Fetch OpenClaw-compliant SKILL.md (+ resources)
   console.log(dim('  Converting to OpenClaw format...'));
-  const skillMd = await fetchOpenClawExport(skill.id);
+  const { skillMd, resources } = await fetchOpenClawExport(skill.id);
+
+  if (resources.length > 0) {
+    console.log(`  Found ${cyan(resources.length.toString())} resource file(s)`);
+  }
 
   // 4. Install
   const scope = global ? 'global' : 'project';
   console.log(dim(`  Installing (${scope})...`));
-  const results = installSkill(skill.name, skillMd, agents, cwd, global);
+  const results = installSkill(skill.name, skillMd, agents, cwd, global, resources);
 
   // 5. Report
   console.log('');
   for (const r of results) {
     if (r.success) {
-      console.log(`  ${green('✓')} ${r.agent}: ${dim(r.path)}`);
+      const fileInfo = r.filesWritten > 1 ? dim(` (${r.filesWritten} files)`) : '';
+      console.log(`  ${green('✓')} ${r.agent}: ${dim(r.path)}${fileInfo}`);
     } else {
       console.log(`  ${red('✗')} ${r.agent}: ${r.error}`);
     }

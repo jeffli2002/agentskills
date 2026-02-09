@@ -47,8 +47,61 @@ export async function getSkillByName(name: string): Promise<SkillResult | null> 
   return json.data.find(s => s.name.toLowerCase() === lower) || json.data[0] || null;
 }
 
-export async function fetchOpenClawExport(skillId: string): Promise<string> {
+export interface ExportResult {
+  skillMd: string;
+  resources: { path: string; content: string }[];
+}
+
+// Parse a stored (uncompressed) ZIP buffer to extract files
+function parseZipFiles(buffer: ArrayBuffer): { path: string; content: string }[] {
+  const view = new DataView(buffer);
+  const files: { path: string; content: string }[] = [];
+  let offset = 0;
+  const decoder = new TextDecoder();
+
+  while (offset < buffer.byteLength - 4) {
+    const sig = view.getUint32(offset, true);
+    if (sig !== 0x04034b50) break; // Not a local file header
+
+    const compressedSize = view.getUint32(offset + 18, true);
+    const filenameLen = view.getUint16(offset + 26, true);
+    const extraLen = view.getUint16(offset + 28, true);
+
+    const filenameBytes = new Uint8Array(buffer, offset + 30, filenameLen);
+    const path = decoder.decode(filenameBytes);
+
+    const contentStart = offset + 30 + filenameLen + extraLen;
+    const contentBytes = new Uint8Array(buffer, contentStart, compressedSize);
+    const content = decoder.decode(contentBytes);
+
+    files.push({ path, content });
+    offset = contentStart + compressedSize;
+  }
+
+  return files;
+}
+
+export async function fetchOpenClawExport(skillId: string): Promise<ExportResult> {
   const res = await fetch(`${API_BASE}/skills/${skillId}/export/openclaw`);
   if (!res.ok) throw new Error(`Export failed: ${res.status}`);
-  return res.text();
+
+  const contentType = res.headers.get('content-type') || '';
+
+  // Multi-file: ZIP response
+  if (contentType.includes('application/zip')) {
+    const buffer = await res.arrayBuffer();
+    const files = parseZipFiles(buffer);
+
+    const skillMdFile = files.find(f => f.path === 'SKILL.md');
+    const resources = files.filter(f => f.path !== 'SKILL.md');
+
+    return {
+      skillMd: skillMdFile?.content || '',
+      resources,
+    };
+  }
+
+  // Single-file: plain markdown
+  const skillMd = await res.text();
+  return { skillMd, resources: [] };
 }

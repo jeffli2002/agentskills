@@ -3,6 +3,7 @@ import { eq, desc, sql, and, asc } from 'drizzle-orm';
 import { createDb, skills, users, type Skill, type User } from '../db';
 import { getSessionFromCookie } from '../middleware/auth';
 import { convertSkillToOpenClaw } from '../services/formatConverter';
+import { createSkillZip } from '../services/zipBuilder';
 import type { ApiResponse, PaginatedResponse } from '@agentskills/shared';
 
 type Bindings = {
@@ -141,14 +142,29 @@ skillsRouter.get('/:id/export/openclaw', async (c) => {
     return c.json<ApiResponse<null>>({ data: null, error: 'Skill not found' }, 404);
   }
 
-  const openClawMd = convertSkillToOpenClaw(skill);
+  const { skillMd: openClawMd, resources } = convertSkillToOpenClaw(skill);
   const sanitizedName = skill.name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
+  // If multi-file skill, return ZIP
+  if (resources.length > 0) {
+    const zipBuffer = createSkillZip(openClawMd, resources);
+    return new Response(zipBuffer, {
+      headers: {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': `attachment; filename="${sanitizedName}.zip"`,
+        'X-OpenClaw-Name': sanitizedName,
+        'X-OpenClaw-HasResources': 'true',
+      },
+    });
+  }
+
+  // Single-file skill, return plain markdown
   return new Response(openClawMd, {
     headers: {
       'Content-Type': 'text/markdown; charset=utf-8',
       'Content-Disposition': `attachment; filename="SKILL.md"`,
       'X-OpenClaw-Name': sanitizedName,
+      'X-OpenClaw-HasResources': 'false',
     },
   });
 });
@@ -245,87 +261,12 @@ skillsRouter.get('/:id/download', async (c) => {
 
   // Fallback for user-created skills: generate ZIP on-the-fly from skillMdContent
   if (skill.skillMdContent) {
-    const skillMdBytes = new TextEncoder().encode(skill.skillMdContent);
-    const filename = 'SKILL.md';
-    const filenameBytes = new TextEncoder().encode(filename);
-    const now = new Date();
-    const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
-    const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+    // Parse resources if present
+    const resources = skill.resourcesJson
+      ? (() => { try { return JSON.parse(skill.resourcesJson); } catch { return undefined; } })()
+      : undefined;
 
-    // CRC32 calculation
-    const crc32Table = new Uint32Array(256);
-    for (let i = 0; i < 256; i++) {
-      let c = i;
-      for (let j = 0; j < 8; j++) {
-        c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-      }
-      crc32Table[i] = c;
-    }
-    let crc = 0xFFFFFFFF;
-    for (let i = 0; i < skillMdBytes.length; i++) {
-      crc = crc32Table[(crc ^ skillMdBytes[i]) & 0xFF] ^ (crc >>> 8);
-    }
-    crc = (crc ^ 0xFFFFFFFF) >>> 0;
-
-    // Local file header
-    const localHeader = new Uint8Array(30 + filenameBytes.length);
-    const localView = new DataView(localHeader.buffer);
-    localView.setUint32(0, 0x04034b50, true);
-    localView.setUint16(4, 20, true);
-    localView.setUint16(6, 0, true);
-    localView.setUint16(8, 0, true);
-    localView.setUint16(10, dosTime, true);
-    localView.setUint16(12, dosDate, true);
-    localView.setUint32(14, crc, true);
-    localView.setUint32(18, skillMdBytes.length, true);
-    localView.setUint32(22, skillMdBytes.length, true);
-    localView.setUint16(26, filenameBytes.length, true);
-    localView.setUint16(28, 0, true);
-    localHeader.set(filenameBytes, 30);
-
-    // Central directory header
-    const centralHeader = new Uint8Array(46 + filenameBytes.length);
-    const centralView = new DataView(centralHeader.buffer);
-    centralView.setUint32(0, 0x02014b50, true);
-    centralView.setUint16(4, 20, true);
-    centralView.setUint16(6, 20, true);
-    centralView.setUint16(8, 0, true);
-    centralView.setUint16(10, 0, true);
-    centralView.setUint16(12, dosTime, true);
-    centralView.setUint16(14, dosDate, true);
-    centralView.setUint32(16, crc, true);
-    centralView.setUint32(20, skillMdBytes.length, true);
-    centralView.setUint32(24, skillMdBytes.length, true);
-    centralView.setUint16(28, filenameBytes.length, true);
-    centralView.setUint16(30, 0, true);
-    centralView.setUint16(32, 0, true);
-    centralView.setUint16(34, 0, true);
-    centralView.setUint16(36, 0, true);
-    centralView.setUint32(38, 0, true);
-    centralView.setUint32(42, 0, true);
-    centralHeader.set(filenameBytes, 46);
-
-    // End of central directory
-    const centralDirOffset = localHeader.length + skillMdBytes.length;
-    const centralDirSize = centralHeader.length;
-    const endRecord = new Uint8Array(22);
-    const endView = new DataView(endRecord.buffer);
-    endView.setUint32(0, 0x06054b50, true);
-    endView.setUint16(4, 0, true);
-    endView.setUint16(6, 0, true);
-    endView.setUint16(8, 1, true);
-    endView.setUint16(10, 1, true);
-    endView.setUint32(12, centralDirSize, true);
-    endView.setUint32(16, centralDirOffset, true);
-    endView.setUint16(20, 0, true);
-
-    // Combine all parts
-    const zipBuffer = new Uint8Array(localHeader.length + skillMdBytes.length + centralHeader.length + endRecord.length);
-    let offset = 0;
-    zipBuffer.set(localHeader, offset); offset += localHeader.length;
-    zipBuffer.set(skillMdBytes, offset); offset += skillMdBytes.length;
-    zipBuffer.set(centralHeader, offset); offset += centralHeader.length;
-    zipBuffer.set(endRecord, offset);
+    const zipBuffer = createSkillZip(skill.skillMdContent, resources);
 
     const headers = new Headers();
     headers.set('Content-Type', 'application/zip');

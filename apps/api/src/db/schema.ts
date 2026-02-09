@@ -39,6 +39,7 @@ export const skills = sqliteTable('skills', {
   filesJson: text('files_json'), // JSON array of {path, name, size, type} for file tree
   skillMdContent: text('skill_md_content'), // Raw SKILL.md content
   skillMdParsed: text('skill_md_parsed'), // Parsed frontmatter as JSON
+  resourcesJson: text('resources_json'), // JSON array of {path, content, description} for multi-file skills
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(sql`(unixepoch() * 1000)`),
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(sql`(unixepoch() * 1000)`),
 });
