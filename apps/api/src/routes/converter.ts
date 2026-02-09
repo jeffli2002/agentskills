@@ -452,7 +452,7 @@ converterRouter.post('/publish', async (c) => {
   const description = frontmatter['description'] || 'An AI agent skill';
 
   const skillId = `sk_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-  const now = Date.now();
+  const now = new Date();
 
   try {
     await db.insert(skills).values({
