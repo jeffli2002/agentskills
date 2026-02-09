@@ -10,16 +10,17 @@ DIST_DIR="apps/web/dist"
 ERRORS=0
 
 # Check for functions directory
-if [ ! -d "$DIST_DIR/functions" ]; then
-  echo "❌ ERROR: $DIST_DIR/functions/ directory missing"
+FUNC_DIR="apps/web/functions"
+if [ ! -d "$FUNC_DIR" ]; then
+  echo "❌ ERROR: $FUNC_DIR/ directory missing"
   ERRORS=$((ERRORS + 1))
 else
   echo "✓ Functions directory exists"
 fi
 
 # Check for API proxy function
-if [ ! -f "$DIST_DIR/functions/api/[[path]].js" ]; then
-  echo "❌ ERROR: API proxy function missing at $DIST_DIR/functions/api/[[path]].js"
+if [ ! -f "$FUNC_DIR/api/[[path]].js" ]; then
+  echo "❌ ERROR: API proxy function missing at $FUNC_DIR/api/[[path]].js"
   ERRORS=$((ERRORS + 1))
 else
   echo "✓ API proxy function exists"
