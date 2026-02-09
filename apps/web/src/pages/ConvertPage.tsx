@@ -440,7 +440,7 @@ export function ConvertPage() {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-[#e4e4e7] mb-2">
-              Universal Skill Converter
+              OpenClaw Skill Converter
             </h1>
             <p className="text-zinc-400 text-sm">
               Convert any skill to OpenClaw-compliant format. Paste, import from GitHub, or convert from the marketplace.

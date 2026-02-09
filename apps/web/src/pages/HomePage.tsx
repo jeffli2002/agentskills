@@ -74,7 +74,7 @@ const features = [
     icon: Brain
   },
   {
-    title: 'Universal Converter',
+    title: 'OpenClaw Converter',
     description: 'Convert any skill to OpenClaw format. Paste, import from GitHub, or transform marketplace skills with validation.',
     icon: ArrowRightLeft
   },
