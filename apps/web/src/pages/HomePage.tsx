@@ -33,7 +33,8 @@ import {
   Briefcase,
   FlaskConical,
   Sparkles,
-  ThumbsUp
+  ThumbsUp,
+  ArrowRightLeft,
 } from 'lucide-react';
 
 // Category icons mapping - user-friendly categories
@@ -73,9 +74,9 @@ const features = [
     icon: Brain
   },
   {
-    title: 'Quality Curation',
-    description: 'Every agent skill is reviewed and rated by the community. Find reliable, well-documented tools.',
-    icon: CheckCircle
+    title: 'Universal Converter',
+    description: 'Convert any skill to OpenClaw format. Paste, import from GitHub, or transform marketplace skills with validation.',
+    icon: ArrowRightLeft
   },
   {
     title: 'Community Ratings',

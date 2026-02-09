@@ -145,9 +145,13 @@ export function CLIPage() {
                       <td className="py-2.5 pr-3 font-mono text-amber-400 whitespace-nowrap">list</td>
                       <td className="py-2.5 text-zinc-400">Show installed skills</td>
                     </tr>
-                    <tr>
+                    <tr className="border-b border-[#2d2d44]">
                       <td className="py-2.5 pr-3 font-mono text-amber-400 whitespace-nowrap">agents</td>
                       <td className="py-2.5 text-zinc-400">Detect installed AI agents</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2.5 pr-3 font-mono text-amber-400 whitespace-nowrap">convert</td>
+                      <td className="py-2.5 text-zinc-400">Convert file or URL to OpenClaw</td>
                     </tr>
                   </tbody>
                 </table>

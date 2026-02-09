@@ -240,3 +240,45 @@ export async function getSkillCreation(creationId) {
         throw new Error(response.error || 'Creation not found');
     return response.data;
 }
+export async function convertPaste(content, filename) {
+    const response = await fetchApi('/converter/paste', {
+        method: 'POST',
+        body: JSON.stringify({ content, filename }),
+    });
+    if (!response.data)
+        throw new Error(response.error || 'Conversion failed');
+    return response.data;
+}
+export async function convertGithub(url, subpath) {
+    const response = await fetchApi('/converter/github', {
+        method: 'POST',
+        body: JSON.stringify({ url, subpath }),
+    });
+    if (!response.data)
+        throw new Error(response.error || 'GitHub import failed');
+    return response.data;
+}
+export async function convertGithubPick(url, file) {
+    const response = await fetchApi('/converter/github/pick', {
+        method: 'POST',
+        body: JSON.stringify({ url, file }),
+    });
+    if (!response.data)
+        throw new Error(response.error || 'GitHub import failed');
+    return response.data;
+}
+export async function convertSkill(skillId) {
+    const response = await fetchApi(`/converter/skill/${skillId}`);
+    if (!response.data)
+        throw new Error(response.error || 'Conversion failed');
+    return response.data;
+}
+export async function publishConverted(content, resources, visibility) {
+    const response = await fetchApi('/converter/publish', {
+        method: 'POST',
+        body: JSON.stringify({ content, resources, visibility }),
+    });
+    if (!response.data)
+        throw new Error(response.error || 'Publish failed');
+    return response.data;
+}

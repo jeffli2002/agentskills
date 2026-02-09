@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import { parseArgs } from 'node:util';
+import { readFileSync, existsSync } from 'node:fs';
 import { detectAgents } from './agents.js';
-import { searchSkills, getSkillByName, fetchOpenClawExport } from './api.js';
+import { searchSkills, getSkillByName, fetchOpenClawExport, convertPaste, convertGithub } from './api.js';
 import { installSkill, listInstalledSkills } from './installer.js';
 
 // ─── Colors (no dependencies) ───────────────────────────────────────────────
@@ -26,11 +27,13 @@ ${bold('USAGE')}
 ${bold('COMMANDS')}
   ${cyan('install')} <name>    Install a skill to detected agents
   ${cyan('search')}  <query>   Search skills on the marketplace
+  ${cyan('convert')} <source>  Convert file or URL to OpenClaw format
   ${cyan('list')}              List installed skills
   ${cyan('agents')}            Show detected AI agents
 
 ${bold('OPTIONS')}
   ${dim('--global, -g')}      Install to global skills directory (~/)
+  ${dim('--install')}          With convert: install after converting
   ${dim('--help, -h')}        Show this help message
   ${dim('--version, -v')}     Show version
 
@@ -38,6 +41,9 @@ ${bold('EXAMPLES')}
   npx agentskills install commit-analyzer
   npx agentskills install commit-analyzer --global
   npx agentskills search "git commit"
+  npx agentskills convert ./my-skill.md
+  npx agentskills convert https://github.com/user/repo
+  npx agentskills convert ./my-skill.md --install
   npx agentskills list
   npx agentskills agents
 `);
@@ -158,6 +164,75 @@ function cmdAgents() {
   }
 }
 
+async function cmdConvert(source: string, install: boolean, global: boolean) {
+  const cwd = process.cwd();
+  const isUrl = source.startsWith('http://') || source.startsWith('https://') || source.startsWith('github.com');
+
+  let result: { skillMd: string; validation: { score: number; checks: { field: string; passed: boolean; message: string; autoFixed: boolean }[] } };
+
+  if (isUrl) {
+    // GitHub URL
+    const url = source.startsWith('http') ? source : `https://${source}`;
+    console.log(dim(`  Importing from GitHub: ${url}`));
+    result = await convertGithub(url);
+  } else {
+    // Local file
+    if (!existsSync(source)) {
+      console.log(red(`  Error: File not found: ${source}`));
+      process.exit(1);
+    }
+    console.log(dim(`  Reading: ${source}`));
+    const content = readFileSync(source, 'utf-8');
+    result = await convertPaste(content, source);
+  }
+
+  // Display validation
+  console.log('');
+  console.log(`  ${bold('Validation')} (score: ${result.validation.score >= 80 ? green(result.validation.score.toString()) : result.validation.score >= 50 ? yellow(result.validation.score.toString()) : red(result.validation.score.toString())}/100)`);
+  console.log('');
+
+  for (const check of result.validation.checks) {
+    const icon = check.passed ? green('✓') : check.autoFixed ? yellow('~') : dim('·');
+    const suffix = check.autoFixed ? dim(' (auto-fixed)') : '';
+    console.log(`  ${icon} ${check.message}${suffix}`);
+  }
+
+  // Output converted SKILL.md
+  console.log('');
+  console.log(`  ${bold('Converted SKILL.md')} (${result.skillMd.length} bytes)`);
+
+  if (install) {
+    // Install the converted skill
+    const agents = detectAgents(cwd);
+    const nameMatch = result.skillMd.match(/^name:\s*(.+)$/m);
+    const skillName = nameMatch ? nameMatch[1].trim() : 'converted-skill';
+
+    const scope = global ? 'global' : 'project';
+    console.log(dim(`  Installing "${skillName}" (${scope})...`));
+    const results = installSkill(skillName, result.skillMd, agents, cwd, global);
+
+    console.log('');
+    for (const r of results) {
+      if (r.success) {
+        console.log(`  ${green('✓')} ${r.agent}: ${dim(r.path)}`);
+      } else {
+        console.log(`  ${red('✗')} ${r.agent}: ${r.error}`);
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    if (successCount > 0) {
+      console.log(`\n  ${green('Done!')} Converted and installed to ${successCount} agent(s).`);
+    }
+  } else {
+    // Write to stdout or file
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync('SKILL.md', result.skillMd, 'utf-8');
+    console.log(`  ${green('✓')} Written to ${bold('SKILL.md')}`);
+    console.log(dim(`  Tip: use --install to install directly, or --install -g for global`));
+  }
+}
+
 // ─── Main ───────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -165,6 +240,7 @@ async function main() {
     allowPositionals: true,
     options: {
       global: { type: 'boolean', short: 'g', default: false },
+      install: { type: 'boolean', default: false },
       help: { type: 'boolean', short: 'h', default: false },
       version: { type: 'boolean', short: 'v', default: false },
     },
@@ -214,6 +290,16 @@ async function main() {
 
       case 'agents':
         cmdAgents();
+        break;
+
+      case 'convert':
+      case 'c':
+        if (!arg) {
+          console.log(red('  Error: Please specify a file path or GitHub URL.'));
+          console.log(dim('  Usage: npx agentskills convert <source>'));
+          process.exit(1);
+        }
+        await cmdConvert(arg, values.install!, values.global!);
         break;
 
       default:

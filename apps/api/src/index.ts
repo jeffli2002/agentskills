@@ -5,6 +5,7 @@ import { authRouter } from './routes/auth';
 import { favoritesRouter } from './routes/favorites';
 import { ratingsRouter } from './routes/ratings';
 import { composerRouter } from './routes/composer';
+import { converterRouter } from './routes/converter';
 import { createDb, skills } from './db';
 
 type Bindings = {
@@ -42,6 +43,7 @@ app.route('/api/auth', authRouter);
 app.route('/api/favorites', favoritesRouter);
 app.route('/api/ratings', ratingsRouter);
 app.route('/api/composer', composerRouter);
+app.route('/api/converter', converterRouter);
 
 // Health check
 app.get('/api/health', (c) => {

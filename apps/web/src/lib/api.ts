@@ -347,3 +347,76 @@ export async function getSkillCreation(creationId: string): Promise<GenerateResp
   if (!response.data) throw new Error(response.error || 'Creation not found');
   return response.data;
 }
+
+// ─── Converter Types & API ─────────────────────────────────────────────────
+
+export interface ValidationCheck {
+  field: string;
+  passed: boolean;
+  message: string;
+  autoFixed: boolean;
+}
+
+export interface ConversionResult {
+  skillMd: string;
+  resources: { path: string; content: string; description: string }[];
+  validation: {
+    score: number;
+    checks: ValidationCheck[];
+  };
+  original: {
+    source: 'paste' | 'github' | 'marketplace' | 'composer';
+    name?: string;
+  };
+}
+
+export interface GithubPickResult {
+  files: string[];
+  needsPick: boolean;
+}
+
+export async function convertPaste(content: string, filename?: string): Promise<ConversionResult> {
+  const response = await fetchApi<ApiResponse<ConversionResult>>('/converter/paste', {
+    method: 'POST',
+    body: JSON.stringify({ content, filename }),
+  });
+  if (!response.data) throw new Error(response.error || 'Conversion failed');
+  return response.data;
+}
+
+export async function convertGithub(url: string, subpath?: string): Promise<ConversionResult | GithubPickResult> {
+  const response = await fetchApi<ApiResponse<ConversionResult | GithubPickResult>>('/converter/github', {
+    method: 'POST',
+    body: JSON.stringify({ url, subpath }),
+  });
+  if (!response.data) throw new Error(response.error || 'GitHub import failed');
+  return response.data;
+}
+
+export async function convertGithubPick(url: string, file: string): Promise<ConversionResult> {
+  const response = await fetchApi<ApiResponse<ConversionResult>>('/converter/github/pick', {
+    method: 'POST',
+    body: JSON.stringify({ url, file }),
+  });
+  if (!response.data) throw new Error(response.error || 'GitHub import failed');
+  return response.data;
+}
+
+export async function convertSkill(skillId: string): Promise<ConversionResult> {
+  const response = await fetchApi<ApiResponse<ConversionResult>>(`/converter/skill/${skillId}`);
+  if (!response.data) throw new Error(response.error || 'Conversion failed');
+  return response.data;
+}
+
+export async function publishConverted(
+  content: string,
+  resources: { path: string; content: string; description: string }[],
+  visibility: 'public' | 'private'
+): Promise<{ skillId: string; url: string }> {
+  const response = await fetchApi<ApiResponse<{ skillId: string; url: string }>>('/converter/publish', {
+    method: 'POST',
+    body: JSON.stringify({ content, resources, visibility }),
+  });
+  if (!response.data) throw new Error(response.error || 'Publish failed');
+  return response.data;
+}

@@ -105,3 +105,46 @@ export async function fetchOpenClawExport(skillId: string): Promise<ExportResult
   const skillMd = await res.text();
   return { skillMd, resources: [] };
 }
+
+// ─── Converter API ─────────────────────────────────────────────────────────
+
+export interface ConvertResult {
+  skillMd: string;
+  resources: { path: string; content: string; description: string }[];
+  validation: {
+    score: number;
+    checks: { field: string; passed: boolean; message: string; autoFixed: boolean }[];
+  };
+  original: {
+    source: string;
+    name?: string;
+  };
+}
+
+export async function convertPaste(content: string, filename?: string): Promise<ConvertResult> {
+  const res = await fetch(`${API_BASE}/converter/paste`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content, filename }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Conversion failed' })) as { error: string };
+    throw new Error(err.error || `Conversion failed: ${res.status}`);
+  }
+  const json = await res.json() as { data: ConvertResult };
+  return json.data;
+}
+
+export async function convertGithub(url: string): Promise<ConvertResult> {
+  const res = await fetch(`${API_BASE}/converter/github`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'GitHub import failed' })) as { error: string };
+    throw new Error(err.error || `GitHub import failed: ${res.status}`);
+  }
+  const json = await res.json() as { data: ConvertResult };
+  return json.data;
+}

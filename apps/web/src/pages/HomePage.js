@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SkillList } from '@/components/skills/SkillList';
 import { SearchBar } from '@/components/skills/SearchBar';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Bot, BarChart3, Palette, Wrench, Lock, Package, Users, Download, Star, CheckCircle, User, Rocket, ChevronLeft, ChevronRight, ChevronDown, Server, Brain, FileText, TestTube, GitBranch, Code, Database, Briefcase, FlaskConical, Sparkles, ThumbsUp } from 'lucide-react';
+import { Zap, Bot, BarChart3, Palette, Wrench, Lock, Package, Users, Download, Star, User, Rocket, ChevronLeft, ChevronRight, ChevronDown, Server, Brain, FileText, TestTube, GitBranch, Code, Database, Briefcase, FlaskConical, Sparkles, ThumbsUp, ArrowRightLeft, } from 'lucide-react';
 // Category icons mapping - user-friendly categories
 const categoryIcons = {
     'Science': FlaskConical,
@@ -42,9 +42,9 @@ const features = [
         icon: Brain
     },
     {
-        title: 'Quality Curation',
-        description: 'Every agent skill is reviewed and rated by the community. Find reliable, well-documented tools.',
-        icon: CheckCircle
+        title: 'Universal Converter',
+        description: 'Convert any skill to OpenClaw format. Paste, import from GitHub, or transform marketplace skills with validation.',
+        icon: ArrowRightLeft
     },
     {
         title: 'Community Ratings',

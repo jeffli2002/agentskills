@@ -35,8 +35,8 @@ export function DownloadSection({ skillId, skillName }: DownloadSectionProps) {
           </code>
         </div>
 
-        {/* Export to OpenClaw */}
-        <Link href={`/skills/${skillId}/openclaw`}>
+        {/* Convert to OpenClaw */}
+        <Link href={`/convert?skill=${skillId}`}>
           <span className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#252538] hover:bg-[#2d2d44] text-[#e4e4e7] font-medium rounded-md transition-colors border border-[#2d2d44] cursor-pointer">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
@@ -45,7 +45,7 @@ export function DownloadSection({ skillId, skillName }: DownloadSectionProps) {
               <circle cx="15" cy="12" r="1" fill="currentColor" />
               <path d="M9 15.5s1.5 1.5 3 1.5 3-1.5 3-1.5" />
             </svg>
-            Export to OpenClaw
+            Convert to OpenClaw
             <ArrowRight className="h-3.5 w-3.5" />
           </span>
         </Link>

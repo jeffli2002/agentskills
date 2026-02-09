@@ -12,6 +12,7 @@ import { TermsPage } from '@/pages/TermsPage';
 import { CreateSkillPage } from '@/pages/CreateSkillPage';
 import { OpenClawExportPage } from '@/pages/OpenClawExportPage';
 import { CLIPage } from '@/pages/CLIPage';
+import { ConvertPage } from '@/pages/ConvertPage';
 
 function NotFoundPage() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/skills/:id" component={SkillDetailPage} />
           <Route path="/skills" component={SkillsPage} />
           <Route path="/cli" component={CLIPage} />
+          <Route path="/convert" component={ConvertPage} />
           <Route path="/favorites" component={FavoritesPage} />
           <Route path="/my-skills" component={MySkillsPage} />
           <Route path="/login" component={LoginPage} />
