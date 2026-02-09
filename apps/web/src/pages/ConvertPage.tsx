@@ -890,10 +890,56 @@ export function ConvertPage() {
                     </span>
                   </div>
                   <div className="p-4 space-y-4">
-                    {/* Option 1: Local - Download and copy */}
+                    {/* Info banner */}
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-3">
+                      <p className="text-xs text-blue-300">
+                        <strong>Published publicly?</strong> You can install it later via CLI. <strong>Saved as private?</strong> Use manual methods below.
+                      </p>
+                    </div>
+
+                    {/* Option 1: CLI install (public only) */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">1</span>
+                        <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center">1</span>
+                        <span className="text-sm text-zinc-200 font-medium">CLI install (public skills only)</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 ml-7 mb-2">
+                        If you published this skill publicly, install it on any VPS or local machine:
+                      </p>
+                      <div className="ml-7 relative group">
+                        <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-sm text-emerald-400 overflow-x-auto">
+                          <span className="text-zinc-500">$ </span>
+                          npx agentskills install skill-name --global
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText('npx agentskills install skill-name --global');
+                              setCommandCopied(true);
+                              setTimeout(() => setCommandCopied(false), 2000);
+                            } catch {}
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded hover:bg-[#2d2d44] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          aria-label="Copy command"
+                        >
+                          {commandCopied ? (
+                            <Check className="h-4 w-4 text-emerald-400" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-2 ml-7">
+                        Requires Node.js. Replace <code className="text-zinc-400">skill-name</code> with your skill's name. Omit <code className="text-zinc-400">--global</code> for project-level install.
+                      </p>
+                    </div>
+
+                    <div className="border-t border-[#2d2d44]" />
+
+                    {/* Option 2: Local - Download and copy */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
                         <span className="text-sm text-zinc-200 font-medium">Local: Download and copy</span>
                       </div>
                       <p className="text-xs text-zinc-400 ml-7 mb-2">
@@ -929,14 +975,14 @@ export function ConvertPage() {
 
                     <div className="border-t border-[#2d2d44]" />
 
-                    {/* Option 2: VPS with curl */}
+                    {/* Option 3: VPS with curl */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 text-xs font-bold flex items-center justify-center">2</span>
+                        <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 text-xs font-bold flex items-center justify-center">3</span>
                         <span className="text-sm text-zinc-200 font-medium">VPS: Fetch with curl</span>
                       </div>
                       <p className="text-xs text-zinc-400 ml-7 mb-2">
-                        Directly fetch from the API (no Node.js needed):
+                        Directly fetch from the API (no Node.js needed, works for private skills if you know the ID):
                       </p>
                       <div className="ml-7 relative group">
                         <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-xs text-emerald-400 overflow-x-auto">
