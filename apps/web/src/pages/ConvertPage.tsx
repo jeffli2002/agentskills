@@ -90,40 +90,82 @@ function renderHighlightedContent(content: string): ReactNode[] {
   });
 }
 
-// ─── ZIP Parser (stored/deflated entries) ─────────────────────────────────
+// ─── ZIP Parser (stored/deflated entries via central directory) ────────────
 
-function parseZipEntries(buffer: ArrayBuffer): { path: string; content: string }[] {
+async function parseZipEntries(buffer: ArrayBuffer): Promise<{ path: string; content: string }[]> {
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
   const entries: { path: string; content: string }[] = [];
-  let offset = 0;
 
-  while (offset < buffer.byteLength - 4) {
-    const sig = view.getUint32(offset, true);
-    if (sig !== 0x04034b50) break; // Not a local file header
+  // Find End of Central Directory record (scan backwards)
+  let eocdOffset = -1;
+  for (let i = buffer.byteLength - 22; i >= 0; i--) {
+    if (view.getUint32(i, true) === 0x06054b50) {
+      eocdOffset = i;
+      break;
+    }
+  }
+  if (eocdOffset === -1) return entries;
 
-    const compressionMethod = view.getUint16(offset + 8, true);
-    const compressedSize = view.getUint32(offset + 18, true);
-    const filenameLen = view.getUint16(offset + 26, true);
-    const extraLen = view.getUint16(offset + 28, true);
+  const cdEntryCount = view.getUint16(eocdOffset + 10, true);
+  let cdOffset = view.getUint32(eocdOffset + 16, true);
 
-    const filenameBytes = new Uint8Array(buffer, offset + 30, filenameLen);
+  // Walk central directory entries — these have reliable sizes
+  for (let i = 0; i < cdEntryCount; i++) {
+    if (cdOffset + 46 > buffer.byteLength) break;
+    if (view.getUint32(cdOffset, true) !== 0x02014b50) break;
+
+    const compressionMethod = view.getUint16(cdOffset + 10, true);
+    const compressedSize = view.getUint32(cdOffset + 20, true);
+    const filenameLen = view.getUint16(cdOffset + 28, true);
+    const extraLen = view.getUint16(cdOffset + 30, true);
+    const commentLen = view.getUint16(cdOffset + 32, true);
+    const localHeaderOffset = view.getUint32(cdOffset + 42, true);
+
+    const filenameBytes = new Uint8Array(buffer, cdOffset + 46, filenameLen);
     const path = decoder.decode(filenameBytes);
 
-    const contentStart = offset + 30 + filenameLen + extraLen;
+    // Read local header to get actual data offset (extra field may differ)
+    const localFilenameLen = view.getUint16(localHeaderOffset + 26, true);
+    const localExtraLen = view.getUint16(localHeaderOffset + 28, true);
+    const dataOffset = localHeaderOffset + 30 + localFilenameLen + localExtraLen;
 
-    // Skip directories
-    if (!path.endsWith('/') && compressedSize > 0) {
+    // Skip directories and empty files
+    if (!path.endsWith('/') && compressedSize > 0 && dataOffset + compressedSize <= buffer.byteLength) {
       if (compressionMethod === 0) {
         // Stored (no compression)
-        const contentBytes = new Uint8Array(buffer, contentStart, compressedSize);
+        const contentBytes = new Uint8Array(buffer, dataOffset, compressedSize);
         entries.push({ path, content: decoder.decode(contentBytes) });
+      } else if (compressionMethod === 8) {
+        // Deflate — decompress using browser DecompressionStream
+        try {
+          const compressedBytes = new Uint8Array(buffer, dataOffset, compressedSize);
+          const ds = new DecompressionStream('deflate-raw');
+          const writer = ds.writable.getWriter();
+          writer.write(compressedBytes);
+          writer.close();
+          const reader = ds.readable.getReader();
+          const chunks: Uint8Array[] = [];
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+          }
+          const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
+          const decompressed = new Uint8Array(totalLen);
+          let pos = 0;
+          for (const chunk of chunks) {
+            decompressed.set(chunk, pos);
+            pos += chunk.length;
+          }
+          entries.push({ path, content: decoder.decode(decompressed) });
+        } catch {
+          // Skip entries that fail to decompress (e.g. binary files)
+        }
       }
-      // Compressed entries (method 8 = deflate) are skipped —
-      // browser-native DecompressionStream is available but most skill ZIPs are stored
     }
 
-    offset = contentStart + compressedSize;
+    cdOffset += 46 + filenameLen + extraLen + commentLen;
   }
 
   return entries;
@@ -347,7 +389,7 @@ export function ConvertPage() {
     if (files.length === 1 && files[0].name.endsWith('.zip')) {
       const zipFile = files[0];
       const buffer = await zipFile.arrayBuffer();
-      const extracted = parseZipEntries(buffer);
+      const extracted = await parseZipEntries(buffer);
 
       const skillMdEntry = extracted.find(
         (f) => f.path.toUpperCase() === 'SKILL.MD' || f.path.toUpperCase().endsWith('/SKILL.MD')
