@@ -84,19 +84,27 @@ pnpm install          # Install dependencies
 pnpm dev              # Start dev servers (API + Web)
 pnpm build            # Production build
 
+# Deployment
+pnpm verify:build     # Verify build artifacts before deployment
+pnpm deploy:web       # Build, verify, and deploy web app
+pnpm deploy:api       # Deploy API worker
+
 # API specific
 cd apps/api
 pnpm dev              # Start API dev server
 pnpm db:generate      # Generate migrations
 pnpm db:migrate       # Apply local migrations
 pnpm db:migrate:prod  # Apply production migrations (--remote)
-npx wrangler deploy   # Deploy to Cloudflare
+pnpm deploy           # Deploy to Cloudflare
 
 # Web specific
 cd apps/web
 pnpm dev              # Start Vite dev server
-pnpm build            # Build for production
+pnpm build            # Build for production (includes functions copy)
+pnpm deploy           # Deploy to Cloudflare Pages
 ```
+
+**IMPORTANT**: Always run `pnpm verify:build` before deploying web app to ensure all required files are present.
 
 ## Environment Variables
 
@@ -208,6 +216,22 @@ Browser → agentskills.cv/api/* → Pages Function → agentskills-api.jefflee2
 3. **X-Forwarded-Host is essential** - Backend needs to know the original host for redirects
 4. **_routes.json controls Functions** - Must explicitly include paths for Functions to handle
 5. **Deployments need propagation** - Wait a few seconds after deploy for changes to take effect
+6. **Build process must copy functions/** - Pages Functions won't deploy if not in `dist/` directory
+7. **Always verify build artifacts** - Run `pnpm verify:build` before every deployment
+
+See `docs/incident-postmortem-2026-02-02-missing-api-proxy.md` for detailed root cause analysis.
+
+## Deployment
+
+For detailed deployment instructions, see `docs/DEPLOYMENT.md`.
+
+**Quick deployment checklist**:
+1. Run `pnpm build` (web app)
+2. Run `pnpm verify:build` to check artifacts
+3. Run `pnpm deploy:web` or manually `npx wrangler pages deploy dist --project-name agentskills`
+4. Verify API proxy: `curl https://agentskills.cv/api/skills?limit=1` (should return JSON)
+
+**Critical**: The build process must copy `functions/` to `dist/functions/` or the API proxy won't work.
 
 ## Business Context
 
