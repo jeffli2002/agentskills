@@ -3,7 +3,7 @@ import { useParams, Link } from 'wouter';
 import { getSkill, getOpenClawExport, getOpenClawExportUrl } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Copy, Download, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Check, Copy, Download, ArrowLeft, ExternalLink, Server, HardDrive } from 'lucide-react';
 import type { Skill } from '@agentskills/shared';
 
 interface OpenClawLogoProps {
@@ -375,6 +375,46 @@ export function OpenClawExportPage() {
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                       YAML frontmatter with required fields
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enable on VPS / Local card */}
+              <div className="bg-[#1a1a2e] rounded-lg border border-[#2d2d44] overflow-hidden">
+                <div className="px-4 py-3 border-b border-[#2d2d44]">
+                  <h3 className="font-semibold text-[#e4e4e7]">
+                    Enable This Skill
+                  </h3>
+                </div>
+                <div className="p-4 space-y-4">
+                  {/* VPS */}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Server className="h-3.5 w-3.5 text-purple-400" />
+                      <p className="text-xs text-zinc-300 font-medium">On OpenClaw VPS</p>
+                    </div>
+                    <div className="bg-[#0d0d1a] rounded-md p-2.5 font-mono text-xs text-emerald-400 overflow-x-auto border border-[#2d2d44] leading-relaxed">
+                      <span className="text-zinc-500">$ </span>npx agentskills install {exportName} --global
+                    </div>
+                    <p className="text-[10px] text-zinc-600 mt-1.5">
+                      Or with curl: <code className="text-zinc-500">curl -o ~/.openclaw/skills/{exportName}/SKILL.md "https://agentskills.cv/api/skills/{id}/export/openclaw"</code>
+                    </p>
+                  </div>
+
+                  <div className="border-t border-[#2d2d44]" />
+
+                  {/* Local */}
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <HardDrive className="h-3.5 w-3.5 text-amber-400" />
+                      <p className="text-xs text-zinc-300 font-medium">From downloaded file</p>
+                    </div>
+                    <div className="bg-[#0d0d1a] rounded-md p-2.5 font-mono text-xs text-emerald-400 overflow-x-auto border border-[#2d2d44] leading-relaxed">
+                      <span className="text-zinc-500">$ </span>cp SKILL.md ~/.openclaw/skills/{exportName}/
+                    </div>
+                    <p className="text-[10px] text-zinc-600 mt-1.5">
+                      Also works with <code className="text-zinc-500">~/.claude/skills/</code> and <code className="text-zinc-500">~/.cursor/skills/</code>
+                    </p>
                   </div>
                 </div>
               </div>

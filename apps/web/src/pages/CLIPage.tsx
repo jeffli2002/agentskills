@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Copy, Terminal, Monitor, Globe, ArrowRight } from 'lucide-react';
+import { Check, Copy, Terminal, Monitor, Globe, ArrowRight, Server, HardDrive } from 'lucide-react';
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 
@@ -226,6 +226,51 @@ export function CLIPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Enable skills on VPS / Local */}
+          <div className="bg-[#1a1a2e] rounded-lg border border-[#2d2d44] overflow-hidden mb-8">
+            <div className="px-4 py-3 border-b border-[#2d2d44] bg-[#252538]">
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-amber-400" />
+                <h3 className="font-semibold text-[#e4e4e7]">Enable Skills on VPS / Local</h3>
+              </div>
+            </div>
+            <div className="p-6 space-y-6">
+              {/* VPS */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Server className="h-4 w-4 text-purple-400" />
+                  <p className="text-sm text-zinc-200 font-medium">Install on OpenClaw VPS</p>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-zinc-500 mb-1.5">Install directly from marketplace (requires Node.js)</p>
+                    <CopyBlock command="npx agentskills install <skill-name> --global" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-zinc-500 mb-1.5">Or fetch with curl (no Node.js needed)</p>
+                    <CopyBlock command={'mkdir -p ~/.openclaw/skills/<skill-name> && curl -o ~/.openclaw/skills/<skill-name>/SKILL.md "https://agentskills.cv/api/skills/<skill-id>/export/openclaw"'} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-[#2d2d44]" />
+
+              {/* Local */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <HardDrive className="h-4 w-4 text-amber-400" />
+                  <p className="text-sm text-zinc-200 font-medium">Enable downloaded SKILL.md locally</p>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-xs text-zinc-500">If you already have a SKILL.md file, copy it to your agent's skills directory:</p>
+                  <CopyBlock command="mkdir -p ~/.openclaw/skills/<skill-name> && cp SKILL.md ~/.openclaw/skills/<skill-name>/" label="OpenClaw" />
+                  <CopyBlock command="mkdir -p .claude/skills/<skill-name> && cp SKILL.md .claude/skills/<skill-name>/" label="Claude Code (project)" />
+                  <CopyBlock command="mkdir -p ~/.claude/skills/<skill-name> && cp SKILL.md ~/.claude/skills/<skill-name>/" label="Claude Code (global)" />
+                </div>
               </div>
             </div>
           </div>
