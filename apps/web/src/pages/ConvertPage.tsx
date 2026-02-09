@@ -901,21 +901,24 @@ export function ConvertPage() {
                       </p>
                     </div>
 
-                    {/* Step 2: Install with CLI */}
+                    {/* Step 2: Place in OpenClaw */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
-                        <span className="text-sm text-zinc-200 font-medium">Install with the CLI</span>
+                        <span className="text-sm text-zinc-200 font-medium">Place in your skills directory</span>
                       </div>
+                      <p className="text-xs text-zinc-400 ml-7 mb-2">
+                        Move the SKILL.md{result.resources.length > 0 ? ' and resource files' : ''} to your OpenClaw skills directory:
+                      </p>
                       <div className="ml-7 relative group">
                         <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-sm text-emerald-400 overflow-x-auto">
                           <span className="text-zinc-500">$ </span>
-                          npx skills add ./SKILL.md
+                          mv SKILL.md ~/.openclaw/skills/
                         </div>
                         <button
                           onClick={async () => {
                             try {
-                              await navigator.clipboard.writeText('npx skills add ./SKILL.md');
+                              await navigator.clipboard.writeText('mv SKILL.md ~/.openclaw/skills/');
                               setCommandCopied(true);
                               setTimeout(() => setCommandCopied(false), 2000);
                             } catch {}
@@ -931,19 +934,18 @@ export function ConvertPage() {
                         </button>
                       </div>
                       <p className="text-xs text-zinc-500 mt-2 ml-7">
-                        Or use <code className="text-zinc-400">bunx</code> / <code className="text-zinc-400">pnpm dlx</code> instead of npx.
+                        Or place in your project's <code className="text-zinc-400">skills/</code> directory for project-level installation.
                       </p>
                     </div>
 
-                    {/* Step 3: Enable */}
+                    {/* Step 3: Reload */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">3</span>
-                        <span className="text-sm text-zinc-200 font-medium">Enable in your project</span>
+                        <span className="text-sm text-zinc-200 font-medium">Reload OpenClaw</span>
                       </div>
                       <p className="text-xs text-zinc-400 ml-7">
-                        Place the SKILL.md{result.resources.length > 0 ? ' and its resource files' : ''} in your project's <code className="text-zinc-300">.claude/skills/</code> directory.
-                        Claude Code will automatically detect and use the skill when relevant.
+                        Restart OpenClaw or reload your skills directory. The skill will be automatically detected and available for use.
                       </p>
                     </div>
                   </div>
