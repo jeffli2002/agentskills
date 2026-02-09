@@ -1,0 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export function TerminalBreadcrumb({ author, skillName }) {
+    return (_jsx("div", { className: "bg-[#1a1a2e] border-b border-[#2d2d44] py-3 px-4", children: _jsx("div", { className: "container mx-auto", children: _jsxs("code", { className: "font-mono text-sm text-[#e4e4e7]", children: [_jsx("span", { className: "text-emerald-400", children: "$" }), ' ', _jsx("span", { className: "text-zinc-400", children: "pwd:" }), ' ', _jsx("span", { className: "text-amber-500", children: "~" }), _jsx("span", { className: "text-zinc-500", children: " / " }), _jsx("span", { className: "text-amber-400", children: author }), _jsx("span", { className: "text-zinc-500", children: " / " }), _jsx("span", { className: "text-amber-300 font-semibold", children: skillName })] }) }) }));
+}
