@@ -34,6 +34,7 @@ import {
   Trash2,
   Archive,
   Files,
+  Terminal,
 } from 'lucide-react';
 
 // ─── Syntax Highlighting (reused from OpenClawExportPage) ──────────────────
@@ -220,7 +221,8 @@ export function ConvertPage() {
 
   // Actions
   const [copied, setCopied] = useState(false);
-  const [publishing, setPublishing] = useState(false);
+  const [commandCopied, setCommandCopied] = useState(false);
+  const [publishing, setPublishing] = useState<'public' | 'private' | null>(null);
 
   // Check for ?skill= query param (from skill detail page)
   useEffect(() => {
@@ -357,14 +359,14 @@ export function ConvertPage() {
 
   const handlePublish = async (visibility: 'public' | 'private') => {
     if (!result || !user) return;
-    setPublishing(true);
+    setPublishing(visibility);
     try {
       const { url } = await publishConverted(result.skillMd, result.resources, visibility);
       navigate(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Publish failed');
     } finally {
-      setPublishing(false);
+      setPublishing(null);
     }
   };
 
@@ -878,6 +880,74 @@ export function ConvertPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Install & Usage Guide */}
+                <div className="bg-[#1a1a2e] rounded-lg border border-[#2d2d44] overflow-hidden">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-[#2d2d44] bg-[#252538]">
+                    <Terminal className="h-4 w-4 text-emerald-400" />
+                    <span className="text-sm text-zinc-300 font-medium">
+                      How to Use This Skill
+                    </span>
+                  </div>
+                  <div className="p-4 space-y-4">
+                    {/* Step 1: Save */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">1</span>
+                        <span className="text-sm text-zinc-200 font-medium">Save the SKILL.md file</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 ml-7">
+                        Download or copy the converted SKILL.md{result.resources.length > 0 ? ' and resource files' : ''} using the buttons on the right.
+                      </p>
+                    </div>
+
+                    {/* Step 2: Install with CLI */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">2</span>
+                        <span className="text-sm text-zinc-200 font-medium">Install with the CLI</span>
+                      </div>
+                      <div className="ml-7 relative group">
+                        <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-sm text-emerald-400 overflow-x-auto">
+                          <span className="text-zinc-500">$ </span>
+                          npx skills add ./SKILL.md
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText('npx skills add ./SKILL.md');
+                              setCommandCopied(true);
+                              setTimeout(() => setCommandCopied(false), 2000);
+                            } catch {}
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded hover:bg-[#2d2d44] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          aria-label="Copy command"
+                        >
+                          {commandCopied ? (
+                            <Check className="h-4 w-4 text-emerald-400" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-2 ml-7">
+                        Or use <code className="text-zinc-400">bunx</code> / <code className="text-zinc-400">pnpm dlx</code> instead of npx.
+                      </p>
+                    </div>
+
+                    {/* Step 3: Enable */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">3</span>
+                        <span className="text-sm text-zinc-200 font-medium">Enable in your project</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 ml-7">
+                        Place the SKILL.md{result.resources.length > 0 ? ' and its resource files' : ''} in your project's <code className="text-zinc-300">.claude/skills/</code> directory.
+                        Claude Code will automatically detect and use the skill when relevant.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Right: Validation + Actions */}
@@ -958,10 +1028,10 @@ export function ConvertPage() {
                       <>
                         <button
                           onClick={() => handlePublish('public')}
-                          disabled={publishing}
+                          disabled={!!publishing}
                           className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition-colors cursor-pointer disabled:opacity-50"
                         >
-                          {publishing ? (
+                          {publishing === 'public' ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <Upload className="h-4 w-4" />
@@ -970,9 +1040,12 @@ export function ConvertPage() {
                         </button>
                         <button
                           onClick={() => handlePublish('private')}
-                          disabled={publishing}
+                          disabled={!!publishing}
                           className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#252538] hover:bg-[#2d2d44] text-zinc-400 text-sm rounded-md transition-colors border border-[#2d2d44] cursor-pointer disabled:opacity-50"
                         >
+                          {publishing === 'private' && (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          )}
                           Save as Private
                         </button>
                       </>
