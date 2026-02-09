@@ -171,7 +171,7 @@ export function SkillDetailPage() {
             <InstallCommands author={skill.author} skillName={skill.name} />
 
             {/* Download Section */}
-            <DownloadSection skillId={skill.id} skillName={skill.name} />
+            <DownloadSection skillId={skill.id} skillName={skill.name} isOpenClaw={!skill.githubUrl.startsWith('https://github.com')} />
 
             {/* Related Skills */}
             <RelatedSkills skillId={skill.id} category={skill.category} />

@@ -5,9 +5,10 @@ import { getDownloadUrl } from '@/lib/api';
 interface DownloadSectionProps {
   skillId: string;
   skillName: string;
+  isOpenClaw?: boolean;
 }
 
-export function DownloadSection({ skillId, skillName }: DownloadSectionProps) {
+export function DownloadSection({ skillId, skillName, isOpenClaw }: DownloadSectionProps) {
   const downloadUrl = getDownloadUrl(skillId);
 
   return (
@@ -35,7 +36,8 @@ export function DownloadSection({ skillId, skillName }: DownloadSectionProps) {
           </code>
         </div>
 
-        {/* Convert to OpenClaw */}
+        {/* Convert to OpenClaw — hide for skills already in OpenClaw format */}
+        {!isOpenClaw && (
         <Link href={`/convert?skill=${skillId}`}>
           <span className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#252538] hover:bg-[#2d2d44] text-[#e4e4e7] font-medium rounded-md transition-colors border border-[#2d2d44] cursor-pointer">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -49,6 +51,7 @@ export function DownloadSection({ skillId, skillName }: DownloadSectionProps) {
             <ArrowRight className="h-3.5 w-3.5" />
           </span>
         </Link>
+        )}
       </div>
     </div>
   );
