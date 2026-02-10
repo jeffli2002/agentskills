@@ -41,7 +41,7 @@ const AGENTS = [
   { name: 'Claude Code', path: '.claude/skills/', globalPath: '~/.claude/skills/', color: 'text-amber-400' },
   { name: 'Cursor', path: '.cursor/skills/', globalPath: '~/.cursor/skills/', color: 'text-blue-400' },
   { name: 'Codex CLI', path: '.codex/skills/', globalPath: '~/.codex/skills/', color: 'text-green-400' },
-  { name: 'OpenClaw', path: 'skills/', globalPath: '~/.openclaw/skills/', color: 'text-purple-400' },
+  { name: 'OpenClaw', path: 'skills/', globalPath: '~/.openclaw/workspace/skills/', color: 'text-purple-400' },
   { name: 'OpenCode', path: '.opencode/skills/', globalPath: '~/.opencode/skills/', color: 'text-cyan-400' },
 ];
 
@@ -56,7 +56,7 @@ export function CLIPage() {
             {' '}
             <span className="text-zinc-400">npx</span>
             {' '}
-            <span className="text-amber-400 font-semibold">agentskills</span>
+            <span className="text-amber-400 font-semibold">@jefflee2002/agentskills</span>
             {' '}
             <span className="text-zinc-400">--help</span>
           </code>
@@ -76,7 +76,7 @@ export function CLIPage() {
               Install skills directly from the marketplace to all your AI agents. One command, every agent.
             </p>
             <div className="mt-6 max-w-lg mx-auto">
-              <CopyBlock command="npx agentskills install <skill-name>" />
+              <CopyBlock command="npx @jefflee2002/agentskills install <skill-name>" />
             </div>
           </div>
 
@@ -96,28 +96,28 @@ export function CLIPage() {
                   <span className="text-amber-400 font-mono font-bold">1.</span>
                   {" "}Search for a skill
                 </p>
-                <CopyBlock command='npx agentskills search "git commit"' />
+                <CopyBlock command='npx @jefflee2002/agentskills search "git commit"' />
               </div>
               <div>
                 <p className="text-sm text-zinc-300 mb-2">
                   <span className="text-amber-400 font-mono font-bold">2.</span>
                   {" "}Install to your project
                 </p>
-                <CopyBlock command="npx agentskills install git-commit" />
+                <CopyBlock command="npx @jefflee2002/agentskills install git-commit" />
               </div>
               <div>
                 <p className="text-sm text-zinc-300 mb-2">
                   <span className="text-amber-400 font-mono font-bold">3.</span>
                   {" "}Or install globally
                 </p>
-                <CopyBlock command="npx agentskills install git-commit --global" />
+                <CopyBlock command="npx @jefflee2002/agentskills install git-commit --global" />
               </div>
               <div>
                 <p className="text-sm text-zinc-300 mb-2">
                   <span className="text-amber-400 font-mono font-bold">4.</span>
                   {" "}See what you have installed
                 </p>
-                <CopyBlock command="npx agentskills list" />
+                <CopyBlock command="npx @jefflee2002/agentskills list" />
               </div>
             </div>
           </div>
@@ -252,11 +252,11 @@ export function CLIPage() {
                 <div className="space-y-3">
                   <div>
                     <p className="text-xs text-zinc-500 mb-1.5">Install directly from marketplace (requires Node.js)</p>
-                    <CopyBlock command="npx agentskills install <skill-name> --global" />
+                    <CopyBlock command="npx @jefflee2002/agentskills install <skill-name> --global" />
                   </div>
                   <div>
                     <p className="text-xs text-zinc-500 mb-1.5">Or fetch with curl (no Node.js needed)</p>
-                    <CopyBlock command={'mkdir -p ~/.openclaw/skills/<skill-name> && curl -o ~/.openclaw/skills/<skill-name>/SKILL.md "https://agentskills.cv/api/skills/<skill-id>/export/openclaw"'} />
+                    <CopyBlock command={'mkdir -p ~/.openclaw/workspace/skills/<skill-name> && curl -o ~/.openclaw/workspace/skills/<skill-name>/SKILL.md "https://agentskills.cv/api/skills/<skill-id>/export/openclaw"'} />
                   </div>
                 </div>
               </div>
@@ -271,7 +271,7 @@ export function CLIPage() {
                 </div>
                 <div className="space-y-3">
                   <p className="text-xs text-zinc-500">If you already have a SKILL.md file, copy it to your agent's skills directory:</p>
-                  <CopyBlock command="mkdir -p ~/.openclaw/skills/<skill-name> && cp SKILL.md ~/.openclaw/skills/<skill-name>/" label="OpenClaw" />
+                  <CopyBlock command="mkdir -p ~/.openclaw/workspace/skills/<skill-name> && cp SKILL.md ~/.openclaw/workspace/skills/<skill-name>/" label="OpenClaw" />
                   <CopyBlock command="mkdir -p .claude/skills/<skill-name> && cp SKILL.md .claude/skills/<skill-name>/" label="Claude Code (project)" />
                   <CopyBlock command="mkdir -p ~/.claude/skills/<skill-name> && cp SKILL.md ~/.claude/skills/<skill-name>/" label="Claude Code (global)" />
                 </div>

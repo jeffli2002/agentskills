@@ -909,12 +909,12 @@ export function ConvertPage() {
                       <div className="ml-7 relative group">
                         <div className="bg-[#0d0d1a] rounded-md p-3 pr-10 font-mono text-sm text-emerald-400 overflow-x-auto">
                           <span className="text-zinc-500">$ </span>
-                          npx agentskills install skill-name --global
+                          npx @jefflee2002/agentskills install skill-name --global
                         </div>
                         <button
                           onClick={async () => {
                             try {
-                              await navigator.clipboard.writeText('npx agentskills install skill-name --global');
+                              await navigator.clipboard.writeText('npx @jefflee2002/agentskills install skill-name --global');
                               setCommandCopied(true);
                               setTimeout(() => setCommandCopied(false), 2000);
                             } catch {}

@@ -394,10 +394,10 @@ export function OpenClawExportPage() {
                       <p className="text-xs text-zinc-300 font-medium">On OpenClaw VPS</p>
                     </div>
                     <div className="bg-[#0d0d1a] rounded-md p-2.5 font-mono text-xs text-emerald-400 overflow-x-auto border border-[#2d2d44] leading-relaxed">
-                      <span className="text-zinc-500">$ </span>npx agentskills install {exportName} --global
+                      <span className="text-zinc-500">$ </span>npx @jefflee2002/agentskills install {exportName} --global
                     </div>
                     <p className="text-[10px] text-zinc-600 mt-1.5">
-                      Or with curl: <code className="text-zinc-500">curl -o ~/.openclaw/skills/{exportName}/SKILL.md "https://agentskills.cv/api/skills/{id}/export/openclaw"</code>
+                      Or with curl: <code className="text-zinc-500">curl -o ~/.openclaw/workspace/skills/{exportName}/SKILL.md "https://agentskills.cv/api/skills/{id}/export/openclaw"</code>
                     </p>
                   </div>
 
@@ -410,7 +410,7 @@ export function OpenClawExportPage() {
                       <p className="text-xs text-zinc-300 font-medium">From downloaded file</p>
                     </div>
                     <div className="bg-[#0d0d1a] rounded-md p-2.5 font-mono text-xs text-emerald-400 overflow-x-auto border border-[#2d2d44] leading-relaxed">
-                      <span className="text-zinc-500">$ </span>cp SKILL.md ~/.openclaw/skills/{exportName}/
+                      <span className="text-zinc-500">$ </span>cp SKILL.md ~/.openclaw/workspace/skills/{exportName}/
                     </div>
                     <p className="text-[10px] text-zinc-600 mt-1.5">
                       Also works with <code className="text-zinc-500">~/.claude/skills/</code> and <code className="text-zinc-500">~/.cursor/skills/</code>

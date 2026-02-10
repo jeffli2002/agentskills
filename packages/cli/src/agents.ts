@@ -15,7 +15,7 @@ const AGENTS: Omit<AgentInfo, 'detected'>[] = [
   { name: 'Claude Code', projectPath: '.claude/skills', globalPath: join(homedir(), '.claude', 'skills') },
   { name: 'Cursor', projectPath: '.cursor/skills', globalPath: join(homedir(), '.cursor', 'skills') },
   { name: 'Codex CLI', projectPath: '.codex/skills', globalPath: join(homedir(), '.codex', 'skills') },
-  { name: 'OpenClaw', projectPath: 'skills', globalPath: join(homedir(), '.openclaw', 'skills') },
+  { name: 'OpenClaw', projectPath: 'skills', globalPath: join(homedir(), '.openclaw', 'workspace', 'skills') },
   { name: 'OpenCode', projectPath: '.opencode/skills', globalPath: join(homedir(), '.opencode', 'skills') },
 ];
 
