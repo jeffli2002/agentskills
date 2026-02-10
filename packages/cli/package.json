@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsup src/cli.ts --format esm --target node22 --clean",
     "dev": "tsx src/cli.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "files": [
     "dist"
@@ -23,6 +24,16 @@
     "codex",
     "openclaw"
   ],
+  "author": "AgentSkills Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeffleeismyhero/agentskills.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://agentskills.cv",
+  "bugs": {
+    "url": "https://github.com/jeffleeismyhero/agentskills/issues"
+  },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
