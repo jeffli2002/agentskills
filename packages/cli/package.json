@@ -1,6 +1,6 @@
 {
   "name": "@jefflee2002/agentskills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool to install AI agent skills from the AgentSkills marketplace",
   "type": "module",
   "bin": {
