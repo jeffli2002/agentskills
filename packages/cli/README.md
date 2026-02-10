@@ -1,4 +1,4 @@
-# agentskills
+# @jefflee2002/agentskills
 
 > CLI tool to install AI agent skills from the [AgentSkills marketplace](https://agentskills.cv)
 
@@ -15,16 +15,16 @@ Install skills directly from agentskills.cv to all your AI agents with a single 
 
 ```bash
 # Install a skill
-npx agentskills install notebooklm
+npx @jefflee2002/agentskills install notebooklm
 
 # Search for skills
-npx agentskills search "git commit"
+npx @jefflee2002/agentskills search "git commit"
 
 # List installed skills
-npx agentskills list
+npx @jefflee2002/agentskills list
 
 # Show detected agents
-npx agentskills agents
+npx @jefflee2002/agentskills agents
 ```
 
 ## Installation
@@ -32,13 +32,13 @@ npx agentskills agents
 No installation required! Use `npx` to run the CLI directly:
 
 ```bash
-npx agentskills <command>
+npx @jefflee2002/agentskills <command>
 ```
 
 Or install globally:
 
 ```bash
-npm install -g agentskills
+npm install -g @jefflee2002/agentskills
 ```
 
 ## Usage
@@ -47,16 +47,16 @@ npm install -g agentskills
 
 ```bash
 # Install to project (local)
-npx agentskills install <skill-name>
+npx @jefflee2002/agentskills install <skill-name>
 
 # Install globally
-npx agentskills install <skill-name> --global
+npx @jefflee2002/agentskills install <skill-name> --global
 ```
 
 ### Search skills
 
 ```bash
-npx agentskills search "your query"
+npx @jefflee2002/agentskills search "your query"
 ```
 
 ### Convert skills
@@ -65,29 +65,29 @@ Convert existing skill files or GitHub repos to OpenClaw format:
 
 ```bash
 # Convert local file
-npx agentskills convert ./my-skill.md
+npx @jefflee2002/agentskills convert ./my-skill.md
 
 # Convert GitHub repo
-npx agentskills convert https://github.com/user/repo
+npx @jefflee2002/agentskills convert https://github.com/user/repo
 
 # Convert and install
-npx agentskills convert ./my-skill.md --install
+npx @jefflee2002/agentskills convert ./my-skill.md --install
 ```
 
 ### List installed skills
 
 ```bash
 # List project skills
-npx agentskills list
+npx @jefflee2002/agentskills list
 
 # List global skills
-npx agentskills list --global
+npx @jefflee2002/agentskills list --global
 ```
 
 ### Show detected agents
 
 ```bash
-npx agentskills agents
+npx @jefflee2002/agentskills agents
 ```
 
 ## Supported Agents
@@ -121,16 +121,16 @@ npx agentskills agents
 
 ```bash
 # Install a skill globally
-npx agentskills install commit-analyzer --global
+npx @jefflee2002/agentskills install commit-analyzer --global
 
 # Search for git-related skills
-npx agentskills search "git"
+npx @jefflee2002/agentskills search "git"
 
 # Convert a GitHub skill to OpenClaw and install
-npx agentskills convert https://github.com/user/skill-repo --install
+npx @jefflee2002/agentskills convert https://github.com/user/skill-repo --install
 
 # List all globally installed skills
-npx agentskills list --global
+npx @jefflee2002/agentskills list --global
 ```
 
 ## Environment Variables
