@@ -93,7 +93,7 @@ const faqs = [
     },
     {
         question: 'How do I enable a skill on my VPS or local machine?',
-        answer: 'Use the CLI: npx agentskills install <skill-name> --global. This auto-detects your agents (OpenClaw, Claude Code, Cursor, etc.) and places the SKILL.md in the right directory. On a VPS without Node.js, use curl: curl -o ~/.openclaw/skills/<skill-name>/SKILL.md "https://agentskills.cv/api/skills/<skill-id>/export/openclaw". For a downloaded SKILL.md file, copy it to your agent\'s skills directory (e.g., ~/.openclaw/skills/<skill-name>/ or ~/.claude/skills/<skill-name>/).'
+        answer: 'Use the CLI: npx @jefflee2002/agentskills install <skill-name> --global. This auto-detects your agents (OpenClaw, Claude Code, Cursor, etc.) and places the SKILL.md in the right directory. On a VPS without Node.js, use curl: curl -o ~/.openclaw/workspace/skills/<skill-name>/SKILL.md "https://agentskills.cv/api/skills/<skill-id>/export/openclaw". For a downloaded SKILL.md file, copy it to your agent\'s skills directory (e.g., ~/.openclaw/workspace/skills/<skill-name>/ or ~/.claude/skills/<skill-name>/).'
     }
 ];
 export function HomePage() {
