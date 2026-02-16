@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq, sql, gte, desc } from 'drizzle-orm';
+import { eq, sql, gte, lt, and, gte as gteSql, lt as ltSql } from 'drizzle-orm';
 import { createDb, skills, users } from '../db';
 
 type Bindings = {
@@ -48,64 +48,141 @@ adminRouter.post('/login', async (c) => {
   return c.json({ success: true, data: { token, expiresIn: 86400 } });
 });
 
+// 获取时间范围
+function getTimeRange(filter: string, customStart?: string, customEnd?: string) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+  
+  switch (filter) {
+    case 'today':
+      return { start: today, end: tomorrow };
+    case 'yesterday':
+      return { start: yesterday, end: today };
+    case '7days':
+      return { start: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), end: tomorrow };
+    case '30days':
+      return { start: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), end: tomorrow };
+    case 'custom':
+      if (customStart && customEnd) {
+        return { start: new Date(customStart), end: new Date(customEnd) };
+      }
+      return { start: today, end: tomorrow };
+    default:
+      return { start: today, end: tomorrow };
+  }
+}
+
 // 仪表盘数据
 adminRouter.get('/dashboard', requireAuth, async (c) => {
   const db = createDb(c.env.DB);
-  const now = Date.now();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const filter = c.req.query('filter') || 'today';
+  const customStart = c.req.query('start');
+  const customEnd = c.req.query('end');
   
-  // 今日新增Skills
-  const newSkillsResult = await db
+  const { start, end } = getTimeRange(filter, customStart, customEnd);
+  
+  // 时间范围内的统计
+  const skillsInRange = await db
     .select({ count: sql<number>`count(*)` })
     .from(skills)
-    .where(gte(skills.createdAt, today));
+    .where(and(
+      gte(skills.createdAt, start),
+      lt(skills.createdAt, end)
+    ));
   
-  // 今日新增用户
-  const newUsersResult = await db
+  const usersInRange = await db
     .select({ count: sql<number>`count(*)` })
     .from(users)
-    .where(gte(users.createdAt, today));
+    .where(and(
+      gte(users.createdAt, start),
+      lt(users.createdAt, end)
+    ));
   
-  // Skills趋势（过去7天）
-  const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+  // Skills分类：有creatorId的是用户创建的，没有的是导入的
+  const openclawSkills = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(skills)
+    .where(and(
+      gte(skills.createdAt, start),
+      lt(skills.createdAt, end),
+      sql`${skills.creatorId} IS NULL`
+    ));
+  
+  const userCreatedSkills = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(skills)
+    .where(and(
+      gte(skills.createdAt, start),
+      lt(skills.createdAt, end),
+      sql`${skills.creatorId} IS NOT NULL`
+    ));
+  
+  // 总计
+  const totalSkills = await db.select({ count: sql<number>`count(*)` }).from(skills);
+  const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
+  
+  const totalOpenclawSkills = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(skills)
+    .where(sql`${skills.creatorId} IS NULL`);
+  
+  const totalUserCreatedSkills = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(skills)
+    .where(sql`${skills.creatorId} IS NOT NULL`);
+  
+  // 趋势数据（过去14天）
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
   const skillsTrend = await db
     .select({
       date: sql<string>`date(${skills.createdAt} / 1000, 'unixepoch')`.as('date'),
       count: sql<number>`count(*)`.as('count'),
     })
     .from(skills)
-    .where(gte(skills.createdAt, sevenDaysAgo))
+    .where(gte(skills.createdAt, fourteenDaysAgo))
     .groupBy(sql`date(${skills.createdAt} / 1000, 'unixepoch')`)
     .orderBy(sql`date(${skills.createdAt} / 1000, 'unixepoch')`);
   
-  // 用户趋势（过去7天）
   const usersTrend = await db
     .select({
       date: sql<string>`date(${users.createdAt} / 1000, 'unixepoch')`.as('date'),
       count: sql<number>`count(*)`.as('count'),
     })
     .from(users)
-    .where(gte(users.createdAt, sevenDaysAgo))
+    .where(gte(users.createdAt, fourteenDaysAgo))
     .groupBy(sql`date(${users.createdAt} / 1000, 'unixepoch')`)
     .orderBy(sql`date(${users.createdAt} / 1000, 'unixepoch')`);
   
-  // 总计
-  const totalSkills = await db.select({ count: sql<number>`count(*)` }).from(skills);
-  const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
-  
   return c.json({
-    today: {
-      newSkills: newSkillsResult[0]?.count || 0,
-      newUsers: newUsersResult[0]?.count || 0,
-    },
-    total: {
-      skills: totalSkills[0]?.count || 0,
-      users: totalUsers[0]?.count || 0,
-    },
-    trend: {
-      skills: skillsTrend,
-      users: usersTrend,
+    success: true,
+    data: {
+      period: {
+        filter,
+        start: start.toISOString(),
+        end: end.toISOString(),
+      },
+      stats: {
+        newSkills: skillsInRange[0]?.count || 0,
+        newUsers: usersInRange[0]?.count || 0,
+        totalSkills: totalSkills[0]?.count || 0,
+        totalUsers: totalUsers[0]?.count || 0,
+      },
+      breakdown: {
+        openclawSkills: {
+          new: openclawSkills[0]?.count || 0,
+          total: totalOpenclawSkills[0]?.count || 0,
+        },
+        userCreatedSkills: {
+          new: userCreatedSkills[0]?.count || 0,
+          total: totalUserCreatedSkills[0]?.count || 0,
+        },
+      },
+      trend: {
+        skills: skillsTrend,
+        users: usersTrend,
+      },
     },
   });
 });
@@ -127,11 +204,14 @@ adminRouter.get('/skills', requireAuth, async (c) => {
   const total = await db.select({ count: sql<number>`count(*)` }).from(skills);
   
   return c.json({
-    data: skillsList,
-    pagination: {
-      page,
-      limit,
-      total: total[0]?.count || 0,
+    success: true,
+    data: {
+      data: skillsList,
+      pagination: {
+        page,
+        limit,
+        total: total[0]?.count || 0,
+      },
     },
   });
 });
@@ -143,7 +223,7 @@ adminRouter.delete('/skills/:id', requireAuth, async (c) => {
   
   await db.delete(skills).where(eq(skills.id, id));
   
-  return c.json({ success: true });
+  return c.json({ success: true, data: null });
 });
 
 // 用户列表
@@ -163,11 +243,14 @@ adminRouter.get('/users', requireAuth, async (c) => {
   const total = await db.select({ count: sql<number>`count(*)` }).from(users);
   
   return c.json({
-    data: usersList,
-    pagination: {
-      page,
-      limit,
-      total: total[0]?.count || 0,
+    success: true,
+    data: {
+      data: usersList,
+      pagination: {
+        page,
+        limit,
+        total: total[0]?.count || 0,
+      },
     },
   });
 });
@@ -179,7 +262,7 @@ adminRouter.delete('/users/:id', requireAuth, async (c) => {
   
   await db.delete(users).where(eq(users.id, id));
   
-  return c.json({ success: true });
+  return c.json({ success: true, data: null });
 });
 
 export { adminRouter };
