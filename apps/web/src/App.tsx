@@ -19,6 +19,13 @@ import { AdminSkillsPage } from '@/pages/admin/AdminSkillsPage';
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
 import DocsPage from '@/pages/DocsPage';
 import WhatAreAgentSkillsPage from '@/pages/docs/WhatAreAgentSkillsPage';
+import HowToCreateAgentSkillsPage from '@/pages/docs/HowToCreateAgentSkillsPage';
+import AiAgentTutorialPage from '@/pages/docs/AiAgentTutorialPage';
+import AgentSkillsPage from '@/pages/docs/AgentSkillsPage';
+import OpenclawSkillsPage from '@/pages/docs/OpenclawSkillsPage';
+import AiAgentNoCodePage from '@/pages/docs/AiAgentNoCodePage';
+import CreateAiAgentSkillsPage from '@/pages/docs/CreateAiAgentSkillsPage';
+import AiAgentTutorialFaqPage from '@/pages/docs/AiAgentTutorialFaqPage';
 
 function NotFoundPage() {
   return (
@@ -63,6 +70,13 @@ export default function App() {
           <Route path="/admin/users" component={AdminUsersPage} />
           <Route path="/docs" component={DocsPage} />
           <Route path="/docs/what-are-agent-skills" component={WhatAreAgentSkillsPage} />
+          <Route path="/docs/how-to-create-agent-skills" component={HowToCreateAgentSkillsPage} />
+          <Route path="/docs/ai-agent-tutorial" component={AiAgentTutorialPage} />
+          <Route path="/docs/agent-skills" component={AgentSkillsPage} />
+          <Route path="/docs/openclaw-skills" component={OpenclawSkillsPage} />
+          <Route path="/docs/ai-agent-no-code" component={AiAgentNoCodePage} />
+          <Route path="/docs/create-ai-agent-skills" component={CreateAiAgentSkillsPage} />
+          <Route path="/docs/ai-agent-tutorial-faq" component={AiAgentTutorialFaqPage} />
           <Route component={NotFoundPage} />
         </Switch>
       </Layout>
