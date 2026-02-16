@@ -1,25 +1,5 @@
 # Robots.txt for Agent Skills
-# https://agentskills.cv
-
 User-agent: *
 Allow: /
-
-# Sitemap
 Sitemap: https://agentskills.cv/sitemap.xml
-
-# Crawl-delay (optional)
-Crawl-delay: 1
-
-# Disallow admin areas
-Disallow: /admin/
-Disallow: /api/
-
-# Allow SEO pages
-Allow: /what-are-agent-skills
-Allow: /how-to-create-agent-skills
-Allow: /ai-agent-tutorial
-Allow: /agent-skills
-Allow: /openclaw-skills
-Allow: /ai-agent-no-code
-Allow: /create-ai-agent-skills
-Allow: /custom-ai-agent-business
+Disallow: /admin/, /api/
