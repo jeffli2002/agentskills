@@ -3,131 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How to Create Agent Skills? - Complete Guide</title>
-  <meta name="description" content="Learn how to create Agent Skills from scratch. Step-by-step guide to building your first AI agent skill.. Discover 200,000+ skills for AI agents like Claude Code, OpenAI Codex.">
-  <meta name="keywords" content="what are agent skills, agent skills definition, AI agent skills guide, SKILL.md tutorial">
-  
-  <!-- Fonts: DM Sans + Space Grotesk -->
+  <title>What are Agent Skills? - Agent Skills Docs</title>
+  <meta name="description" content="Learn what Agent Skills are and how to use them.">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root {
-      --background: #121418;
-      --foreground: #E4E6EA;
-      --primary: #E4E6EA;
-      --secondary: #1F2328;
-      --muted: #282D35;
-      --accent: #333A45;
-      --border: #353B44;
-      --gold: #D4A017;
-    }
-    body {
-      font-family: 'DM Sans', system-ui, sans-serif;
-      background-color: #121418;
-      color: #E4E6EA;
-    }
-    h1, h2, h3, h4 {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
-    }
-    .text-gold {
-      background: linear-gradient(135deg, #F4C542 0%, #D4A017 50%, #A67C00 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+    body { font-family: 'DM Sans', system-ui, sans-serif; background-color: #121418; color: #E4E6EA; }
+    h1, h2, h3 { font-family: 'Space Grotesk', system-ui, sans-serif; }
+    .text-gold { background: linear-gradient(135deg, #F4C542, #D4A017); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    a { color: #E4E6EA; text-decoration: none; }
+    a:hover { color: #F4C542; }
   </style>
 </head>
-<body class="min-h-screen" style="background-color: #121418; color: #E4E6EA;">
-  <!-- Header -->
-  <header style="background-color: #1F2328; border-bottom: 1px solid #353B44;" class="sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <a href="/" class="text-2xl font-bold text-gold">Agent Skills</a>
-      <nav class="flex items-center gap-8">
-        <a href="/skills" style="color: #E4E6EA;" class="hover:text-white font-medium">Browse</a>
-        <a href="/docs" style="color: #F4C542;" class="font-semibold">Docs</a>
-        <a href="/create" style="color: #E4E6EA;" class="hover:text-white font-medium">Create</a>
-        <a href="/login" style="color: #E4E6EA;" class="hover:text-white font-medium">Login</a>
-        <a href="/create" style="background: linear-gradient(135deg, #F4C542, #D4A017);" class="text-black px-5 py-2.5 rounded-full font-semibold hover:opacity-90 transition">Get Started</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Breadcrumb -->
-  <div class="py-4" style="background-color: #1F2328;">
+<body class="min-h-screen flex flex-col">
+  <main class="flex-1 py-12">
     <div class="max-w-4xl mx-auto px-4">
-      <a href="/" class="text-gold hover:underline text-sm">Home</a> / <a href="/docs" class="text-gold hover:underline text-sm">Docs</a> / <span style="color: #858993;" class="text-sm">How to Create Agent Skills</span>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <section class="py-16" style="background-color: #121418;">
-    <div class="max-w-4xl mx-auto px-4">
-      <h1 class="text-4xl font-bold mb-6" style="color: #E4E6EA; font-family: 'Space Grotesk', sans-serif;">How to Create Agent Skills? A Complete Guide</h1>
-      <p class="text-xl mb-8" style="color: #858993;">Agent Skills are modular capabilities that extend AI agent functionality. These skills allow AI agents to perform specialized tasks.</p>
-
-      <!-- Content -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-bold mb-4" style="color: #E4E6EA; font-family: 'Space Grotesk', sans-serif;">Understanding Agent Skills</h2>
-        <p class="mb-4" style="color: #858993;">Agent skills are instruction sets that define how an AI agent should behave. When you install an agent skill, your AI gains access to specialized knowledge and workflows.</p>
-        <p class="mb-4" style="color: #858993;">Whether you need your agent to perform code reviews, generate tests, analyze SEO, write content, or handle customer support, there's likely an existing agent skill for that purpose.</p>
+      <div class="mb-8">
+        <a href="/" class="text-gold hover:underline">← Back to Agent Skills</a> / <a href="/docs" class="text-gold hover:underline">Docs</a>
       </div>
+      
+      <h1 class="text-4xl font-bold mb-6">What are Agent Skills? A Complete Guide</h1>
+      <p class="text-xl mb-8" style="color: #858993;">Agent Skills are modular capabilities that extend AI agent functionality.</p>
 
-      <!-- FAQ Section -->
-      <div class="mt-16">
-        <h2 class="text-3xl font-bold mb-8" style="color: #E4E6EA; font-family: 'Space Grotesk', sans-serif;">Frequently Asked Questions</h2>
-        
-        <div class="space-y-4">
-          <div class="p-6 rounded-xl transition" style="background-color: #1F2328; border: 1px solid #353B44;">
-            <h3 class="font-semibold text-lg mb-3" style="color: #E4E6EA;">How to Create Agent Skills?</h3>
-            <p style="color: #858993;">Agent Skills are lightweight, open-format modules that extend AI agent capabilities. Each skill contains a SKILL.md file that defines what the AI can do.</p>
-          </div>
+      <h2 class="text-2xl font-bold mb-4 mt-8">Understanding Agent Skills</h2>
+      <p class="mb-4" style="color: #858993;">Agent skills are instruction sets that define how an AI agent should behave. When you install an agent skill, your AI gains access to specialized knowledge and workflows.</p>
 
-          <div class="p-6 rounded-xl transition" style="background-color: #1F2328; border: 1px solid #353B44;">
-            <h3 class="font-semibold text-lg mb-3" style="color: #E4E6EA;">How do I install Agent Skills?</h3>
-            <p style="color: #858993;">Visit our marketplace, find a skill you need, and click install. Most agent skills work immediately with platforms like Claude Code and OpenAI Codex.</p>
-          </div>
-
-          <div class="p-6 rounded-xl transition" style="background-color: #1F2328; border: 1px solid #353B44;">
-            <h3 class="font-semibold text-lg mb-3" style="color: #E4E6EA;">How to create my own Agent Skill?</h3>
-            <p style="color: #858993;">Create a folder with a SKILL.md file inside. Include a name, description, and detailed instructions. Upload to our marketplace to share.</p>
-          </div>
-
-          <div class="p-6 rounded-xl transition" style="background-color: #1F2328; border: 1px solid #353B44;">
-            <h3 class="font-semibold text-lg mb-3" style="color: #E4E6EA;">Are Agent Skills free?</h3>
-            <p style="color: #858993;">Many agent skills are free. Some premium skills may require payment. Basic skills for individual use are mostly free.</p>
-          </div>
-
-          <div class="p-6 rounded-xl transition" style="background-color: #1F2328; border: 1px solid #353B44;">
-            <h3 class="font-semibold text-lg mb-3" style="color: #E4E6EA;">Which AI platforms support Agent Skills?</h3>
-            <p style="color: #858993;">Most major platforms support the open SKILL.md format: Claude Code, OpenAI Codex, GitHub Copilot, Cursor, and VS Code.</p>
-          </div>
+      <h2 class="text-2xl font-bold mb-4 mt-8">Frequently Asked Questions</h2>
+      
+      <div class="space-y-4 mt-6">
+        <div class="p-6 rounded-xl" style="background-color: #1F2328; border: 1px solid #353B44;">
+          <h3 class="font-semibold text-lg mb-3">What are Agent Skills?</h3>
+          <p style="color: #858993;">Agent Skills are lightweight, open-format modules that extend AI agent capabilities.</p>
+        </div>
+        <div class="p-6 rounded-xl" style="background-color: #1F2328; border: 1px solid #353B44;">
+          <h3 class="font-semibold text-lg mb-3">How to install?</h3>
+          <p style="color: #858993;">Visit our marketplace and click install. Works with Claude Code, OpenAI Codex, and more.</p>
+        </div>
+        <div class="p-6 rounded-xl" style="background-color: #1F2328; border: 1px solid #353B44;">
+          <h3 class="font-semibold text-lg mb-3">How to create?</h3>
+          <p style="color: #858993;">Create a folder with SKILL.md inside. Include name, description, and instructions.</p>
         </div>
       </div>
 
-      <!-- CTA -->
-      <div class="mt-12 text-center">
-        <a href="/skills" style="background: linear-gradient(135deg, #F4C542, #D4A017);" class="inline-block text-black px-8 py-3 rounded-full font-semibold hover:opacity-90 transition">Browse Agent Skills →</a>
+      <div class="mt-12">
+        <a href="/skills" class="text-gold hover:underline">Browse Skills →</a>
       </div>
     </div>
-  </section>
-
-  <!-- Related -->
-  <section class="py-12" style="background-color: #1F2328;">
-    <div class="max-w-4xl mx-auto px-4">
-      <h3 class="font-semibold mb-4" style="color: #E4E6EA;">Related Pages</h3>
-      <div class="flex flex-wrap gap-4">
-        <a href="/docs/openclaw-skills" class="text-gold hover:underline">Openclaw Skills →</a>
-        <a href="/docs/how-to-create-agent-skills" class="text-gold hover:underline">How to Create Agent Skills →</a>
-        <a href="/docs/ai-agent-tutorial" class="text-gold hover:underline">AI Agent Tutorial →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer style="background-color: #0D0F12; border-top: 1px solid #353B44;" class="py-8">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-      <p style="color: #858993;">&copy; 2026 Agent Skills. All rights reserved.</p>
-    </div>
-  </footer>
+  </main>
 </body>
 </html>
