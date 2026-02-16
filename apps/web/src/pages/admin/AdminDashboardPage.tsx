@@ -49,10 +49,12 @@ export function AdminDashboardPage() {
         return res.json();
       })
       .then((result) => {
-        if (result?.success) {
-          setData(result.data);
+        if (result && (result.success === false || result.error)) {
+          setError(result.error || '加载失败');
+        } else if (result) {
+          setData(result);
         } else {
-          setError(result?.error || '加载失败');
+          setError('加载失败');
         }
         setLoading(false);
       })
