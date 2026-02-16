@@ -17,6 +17,8 @@ import { AdminLoginPage } from '@/pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
 import { AdminSkillsPage } from '@/pages/admin/AdminSkillsPage';
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
+import { DocsPage } from '@/pages/DocsPage';
+import { WhatAreAgentSkillsPage } from '@/pages/docs/WhatAreAgentSkillsPage';
 
 function NotFoundPage() {
   return (
@@ -59,6 +61,8 @@ export default function App() {
           <Route path="/admin/dashboard" component={AdminDashboardPage} />
           <Route path="/admin/skills" component={AdminSkillsPage} />
           <Route path="/admin/users" component={AdminUsersPage} />
+          <Route path="/docs" component={DocsPage} />
+          <Route path="/docs/what-are-agent-skills" component={WhatAreAgentSkillsPage} />
           <Route component={NotFoundPage} />
         </Switch>
       </Layout>
