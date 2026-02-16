@@ -24,45 +24,45 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <!-- SEO Pages under Docs -->
+  <!-- SEO Pages directly under /docs -->
   <url>
-    <loc>https://agentskills.cv/docs/seo/what-are-agent-skills</loc>
+    <loc>https://agentskills.cv/docs/what-are-agent-skills</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agentskills.cv/docs/seo/how-to-create-agent-skills</loc>
+    <loc>https://agentskills.cv/docs/how-to-create-agent-skills</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agentskills.cv/docs/seo/ai-agent-tutorial</loc>
+    <loc>https://agentskills.cv/docs/ai-agent-tutorial</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agentskills.cv/docs/seo/agent-skills</loc>
+    <loc>https://agentskills.cv/docs/agent-skills</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agentskills.cv/docs/seo/openclaw-skills</loc>
+    <loc>https://agentskills.cv/docs/openclaw-skills</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agentskills.cv/docs/seo/ai-agent-no-code</loc>
+    <loc>https://agentskills.cv/docs/ai-agent-no-code</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agentskills.cv/docs/seo/create-ai-agent-skills</loc>
+    <loc>https://agentskills.cv/docs/create-ai-agent-skills</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
