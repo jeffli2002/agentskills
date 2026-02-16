@@ -1,30 +1,69 @@
 import { Link } from 'wouter';
 
 export default function AiAgentTutorialFaqPage() {
-  const faqs = [
-    { q: 'What are AI agents?', a: 'AI agents are AI systems that can autonomously perform tasks, make decisions, and interact with other systems based on user instructions.' },
-    { q: 'Do I need coding skills?', a: 'No! Many AI agents can be built using no-code tools. However, coding skills can help you create more advanced custom skills.' },
-    { q: 'Which platforms support Agent Skills?', a: 'Most major platforms: Claude Code, OpenAI Codex, GitHub Copilot, Cursor, and VS Code all support the SKILL.md format.' },
-    { q: 'Are Agent Skills free?', a: 'Many skills are free. Premium skills may require payment. Basic skills for individual use are mostly free.' },
-    { q: 'How do I install a skill?', a: 'Visit the skill page on our marketplace and click Install. Most skills work immediately with supported platforms.' },
-    { q: 'Can I create custom skills?', a: 'Absolutely! Create a SKILL.md file with your instructions and publish it to share with others.' },
-  ];
-
   return (
     <div className="min-h-[80vh] py-12">
       <div className="max-w-4xl mx-auto px-4">
         <Link href="/docs"><a className="text-primary hover:underline mb-8 inline-block">← Back to Docs</a></Link>
         
         <h1 className="text-4xl font-bold mb-6">AI Agent FAQ</h1>
-        <p className="text-xl text-muted-foreground mb-8">Common questions about AI agents and Agent Skills.</p>
 
-        <div className="space-y-4 mt-8">
-          {faqs.map((faq, i) => (
-            <div key={i} className="p-6 rounded-xl border bg-card">
-              <h3 className="font-semibold text-lg mb-3">{faq.q}</h3>
-              <p className="text-muted-foreground">{faq.a}</p>
-            </div>
-          ))}
+        <div className="space-y-6 mt-8">
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">What are AI agents?</h2>
+            <p className="text-muted-foreground">
+              AI agents are artificial intelligence systems capable of autonomously performing tasks, making decisions, and interacting with other systems based on user instructions. Unlike chatbots that simply respond to messages, AI agents can execute code, manipulate files, call APIs, and complete complex multi-step workflows. They understand context, remember preferences, and learn from interactions to provide increasingly relevant assistance.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Do I need coding skills to use AI agents?</h2>
+            <p className="text-muted-foreground">
+              No! Many AI agents can be used effectively through natural language alone. Describe what you need in plain English, and the agent handles technical implementation. Our Skill Composer lets you create custom skills without coding. While coding skills help for advanced customization, the core functionality is accessible to everyone.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Which platforms support Agent Skills?</h2>
+            <p className="text-muted-foreground">
+              Most major platforms support the SKILL.md format: Claude Code, OpenAI Codex, GitHub Copilot, Cursor, and OpenClaw. This cross-platform compatibility means you can build skills once and use them across different AI assistants. Our marketplace serves as a centralized hub where developers discover, share, and install skills regardless of their chosen platform.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Are Agent Skills free?</h2>
+            <p className="text-muted-foreground">
+              Many skills are free. Basic skills for individual use are free. Premium skills may require payment. We believe in open knowledge sharing to help the AI agent community grow. Creators earn recognition through ratings, favorites, and community visibility. This open approach has resulted in a thriving ecosystem of over 1,000 community-contributed skills.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I install a skill?</h2>
+            <p className="text-muted-foreground">
+              Visit the skill page and click Install or Download ZIP. Extract SKILL.md to your agent's skills directory—for Claude Code, use ~/.claude/skills/, for OpenClaw use ~/.openclaw/workspace/skills/. Our CLI automates: npx @jefflee2002/agentskills install skill-name. The agent automatically discovers installed skills on startup.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Can I create custom skills?</h2>
+            <p className="text-muted-foreground">
+              Absolutely! Use our Skill Composer to describe what you want in plain language. The AI generates a complete SKILL.md file based on proven patterns. You can review, edit, and refine before publishing. Skills can be kept private for personal use or published publicly for the community. This makes skill creation accessible to everyone regardless of technical background.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I enable skills on my VPS?</h2>
+            <p className="text-muted-foreground">
+              Use our CLI tool: npx @jefflee2002/agentskills install skill-name --global. This auto-detects your agents and places SKILL.md correctly. For VPS without Node.js, use curl: curl -o ~/.openclaw/workspace/skills/[skill-name]/SKILL.md "https://agentskills.cv/api/skills/[skill-id]/export/openclaw". After installation, restart your agent to discover new skills.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">What are the best practices for using AI agents?</h2>
+            <p className="text-muted-foreground">
+              Start simple with proven skills from the marketplace. Always review AI-generated code before production use. Iterate gradually rather than expecting perfection. Provide relevant context for better assistance. Use appropriate skills matching your specific use case. Think of AI agents as collaborators that improve with clear communication.
+            </p>
+          </div>
         </div>
 
         <div className="mt-12">

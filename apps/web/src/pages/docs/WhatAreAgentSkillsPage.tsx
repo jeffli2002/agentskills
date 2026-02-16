@@ -7,44 +7,71 @@ export default function WhatAreAgentSkillsPage() {
         <Link href="/docs"><a className="text-primary hover:underline mb-8 inline-block">← Back to Docs</a></Link>
         
         <h1 className="text-4xl font-bold mb-6">What are Agent Skills? Complete Guide</h1>
-        <p className="text-xl text-muted-foreground mb-8">
-          Agent skills are reusable SKILL.md files that extend AI coding assistants like Claude Code and Codex CLI with specialized capabilities, workflows, and domain expertise.
-        </p>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">Understanding Agent Skills</h2>
-        <p className="text-muted-foreground mb-4">
-          Agent skills are modular capability packages that enhance AI agents. Each skill is defined in a SKILL.md file—a simple, open-format specification that any compatible AI agent can read and execute. With over 1,000+ agent skills available in our marketplace, you can equip your AI assistant with abilities ranging from code review and automated testing to SEO analysis, content generation, and complex workflow automation.
-        </p>
-        <p className="text-muted-foreground mb-4">
-          The power of agent skills lies in their simplicity and reusability. Instead of programming custom behaviors from scratch, you can browse our marketplace, find skills that match your needs, and install them with a single click. Each skill encapsulates proven patterns and best practices gathered from the developer community.
-        </p>
+        <div className="space-y-6 mt-8">
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">What are Agent Skills?</h2>
+            <p className="text-muted-foreground">
+              Agent skills are reusable SKILL.md files that extend AI coding assistants like Claude Code and Codex CLI with specialized capabilities, workflows, and domain expertise. Each skill is a modular package that defines what an AI agent can do—ranging from code review and automated testing to SEO analysis, content generation, and complex workflow automation. With over 1,000+ agent skills available in our marketplace, you can equip your AI assistant with abilities across diverse domains including development, marketing, operations, and business.
+            </p>
+          </div>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">How Agent Skills Work</h2>
-        <p className="text-muted-foreground mb-4">
-          When you install an agent skill, the SKILL.md file is placed in your agent's skills directory. The AI agent reads this file when starting up or during conversation, learning about the capabilities, instructions, and workflows defined within. This allows the agent to offer specialized assistance in areas like debugging, documentation writing, database design, security auditing, and hundreds of other domains.
-        </p>
-        <p className="text-muted-foreground mb-4">
-          Agent skills follow an open standard (SKILL.md) that ensures compatibility across platforms. Whether you use Claude Code, OpenAI Codex, Cursor, or other AI coding assistants, you can leverage the same library of skills. This standardization makes it easy to share knowledge and build on each other's work.
-        </p>
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do Agent Skills work?</h2>
+            <p className="text-muted-foreground">
+              When you install an agent skill, the SKILL.md file is placed in your agent's skills directory. The AI agent reads this file when starting up or during conversation, learning about the capabilities, instructions, and workflows defined within. This allows the agent to offer specialized assistance in areas like debugging, documentation writing, database design, security auditing, and hundreds of other domains. The skills follow an open standard ensuring compatibility across platforms like Claude Code, OpenAI Codex, Cursor, and OpenClaw.
+            </p>
+          </div>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">Key Benefits</h2>
-        <ul className="list-disc pl-6 text-muted-foreground mb-6 space-y-3">
-          <li><strong>Instant Capability Addition:</strong> Add new AI capabilities in seconds without coding</li>
-          <li><strong>Community-Tested:</strong> Skills are rated and reviewed by real developers</li>
-          <li><strong>Platform Compatible:</strong> Works with Claude Code, OpenAI Codex, Cursor, and more</li>
-          <li><strong>Open Standard:</strong> SKILL.md format ensures interoperability</li>
-          <li><strong>Continuous Improvement:</strong> Community feedback drives skill quality</li>
-        </ul>
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How to install Agent Skills?</h2>
+            <p className="text-muted-foreground">
+              Installing agent skills is simple. Browse our marketplace, find skills matching your needs, and click "Download ZIP" to get the SKILL.md file. Place it in your agent's skills directory—for Claude Code, typically ~/.claude/skills/, and for OpenClaw, ~/.openclaw/workspace/skills/. Our CLI tool automates this: npx @jefflee2002/agentskills install skill-name. The agent automatically discovers skills on startup. For VPS environments without Node.js, use curl to download directly from our API.
+            </p>
+          </div>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">Popular Use Cases</h2>
-        <p className="text-muted-foreground mb-4">
-          Developers use agent skills for diverse purposes: code review automation, generating unit tests, analyzing code quality, creating documentation, refactoring legacy code, performing security audits, integrating with APIs, building CI/CD pipelines, and automating repetitive development tasks. The marketplace spans categories including AI & machine learning, automation, DevOps, documentation, code management, security, testing, and business applications.
-        </p>
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Are Agent Skills free to use?</h2>
+            <p className="text-muted-foreground">
+              Yes! All skills in our marketplace are free to download and use. We believe in open knowledge sharing to help the AI agent community grow. Creators earn recognition through ratings, favorites, and community visibility. Premium features like advanced analytics or team management may require payment, but the core skill library remains free. This open approach has resulted in a thriving ecosystem of over 1,000 community-contributed skills.
+            </p>
+          </div>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">Getting Started</h2>
-        <p className="text-muted-foreground mb-4">
-          Browse our marketplace to discover skills relevant to your workflow. Most skills can be installed instantly—simply download the ZIP file and place the SKILL.md in your agent's skills directory. For Claude Code users, the typical location is ~/.claude/skills/. For OpenClaw users, it's ~/.openclaw/workspace/skills/. Use our CLI tool for automatic installation: npx @jefflee2002/agentskills install skill-name.
-        </p>
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Which AI platforms support Agent Skills?</h2>
+            <p className="text-muted-foreground">
+              Most major AI agent platforms support the SKILL.md format, including Claude Code, OpenAI Codex, GitHub Copilot, Cursor, and OpenClaw. This cross-platform compatibility means you can build skills once and use them across different AI assistants. Our platform serves as a centralized marketplace where developers can discover, share, and install skills regardless of which AI platform they use. The standardized format ensures consistent behavior across different agents.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How to create my own Agent Skill?</h2>
+            <p className="text-muted-foreground">
+              Use our Skill Composer—an AI-powered tool that generates well-structured SKILL.md files from natural language descriptions. Click "Create with AI," describe what you want your skill to do (e.g., "A skill that helps review code for security vulnerabilities"), answer clarifying questions, and get a complete skill ready for customization and publishing. The composer learns from top-rated community skills to generate professional-quality outputs based on proven patterns.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">What are popular use cases for Agent Skills?</h2>
+            <p className="text-muted-foreground">
+              Developers use agent skills for diverse purposes: code review automation, generating unit tests, analyzing code quality, creating documentation, refactoring legacy code, performing security audits, integrating with APIs, building CI/CD pipelines, and automating repetitive development tasks. The marketplace spans categories including AI & machine learning, automation, DevOps, documentation, code management, security, testing, and business applications. Skills can be combined for complex workflows.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I enable skills on my VPS or local machine?</h2>
+            <p className="text-muted-foreground">
+              Use our CLI tool: npx @jefflee2002/agentskills install skill-name --global. This auto-detects your agents (OpenClaw, Claude Code, Cursor, etc.) and places the SKILL.md in the right directory. On a VPS without Node.js, use curl: curl -o ~/.openclaw/workspace/skills/[skill-name]/SKILL.md "https://agentskills.cv/api/skills/[skill-id]/export/openclaw". For manual installation, copy downloaded SKILL.md to your agent's skills directory.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How are skills reviewed and rated?</h2>
+            <p className="text-muted-foreground">
+              Skills are rated by the community on a 5-star scale. You can favorite skills to save them for later and help others discover quality content. Popular skills with high ratings appear in featured sections and category highlights. Creators can respond to reviews, update skills based on feedback, and iterate on improvements. This community-driven quality assurance helps ensure high-quality skills rise to the top.
+            </p>
+          </div>
+        </div>
 
         <div className="mt-12">
           <Link href="/skills"><a className="text-primary hover:underline">Browse Agent Skills →</a></Link>

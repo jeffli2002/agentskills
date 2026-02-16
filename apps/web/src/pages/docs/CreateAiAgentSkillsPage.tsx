@@ -7,23 +7,57 @@ export default function CreateAiAgentSkillsPage() {
         <Link href="/docs"><a className="text-primary hover:underline mb-8 inline-block">← Back to Docs</a></Link>
         
         <h1 className="text-4xl font-bold mb-6">Create AI Agent Skills</h1>
-        <p className="text-xl text-muted-foreground mb-8">Share your expertise as reusable AI capabilities.</p>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">Why Create Skills?</h2>
-        <ul className="list-disc pl-6 text-muted-foreground mb-6 space-y-2">
-          <li>Package your knowledge for reuse</li>
-          <li>Help others benefit from your expertise</li>
-          <li>Build a portfolio of AI capabilities</li>
-          <li>Earn from premium skills</li>
-        </ul>
+        <div className="space-y-6 mt-8">
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I create an Agent Skill?</h2>
+            <p className="text-muted-foreground">
+              Use our Skill Composer—an AI-powered tool that generates well-structured SKILL.md files from natural language. Click "Create with AI," describe your idea (e.g., "A skill that helps review code for security vulnerabilities"), answer clarifying questions, and get a complete skill ready for customization and publishing. The composer learns from top-rated community skills to generate professional-quality outputs.
+            </p>
+          </div>
 
-        <h2 className="text-2xl font-bold mb-4 mt-8">How to Create</h2>
-        <ol className="list-decimal pl-6 text-muted-foreground mb-6 space-y-2">
-          <li>Identify a specific task or expertise</li>
-          <li>Write clear instructions in SKILL.md</li>
-          <li>Test with different AI agents</li>
-          <li>Publish to the marketplace</li>
-        </ol>
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Why should I create Agent Skills?</h2>
+            <p className="text-muted-foreground">
+              Creating skills lets you package your knowledge for reuse, help others benefit from your expertise, build a portfolio of AI capabilities, and potentially earn from premium skills. Skills formalize your expertise in a reusable format that AI agents can apply consistently. Your knowledge becomes accessible to anyone who installs your skill.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I write effective skill instructions?</h2>
+            <p className="text-muted-foreground">
+              Be specific and detailed—clear instructions produce better results than vague descriptions. Include examples showing the AI exactly how to handle different scenarios. Handle edge cases by anticipating unusual situations and providing guidance. Test thoroughly with various inputs before publishing. Iterate based on feedback from users to improve over time.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I publish my skill?</h2>
+            <p className="text-muted-foreground">
+              Click "Publish" in the Skill Composer. Choose public (visible to everyone) or private (only you) visibility. Public skills undergo community review via ratings and reviews, building credibility. Write a compelling description, select appropriate categories, add relevant tags, and include clear usage examples to maximize visibility and adoption.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">Can I keep skills private?</h2>
+            <p className="text-muted-foreground">
+              Yes! When publishing, choose private visibility. Private skills remain in your "My Skills" section for personal use. You can make them public later if you decide to share with the community. This allows you to develop, test, and refine skills before public release.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">How do I get my skills rated highly?</h2>
+            <p className="text-muted-foreground">
+              High-rated skills have clear instructions, comprehensive coverage, and reliable performance. Respond to reviews, update based on feedback, and iterate on improvements. Include multiple examples covering different use cases. Handle edge cases gracefully. Skills with positive reviews gain visibility through featured placements and category highlights.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border bg-card">
+            <h2 className="font-semibold text-lg mb-3 text-primary">What makes a successful skill?</h2>
+            <p className="text-muted-foreground">
+              Successful skills solve real problems with clear, actionable instructions. They are specific, well-documented, and thoroughly tested. Include multiple examples covering different use cases. Handle edge cases gracefully. Maintain and update based on user feedback. The best skills become go-to resources for specific tasks in the community.
+            </p>
+          </div>
+        </div>
 
         <div className="mt-12">
           <Link href="/create"><a className="text-primary hover:underline">Start Creating →</a></Link>
