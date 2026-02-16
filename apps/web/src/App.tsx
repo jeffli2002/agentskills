@@ -17,8 +17,8 @@ import { AdminLoginPage } from '@/pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
 import { AdminSkillsPage } from '@/pages/admin/AdminSkillsPage';
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
-import { DocsPage } from '@/pages/DocsPage';
-import { WhatAreAgentSkillsPage } from '@/pages/docs/WhatAreAgentSkillsPage';
+import DocsPage from '@/pages/DocsPage';
+import WhatAreAgentSkillsPage from '@/pages/docs/WhatAreAgentSkillsPage';
 
 function NotFoundPage() {
   return (
