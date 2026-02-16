@@ -13,7 +13,7 @@ const docsPages = [
 
 export default function DocsPage() {
   return (
-    <div className="min-h-[80vh] py-12" style={{ backgroundColor: '#121418' }}>
+    <div className="min-h-[80vh] py-12 bg-surface">
       <div className="max-w-6xl mx-auto px-4">
         <h1 className="text-4xl font-bold mb-4">Documentation</h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl">

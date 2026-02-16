@@ -33,6 +33,13 @@ export default {
           light: 'hsl(var(--gold-light))',
           dark: 'hsl(var(--gold-dark))',
         },
+        // 统一页面颜色
+        surface: {
+          DEFAULT: '#121418',
+          elevated: '#1F2328',
+          muted: '#282D35',
+        },
+        divider: '#353B44',
       },
       borderRadius: {
         lg: 'var(--radius)',
