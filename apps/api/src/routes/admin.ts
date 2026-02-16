@@ -40,12 +40,12 @@ adminRouter.post('/login', async (c) => {
   const ADMIN_PASSWORD = c.env.ADMIN_PASSWORD || 'admin123';
   
   if (password !== ADMIN_PASSWORD) {
-    return c.json({ error: 'Invalid password' }, 401);
+    return c.json({ success: false, error: 'Invalid password' }, 401);
   }
   
   const token = btoa(`${Date.now()}:admin`);
   
-  return c.json({ token, expiresIn: 86400 });
+  return c.json({ success: true, data: { token, expiresIn: 86400 } });
 });
 
 // 仪表盘数据
