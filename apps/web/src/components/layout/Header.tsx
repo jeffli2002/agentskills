@@ -52,6 +52,9 @@ export function Header() {
             <Link href="/cli" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
               CLI
             </Link>
+            <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
+              Docs
+            </Link>
             {user && (
               <>
                 <Link href="/favorites" className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">
