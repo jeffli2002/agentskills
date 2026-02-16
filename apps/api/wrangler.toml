@@ -16,4 +16,5 @@ bucket_name = "agentskills"
 
 [vars]
 ENVIRONMENT = "production"
+ADMIN_PASSWORD = "admin123"
 # DEEPSEEK_BASE_URL and DEEPSEEK_API_KEY are set as secrets

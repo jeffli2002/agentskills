@@ -6,6 +6,7 @@ import { favoritesRouter } from './routes/favorites';
 import { ratingsRouter } from './routes/ratings';
 import { composerRouter } from './routes/composer';
 import { converterRouter } from './routes/converter';
+import { adminRouter } from './routes/admin';
 import { createDb, skills } from './db';
 
 type Bindings = {
@@ -16,6 +17,7 @@ type Bindings = {
   SESSION_SECRET: string;
   ENVIRONMENT: string;
   ANTHROPIC_API_KEY: string;
+  ADMIN_PASSWORD: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -44,6 +46,7 @@ app.route('/api/favorites', favoritesRouter);
 app.route('/api/ratings', ratingsRouter);
 app.route('/api/composer', composerRouter);
 app.route('/api/converter', converterRouter);
+app.route('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (c) => {

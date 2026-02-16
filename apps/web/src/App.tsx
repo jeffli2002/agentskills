@@ -13,6 +13,10 @@ import { CreateSkillPage } from '@/pages/CreateSkillPage';
 import { OpenClawExportPage } from '@/pages/OpenClawExportPage';
 import { CLIPage } from '@/pages/CLIPage';
 import { ConvertPage } from '@/pages/ConvertPage';
+import { AdminLoginPage } from '@/pages/admin/AdminLoginPage';
+import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
+import { AdminSkillsPage } from '@/pages/admin/AdminSkillsPage';
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
 
 function NotFoundPage() {
   return (
@@ -50,6 +54,11 @@ export default function App() {
           <Route path="/create" component={CreateSkillPage} />
           <Route path="/privacy" component={PrivacyPage} />
           <Route path="/terms" component={TermsPage} />
+          {/* Admin routes (no layout) */}
+          <Route path="/admin/login" component={AdminLoginPage} />
+          <Route path="/admin/dashboard" component={AdminDashboardPage} />
+          <Route path="/admin/skills" component={AdminSkillsPage} />
+          <Route path="/admin/users" component={AdminUsersPage} />
           <Route component={NotFoundPage} />
         </Switch>
       </Layout>
