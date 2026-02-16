@@ -253,7 +253,7 @@ export function AdminDashboardPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Skills 趋势 (14天)</h2>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {data?.trend?.skills?.length > 0 ? (
+              {data?.trend?.skills && data.trend.skills.length > 0 ? (
                 data.trend.skills.map((item) => (
                   <div key={item.date} className="flex justify-between items-center py-2 border-b">
                     <span className="text-gray-600">{item.date}</span>
@@ -268,7 +268,7 @@ export function AdminDashboardPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold mb-4">用户趋势 (14天)</h2>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {data?.trend?.users?.length > 0 ? (
+              {data?.trend?.users && data.trend.users.length > 0 ? (
                 data.trend.users.map((item) => (
                   <div key={item.date} className="flex justify-between items-center py-2 border-b">
                     <span className="text-gray-600">{item.date}</span>

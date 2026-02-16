@@ -1,24 +1,25 @@
-# robots.txt for Agent Skills Marketplace
+# Robots.txt for Agent Skills
 # https://agentskills.cv
 
 User-agent: *
 Allow: /
 
-# Sitemap location
+# Sitemap
 Sitemap: https://agentskills.cv/sitemap.xml
 
-# Disallow API endpoints
+# Crawl-delay (optional)
+Crawl-delay: 1
+
+# Disallow admin areas
+Disallow: /admin/
 Disallow: /api/
 
-# Allow all crawlers to access main content
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Slurp
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
+# Allow SEO pages
+Allow: /what-are-agent-skills
+Allow: /how-to-create-agent-skills
+Allow: /ai-agent-tutorial
+Allow: /agent-skills
+Allow: /openclaw-skills
+Allow: /ai-agent-no-code
+Allow: /create-ai-agent-skills
+Allow: /custom-ai-agent-business
